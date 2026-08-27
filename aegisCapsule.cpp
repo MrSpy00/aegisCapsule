@@ -3128,6 +3128,11 @@ class Renderer {
         else glassGlossBrush_->SetColor(glossCol);
     }
 
+    void DrawVoiceRecording(const SharedState& state, D2D1_RECT_F rect, double now, const Settings& settings);
+    void DrawCollapsedIdle(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now);
+    void DrawExpandedDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now, float scale = 1.0f);
+    void DrawGameOverlay(const SharedState& state, D2D1_RECT_F rect, float scale);
+
     void DrawSoftShadow(D2D1_RECT_F rect, float radius, float softness, const Settings& settings) {
         if (!target_) return;
         const int steps = 5;
@@ -3391,22 +3396,6 @@ class Renderer {
         DrawPillSurface(rect, radius, activity.kind, settings, now);
 
         float contentAlpha = 1.0f;
-        if (settings.contentFadeOnResize) {
-            float targetW = (activity.kind == IslandKind::Media)
-                ? (settings.media ? settings.expandedWidth : settings.collapsedWidth + 40.0f) * settings.sizeScale
-                : settings.expandedWidth * settings.sizeScale;
-            float targetH = (activity.kind == IslandKind::Media)
-                ? settings.expandedHeight * settings.sizeScale
-                : settings.expandedHeight * settings.sizeScale;
-            float actualW = rect.right - rect.left;
-            float actualH = rect.bottom - rect.top;
-            if (targetW > 1.0f && targetH > 1.0f) {
-                float wRatio = Clamp(actualW / targetW, 0.0f, 1.0f);
-                float hRatio = Clamp(actualH / targetH, 0.0f, 1.0f);
-                contentAlpha = std::min(wRatio, hRatio);
-                contentAlpha = Clamp(contentAlpha, 0.0f, 1.0f);
-            }
-        }
 
         if (activity.kind == IslandKind::Progress) {
             DrawProgressRing(rect, state.progress.percent, settings);
@@ -3450,9 +3439,9 @@ class Renderer {
             mutedBrush_->SetOpacity(contentAlpha * 0.58f);
         }
 
-        bool isExpanded = (unH > (settings.collapsedHeight + 20.0f));
+        bool isExpanded = (unH > (settings.collapsedHeight + std::max(12.0f, (settings.expandedHeight - settings.collapsedHeight) * 0.30f)));
         if (isExpanded) {
-            DrawIdleDashboard(state, unscaledRect, settings, now);
+            DrawExpandedDashboard(state, unscaledRect, settings, now, 1.0f);
         } else {
             switch (activity.kind) {
                 case IslandKind::Media:
@@ -3479,9 +3468,12 @@ class Renderer {
                 case IslandKind::Progress:
                     DrawProgress(state, unscaledRect);
                     break;
+                case IslandKind::Recording:
+                    DrawVoiceRecording(state, unscaledRect, now, settings);
+                    break;
                 case IslandKind::Idle:
                 default:
-                    DrawIdleDashboard(state, unscaledRect, settings, now);
+                    DrawCollapsedIdle(state, unscaledRect, settings, now);
                     break;
             }
         }
@@ -3938,27 +3930,18 @@ class Renderer {
         }
     }
 
-    void DrawIdleDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings,
-                           double now) {
-        const float scale = 1.0f;
+    void DrawCollapsedIdle(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now) {
         const float width = rect.right - rect.left;
+        const float height = rect.bottom - rect.top;
+        if (width < 20.0f || height < 10.0f) return;
 
-        if (width / scale >= 240.0f && (settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0)) {
-            DrawGameOverlay(state, rect, 1.0f);
-            return;
-        }
         target_->PushAxisAlignedClip(rect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-        
-        if (!clockFormat_) {
-            target_->PopAxisAlignedClip();
-            return;
-        }
 
         SYSTEMTIME local = {};
         GetLocalTime(&local);
         wchar_t timeBuf[32] = {};
         GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, &local, nullptr, timeBuf, ARRAYSIZE(timeBuf));
-        
+
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
         std::wstring wText = L"Clear";
@@ -3967,138 +3950,127 @@ class Renderer {
             GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText, IsTurkish(settings.language));
         }
 
-        if (width / scale < 240.0f) {
-            // Collapsed Mode - Rebalanced, perfectly spaced layout
-            const float cx = (rect.left + rect.right) * 0.5f;
-            const float cy = (rect.top + rect.bottom) * 0.5f;
-            bool tr = IsTurkish(settings.language);
+        const float cx = (rect.left + rect.right) * 0.5f;
+        const float cy = (rect.top + rect.bottom) * 0.5f;
+        bool tr = IsTurkish(settings.language);
 
-            bool pomoActive = (state.pomodoro.state == PomodoroState::Working || state.pomodoro.state == PomodoroState::Break);
-            int displayMode = settings.idleDisplayMode;
+        bool pomoActive = (state.pomodoro.state == PomodoroState::Working || state.pomodoro.state == PomodoroState::Break);
+        int displayMode = settings.idleDisplayMode;
 
-            if (pomoActive || displayMode == 5) {
-                // Live Activity Focus Pill (Tomato + MM:SS | Clock or Weather)
-                int remMins = state.pomodoro.remainingSeconds / 60;
-                int remSecs = state.pomodoro.remainingSeconds % 60;
-                wchar_t pomoText[32] = {};
-                swprintf_s(pomoText, L"🍅 %02d:%02d", remMins, remSecs);
+        // Auto-adapt for Smart Dynamic (0)
+        if (displayMode == 0) {
+            if (pomoActive) displayMode = 5;
+            else if (hasWeather) displayMode = 1;
+            else displayMode = 2;
+        }
 
-                // Left: Pomodoro Timer with trailing-alignment
-                D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 10.0f * scale, cy - 10.0f * scale, cx - 6.0f * scale, cy + 10.0f * scale);
-                if (boldTextFormat_) {
-                    boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-                    boldTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    ID2D1SolidColorBrush* pBrush = (state.pomodoro.state == PomodoroState::Working) ? redBrush_.Get() : greenBrush_.Get();
-                    target_->DrawText(pomoText, static_cast<UINT32>(wcslen(pomoText)), boldTextFormat_.Get(), leftRect, pBrush ? pBrush : textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
-                    boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-                    boldTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-                }
+        if (pomoActive || displayMode == 5) {
+            // Live Pomodoro Focus (Tomato + MM:SS | Time)
+            int remMins = state.pomodoro.remainingSeconds / 60;
+            int remSecs = state.pomodoro.remainingSeconds % 60;
+            wchar_t pomoText[32] = {};
+            swprintf_s(pomoText, L"🍅 %02d:%02d", remMins, remSecs);
 
-                // Center Divider
-                ComPtr<ID2D1SolidColorBrush> divider;
-                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.75f * scale, cy - 6.0f * scale, cx + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+            ID2D1SolidColorBrush* pBrush = (state.pomodoro.state == PomodoroState::Working) ? redBrush_.Get() : greenBrush_.Get();
 
-                // Right: Time
-                D2D1_RECT_F rightRect = D2D1::RectF(cx + 6.0f * scale, cy - 10.0f * scale, rect.right - 10.0f * scale, cy + 10.0f * scale);
-                if (smallTextFormat_) {
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(), rightRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-                }
-            } else if (displayMode == 2) {
-                // Clock Only (Large Centered Time)
-                D2D1_RECT_F fullRect = D2D1::RectF(rect.left + 10.0f * scale, cy - 12.0f * scale, rect.right - 10.0f * scale, cy + 12.0f * scale);
-                if (boldTextFormat_) {
-                    boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-                    boldTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), boldTextFormat_.Get(), fullRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-                    boldTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-                }
-            } else if (displayMode == 3 || (settings.showMetricsInIdle && state.system.cpuPercent >= 0)) {
-                // System Telemetry HUD with high contrast, precise 3 columns and zero overlap
-                const float pad = 8.0f * scale;
-                const float totalW = (rect.right - rect.left) - pad * 2.0f;
-                const float colW = totalW / 3.0f;
-                const float d1 = rect.left + pad + colW;
-                const float d2 = rect.left + pad + colW * 2.0f;
+            D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 6.0f, cy - 11.0f, cx - 3.0f, cy + 11.0f);
+            DrawFittedLine(pomoText, leftRect, pBrush ? pBrush : textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                ComPtr<ID2D1SolidColorBrush> divider;
-                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d1 - 0.5f * scale, cy - 6.0f * scale, d1 + 0.5f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d2 - 0.5f * scale, cy - 6.0f * scale, d2 + 0.5f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+            // Center Divider
+            ComPtr<ID2D1SolidColorBrush> divider;
+            target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
+            target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.5f, cy - 6.0f, cx + 0.5f, cy + 6.0f), 0.5f, 0.5f), divider.Get());
 
-                // Col 1: Time
-                D2D1_RECT_F col1 = D2D1::RectF(rect.left + pad, cy - 10.0f * scale, d1 - 3.0f * scale, cy + 10.0f * scale);
-                DrawFittedLine(timeBuf, col1, textBrush_.Get(), 11.5f, scale, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            // Right: Time
+            D2D1_RECT_F rightRect = D2D1::RectF(cx + 3.0f, cy - 11.0f, rect.right - 6.0f, cy + 11.0f);
+            DrawFittedLine(timeBuf, rightRect, textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_NORMAL);
+        } else if (displayMode == 2) {
+            // Minimalist Clock Only (Centered)
+            D2D1_RECT_F fullRect = D2D1::RectF(rect.left + 6.0f, cy - 12.0f, rect.right - 6.0f, cy + 12.0f);
+            DrawFittedLine(timeBuf, fullRect, textBrush_.Get(), 14.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+        } else if (displayMode == 3 || (settings.showMetricsInIdle && state.system.cpuPercent >= 0)) {
+            // System Telemetry HUD with high contrast, 3 equal columns and zero overlap
+            const float pad = 6.0f;
+            const float totalW = (rect.right - rect.left) - pad * 2.0f;
+            const float colW = totalW / 3.0f;
+            const float d1 = rect.left + pad + colW;
+            const float d2 = rect.left + pad + colW * 2.0f;
 
-                // Col 2: CPU %
-                wchar_t cpuLabel[32] = {};
-                swprintf_s(cpuLabel, L"CPU %d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
-                D2D1_RECT_F col2 = D2D1::RectF(d1 + 3.0f * scale, cy - 10.0f * scale, d2 - 3.0f * scale, cy + 10.0f * scale);
-                DrawFittedLine(cpuLabel, col2, cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get(), 11.0f, scale, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            ComPtr<ID2D1SolidColorBrush> divider;
+            target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
+            target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d1 - 0.5f, cy - 6.0f, d1 + 0.5f, cy + 6.0f), 0.5f, 0.5f), divider.Get());
+            target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d2 - 0.5f, cy - 6.0f, d2 + 0.5f, cy + 6.0f), 0.5f, 0.5f), divider.Get());
 
-                // Col 3: RAM %
-                wchar_t memLabel[32] = {};
-                swprintf_s(memLabel, L"RAM %d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
-                D2D1_RECT_F col3 = D2D1::RectF(d2 + 3.0f * scale, cy - 10.0f * scale, rect.right - pad, cy + 10.0f * scale);
-                DrawFittedLine(memLabel, col3, orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get(), 11.0f, scale, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
-            } else if (displayMode == 4) {
-                // Weather Focus: [ ☀️ Istanbul 28° | 17:09 ]
-                wchar_t weatherLabel[64] = {};
-                std::wstring locName = (!state.weather.city.empty() && state.weather.city != L"[") ? state.weather.city : (tr ? L"Hava" : L"Weather");
-                if (hasWeather) swprintf_s(weatherLabel, L"%s %s %.0f\x00B0", wIcon.c_str(), locName.c_str(), state.weather.temperature);
-                else swprintf_s(weatherLabel, L"☀️ %s 24\x00B0", locName.c_str());
+            // Col 1: Time
+            D2D1_RECT_F col1 = D2D1::RectF(rect.left + pad, cy - 10.0f, d1 - 2.0f, cy + 10.0f);
+            DrawFittedLine(timeBuf, col1, textBrush_.Get(), 11.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 10.0f * scale, cy - 10.0f * scale, cx - 6.0f * scale, cy + 10.0f * scale);
-                if (smallTextFormat_) {
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    target_->DrawText(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), smallTextFormat_.Get(), leftRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
-                }
+            // Col 2: CPU %
+            wchar_t cpuLabel[32] = {};
+            swprintf_s(cpuLabel, L"CPU %d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
+            D2D1_RECT_F col2 = D2D1::RectF(d1 + 2.0f, cy - 10.0f, d2 - 2.0f, cy + 10.0f);
+            DrawFittedLine(cpuLabel, col2, cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get(), 11.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                ComPtr<ID2D1SolidColorBrush> divider;
-                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.75f * scale, cy - 6.0f * scale, cx + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+            // Col 3: RAM %
+            wchar_t memLabel[32] = {};
+            swprintf_s(memLabel, L"RAM %d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
+            D2D1_RECT_F col3 = D2D1::RectF(d2 + 2.0f, cy - 10.0f, rect.right - pad, cy + 10.0f);
+            DrawFittedLine(memLabel, col3, orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get(), 11.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+        } else if (displayMode == 4) {
+            // Weather Focus: [ ☀️ Istanbul 28° | 17:09 ]
+            wchar_t weatherLabel[64] = {};
+            std::wstring locName = (!state.weather.city.empty() && state.weather.city != L"[") ? state.weather.city : (tr ? L"Hava" : L"Weather");
+            if (hasWeather) swprintf_s(weatherLabel, L"%s %s %.0f\x00B0", wIcon.c_str(), locName.c_str(), state.weather.temperature);
+            else swprintf_s(weatherLabel, L"☀️ %s 24\x00B0", locName.c_str());
 
-                D2D1_RECT_F rightRect = D2D1::RectF(cx + 6.0f * scale, cy - 10.0f * scale, rect.right - 10.0f * scale, cy + 10.0f * scale);
-                if (smallTextFormat_) {
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(), rightRect, textBrush_.Get());
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-                }
-            } else {
-                // Classic 50/50 Duo: [ Time | Weather ] (Style 0 & 1)
-                D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 10.0f * scale, cy - 10.0f * scale, cx - 8.0f * scale, cy + 10.0f * scale);
-                if (smallTextFormat_) {
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(), leftRect, textBrush_.Get());
-                }
+            D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 6.0f, cy - 10.0f, cx - 3.0f, cy + 10.0f);
+            DrawFittedLine(weatherLabel, leftRect, textBrush_.Get(), 11.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                // Center Divider
-                ComPtr<ID2D1SolidColorBrush> divider;
-                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.75f * scale, cy - 6.0f * scale, cx + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+            ComPtr<ID2D1SolidColorBrush> divider;
+            target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
+            target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.5f, cy - 6.0f, cx + 0.5f, cy + 6.0f), 0.5f, 0.5f), divider.Get());
 
-                // Weather: [ ☀️ 32° ]
-                wchar_t weatherLabel[32] = {};
-                if (hasWeather) swprintf_s(weatherLabel, L"%s %.0f\x00B0", wIcon.c_str(), state.weather.temperature);
-                else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"☀️ 24\x00B0");
+            D2D1_RECT_F rightRect = D2D1::RectF(cx + 3.0f, cy - 10.0f, rect.right - 6.0f, cy + 10.0f);
+            DrawFittedLine(timeBuf, rightRect, textBrush_.Get(), 11.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_NORMAL);
+        } else {
+            // Classic 50/50 Duo: [ Time | Weather ] (Style 1 & default)
+            D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 6.0f, cy - 10.0f, cx - 3.0f, cy + 10.0f);
+            DrawFittedLine(timeBuf, leftRect, textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                D2D1_RECT_F rightRect = D2D1::RectF(cx + 8.0f * scale, cy - 10.0f * scale, rect.right - 10.0f * scale, cy + 10.0f * scale);
-                if (smallTextFormat_) {
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                    target_->DrawText(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), smallTextFormat_.Get(), rightRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-                }
-            }
+            // Center Divider
+            ComPtr<ID2D1SolidColorBrush> divider;
+            target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
+            target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.5f, cy - 6.0f, cx + 0.5f, cy + 6.0f), 0.5f, 0.5f), divider.Get());
 
-            target_->PopAxisAlignedClip();
+            // Weather: [ ☀️ 32° ]
+            wchar_t weatherLabel[32] = {};
+            if (hasWeather) swprintf_s(weatherLabel, L"%s %.0f\x00B0", wIcon.c_str(), state.weather.temperature);
+            else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"☀️ 24\x00B0");
+
+            D2D1_RECT_F rightRect = D2D1::RectF(cx + 3.0f, cy - 10.0f, rect.right - 6.0f, cy + 10.0f);
+            DrawFittedLine(weatherLabel, rightRect, textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+        }
+
+        target_->PopAxisAlignedClip();
+    }
+
+    void DrawExpandedDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now, float scale) {
+        if (settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0) {
+            DrawGameOverlay(state, rect, scale);
             return;
+        }
+
+        target_->PushAxisAlignedClip(rect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+
+        SYSTEMTIME local = {};
+        GetLocalTime(&local);
+
+        bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
+        std::wstring wIcon = L"🌡️";
+        std::wstring wText = L"Clear";
+        if (hasWeather) {
+            wText = state.weather.weatherDesc;
+            GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText, IsTurkish(settings.language));
         }
 
         // Expanded Mode (6 Interactive Tabs with Smooth Sliding Carousel)
@@ -4124,7 +4096,7 @@ class Renderer {
         const float dotY = (rect.top + rect.bottom) * 0.5f;
         const float spacing = 7.0f * scale;
         const float r = settings.paginationDotSize * scale;
-        
+
         ComPtr<ID2D1SolidColorBrush> activeDot, inactiveDot;
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.90f * settingsOpacity_), &activeDot);
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.22f * settingsOpacity_), &inactiveDot);
@@ -4757,6 +4729,25 @@ class Renderer {
         accentBrush_->SetOpacity(1.0f);
     }
 
+    void DrawVoiceRecording(const SharedState& state, D2D1_RECT_F rect, double now, const Settings& settings) {
+        if (rect.bottom - rect.top < 18.0f || rect.right - rect.left < 50.0f) return;
+        const float cy = (rect.top + rect.bottom) * 0.5f;
+        const float iconSz = std::min((rect.bottom - rect.top) - 10.0f, 26.0f);
+        D2D1_RECT_F badge = D2D1::RectF(rect.left + 10.0f, cy - iconSz * 0.5f, rect.left + 10.0f + iconSz, cy + iconSz * 0.5f);
+        const float br = iconSz * 0.35f;
+
+        ComPtr<ID2D1SolidColorBrush> badgeBg;
+        target_->CreateSolidColorBrush(D2D1::ColorF(1.0f, 0.23f, 0.18f, 0.25f), &badgeBg);
+        target_->FillRoundedRectangle(D2D1::RoundedRect(badge, br, br), badgeBg.Get());
+
+        if (emojiFormat_) {
+            DrawCenteredGlyph(L"🎙️", badge, emojiFormat_.Get(), textBrush_.Get(), true);
+        }
+
+        D2D1_RECT_F waveRect = D2D1::RectF(badge.right + 8.0f, rect.top + 4.0f, rect.right - 10.0f, rect.bottom - 4.0f);
+        DrawWaveform(state, waveRect, settings);
+    }
+
     void DrawClipboard(const SharedState& state, D2D1_RECT_F rect) {
         if (rect.bottom - rect.top < 40.0f || rect.right - rect.left < 100.0f) return;
         const double now = NowSeconds();
@@ -5337,8 +5328,11 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 return 0;
             }
 
+            float expandThreshold = settings.collapsedHeight + std::max(12.0f, (settings.expandedHeight - settings.collapsedHeight) * 0.30f);
+            bool isExpandedPill = (pillH / settings.sizeScale > expandThreshold);
+
             int currentTab = Modulo(g_idleTab.load(), kTotalTabs);
-            if (currentTab == 4 && pillH / settings.sizeScale > 80.0f) {
+            if (currentTab == 4 && isExpandedPill) {
                 std::lock_guard lock(g_stateMutex);
                 if (g_state.pomodoro.state == PomodoroState::Stopped || g_state.pomodoro.state == PomodoroState::Break) {
                     g_state.pomodoro.state = PomodoroState::Working;
@@ -5349,7 +5343,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 return 0;
             }
 
-            if (pillH / settings.sizeScale > 80.0f) {
+            if (isExpandedPill) {
                 g_idleTab = Modulo(g_idleTab.load() + 1, kTotalTabs);
             }
             return 0;
@@ -5494,7 +5488,7 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
             primary.width = settings.expandedWidth * settings.sizeScale;
             primary.height = settings.expandedHeight * settings.sizeScale;
         } else if (primaryKind == IslandKind::Recording) {
-            primary.width = 240.0f * settings.sizeScale;
+            primary.width = std::max(220.0f, settings.collapsedWidth + 40.0f) * settings.sizeScale;
             primary.height = settings.collapsedHeight * settings.sizeScale;
         } else if (primaryKind == IslandKind::Media) {
             primary.width = (settings.collapsedWidth + 40.0f) * settings.sizeScale;
