@@ -79,7 +79,7 @@ Genişletilmiş modda fare tekerleğiyle veya tıklayarak 6 farklı sekmeye geç
 ## 🇬🇧 English Description
 
 ### 💎 What is aegisCapsule?
-**aegisCapsule** brings the pinnacle of Apple iOS Dynamic Island and Vision Pro Liquid Glass aesthetics to Windows 10 and 11. Built with pure hardware-accelerated Direct2D and DirectWrite in a single zero-bloat file (`aegisCapsule.cpp`), it runs smoothly at 60 to 240 FPS.
+**aegisCapsule** brings the pinnacle of Apple iOS Dynamic Island and Vision Pro Liquid Glass aesthetics to Windows 10 and 11. Built with pure hardware-accelerated Direct2D and DirectWrite in a single zero-bloat file (`aegis-capsule.cpp`), it runs smoothly at 60 to 240 FPS.
 
 Beyond a simple status pill, it is a **complete personal desktop companion**, featuring a **WASAPI voice recorder**, **Pomodoro timer**, **quick notes scratchpad**, **living wellness assistant**, and **hardware telemetry**.
 
@@ -102,7 +102,7 @@ Beyond a simple status pill, it is a **complete personal desktop companion**, fe
 
 1. Download and install **Windhawk**: [https://windhawk.net](https://windhawk.net)
 2. Open Windhawk > **Mods** > **Create / Install from file**.
-3. Select `aegisCapsule.cpp`.
+3. Select `aegis-capsule.cpp`.
 4. Windhawk will automatically compile and launch the mod with all required compiler options.
 
 ---
