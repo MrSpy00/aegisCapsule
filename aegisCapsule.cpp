@@ -1,46 +1,46 @@
 // ==WindhawkMod==
 // @id              aegis-capsule
 // @name            aegisCapsule
-// @description     aegisCapsule - Next-generation fluid Liquid Glass dynamic capsule for Windows desktops with advanced hardware metrics, media controls, intelligent dashboards, and buttery-smooth physics animations.
-// @version         0.0.1
+// @description     aegisCapsule - Next-generation fluid Liquid Glass dynamic capsule for Windows desktops with full-screen auto-hide, living assistant, smart voice recorder, quick notes, pomodoro focus, hardware metrics, and buttery-smooth physics animations.
+// @version         0.0.2
 // @author          aegis
 // @github          https://github.com/MrSpy00/aegisCapsule
 // @include         windhawk.exe
-// @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh
+// @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh -lwinmm
 // @license         MIT
 // ==/WindhawkMod==
 
 // ==WindhawkModReadme==
 /*
-# aegisCapsule v0.0.1
+# aegisCapsule v0.0.2
 
-A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern Liquid Glass optics, Apple Vision Pro aesthetics, intelligent hardware dashboards, media controls, and buttery-smooth physics animations. Built natively with hardware-accelerated Direct2D rendering for an uncompromising 60-240 FPS experience with near-zero CPU usage.
+A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern Liquid Glass optics, Apple Vision Pro aesthetics, intelligent living assistant, smart voice recorder, quick notes, Pomodoro focus timer, hardware dashboards, media controls, and buttery-smooth physics animations. Built natively with hardware-accelerated Direct2D rendering for an uncompromising 60-240 FPS experience with near-zero CPU usage.
 
 ---
 
 ## 💎 Liquid Glass & Optical Design Engine
 - **Multi-Layer Optics:** Dynamic specular highlights, soft ambient drop shadows, light refraction rims, and subtle animated shimmer caustics.
+- **Pristine Border & Artifact-Free:** Zero halo bleeding, clean sub-pixel anti-aliased glass geometry.
 - **Customizable Corner Geometry:** Switch freely between Full Pill, Vision Squircle, Modern 8px Box, Sharp Minimal Box, or custom radius (0-60px).
 - **Adaptive Accent Illumination:** Dynamic ambient backglow reacting to album artwork or system accent colors.
-- **Ultra-Tuned Micro-Physics Spring:** Independent damping and stiffness tailored for media, alerts, and idle states.
 
-## 🚀 Modules & Smart Dashboards
-- **Media Controller:** Live album art, track info, responsive frequency-colored waveform, interactive seek bar, and transport controls.
-- **Calendar & Time:** Perfectly aligned monthly calendar with today highlighting and active date grid.
-- **Real-Time Weather:** Live weather stats powered by wttr.in (temp, feels-like, humidity, wind speed, condition icons).
-- **Game & Hardware Bar:** Real-time FPS, CPU, RAM, GPU, and Disk utilization overlays.
-- **Idle Pill & Micro-Metrics:** Minimal clock, weather summary, and optional collapsed CPU/RAM/Battery micro-chips.
-- **Hardware Privacy Shield:** Pulsing visual indicators for active microphone (orange) and webcam (green) sessions.
-- **High-Fidelity Clipboard & Notifications:** 64px crisp executable icon extraction with UWP toast parsing.
-
----
-
-## ⚙️ Extensive Customization & Placement
-- **Full Screen Freedom:** Anchor to Top-Center, Top-Left, Top-Right, Bottom-Center, Bottom-Left, Bottom-Right, or Center, with fine-grained X/Y pixel offsets and boundary margins.
-- **Customizable Dimensions:** Adjust collapsed and expanded width/height, scale multiplier (0.5x - 3.0x).
-- **Auto-Hide & Hover:** Hide instantly, after X seconds, or never; toggle hover expansion vs click expansion.
-- **Right-Click Power Menu:** Instant access to curated themes (OLED Black, Liquid Silver, Liquid Aurora, Liquid Night, Pure Glass, etc.), transparency sliders, and live style toggles.
-- **Multi-Monitor:** Place on Primary display, secondary monitors, or activate "Follow Mouse" mode.
+## 🚀 Living Capsule & Intelligent Modules
+- **Full-Screen Auto-Hide (Tam Ekran Algılama):** Automatically hides completely when games, movies (VLC, YouTube full screen, Netflix), or full-screen apps are active, and seamlessly restores when returning to the desktop.
+- **Dynamic Island Notification Expansion (Bar Genişlemesi):** Smoothly expands capsule width dynamically to show full notification/screenshot text without truncation or marquee clipping.
+- **Living Assistant & Wellness (Sağlık & Mola Asistanı):** Continuous PC uptime tracker, hydration reminders (Su İç), 20-20-20 eye strain breaks, posture and walking alerts.
+- **Smart Voice Recorder (Akıllı Ses Kaydı):** One-click WASAPI microphone recording saving crystal-clear WAV audio to Desktop with live animated waveform in the capsule.
+- **Quick Notes & Scratchpad (Hızlı Notlar):** Instant note taking and viewing directly from the capsule, stored locally in `%APPDATA%\aegisCapsule\notes.txt`.
+- **Pomodoro Productivity Timer (Odak Zamanlayıcı):** 25m Focus / 5m Short Break / 15m Long Break with live circular progress and completion chime.
+- **Real-Time Weather Hub:** Robust JSON parser (no `[` errors), live temp, feels-like, wind, humidity, and condition icons.
+- **6-Tab Expanded Dashboard:** 
+  1. 📅 Calendar & Time
+  2. ☀️ Weather & Atmosphere
+  3. ⚡ Hardware & Game Overlay (FPS, CPU, RAM, GPU, Disk)
+  4. 📝 Quick Notes
+  5. 🍅 Pomodoro Focus Timer
+  6. 🌿 Living Assistant & Wellness
+- **Natural Scroll Wheel:** Fixed natural mouse wheel navigation (Wheel Down = Next Tab, Wheel Up = Previous Tab).
+- **Bilingual Settings:** Full Turkish and English configuration in Windhawk.
 */
 // ==/WindhawkModReadme==
 
@@ -48,39 +48,42 @@ A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern L
 /*
 - Appearance:
   - Position: top-center
-    $name: Position
-    $description: Where aegisCapsule should appear on your screen.
+    $name: Position / Konum
+    $description: Where aegisCapsule should appear on your screen. / Kapsülün ekranda nerede görüneceğini seçin.
     $options:
-      - top-center: Top Center
-      - top-left: Top Left
-      - top-right: Top Right
-      - bottom-center: Bottom Center
-      - bottom-left: Bottom Left
-      - bottom-right: Bottom Right
-      - center: Screen Center
+      - top-center: Top Center / Üst Orta
+      - top-left: Top Left / Üst Sol
+      - top-right: Top Right / Üst Sağ
+      - bottom-center: Bottom Center / Alt Orta
+      - bottom-left: Bottom Left / Alt Sol
+      - bottom-right: Bottom Right / Alt Sağ
+      - center: Screen Center / Ekran Ortası
   - TargetMonitor: primary
-    $name: Target Monitor
-    $description: Select the screen to display the capsule. Falls back to Primary Monitor if unavailable.
+    $name: Target Monitor / Hedef Monitör
+    $description: Select the screen to display the capsule. / Kapsülün gösterileceği monitörü seçin.
     $options:
-      - 'primary': Primary Monitor
-      - '1': Display 1
-      - '2': Display 2
-      - '3': Display 3
-      - '4': Display 4
-      - '5': Display 5
-      - 'follow': Follow Mouse (Active Monitor)
+      - 'primary': Primary Monitor / Ana Monitör
+      - '1': Display 1 / Monitör 1
+      - '2': Display 2 / Monitör 2
+      - '3': Display 3 / Monitör 3
+      - '4': Display 4 / Monitör 4
+      - '5': Display 5 / Monitör 5
+      - 'follow': Follow Mouse (Active Monitor) / Fareyi Takip Et
+  - FullScreenDetection: true
+    $name: Full-screen Auto-Hide / Tam Ekran Otomatik Gizleme
+    $description: Automatically hide capsule completely during full-screen games, movies, and apps. / Oyun veya film gibi tam ekran uygulamalarda kapsülü tamamen gizler.
   - OffsetX: 0
-    $name: Offset X (px)
-    $description: Horizontal fine-tuning in pixels. Positive moves right, negative moves left.
+    $name: Offset X (px) / X Ekseni Kaydırma
+    $description: Horizontal fine-tuning in pixels. / Yatay konum ince ayarı (piksel).
   - OffsetY: 0
-    $name: Offset Y (px)
-    $description: Vertical fine-tuning in pixels. Positive moves down, negative moves up.
+    $name: Offset Y (px) / Y Ekseni Kaydırma
+    $description: Vertical fine-tuning in pixels. / Dikey konum ince ayarı (piksel).
   - EdgeMargin: 8
-    $name: Screen Edge Margin (px)
-    $description: Distance from the edge of the monitor.
+    $name: Screen Edge Margin (px) / Ekran Kenar Boşluğu
+    $description: Distance from the edge of the monitor. / Ekran kenarından uzaklık.
   - SizeScale: '1.0'
-    $name: Overall Size Scale
-    $description: Adjust global UI size scale multiplier.
+    $name: Overall Size Scale / Genel Boyut Ölçeği
+    $description: Adjust global UI size scale multiplier. / Genel arayüz boyut ölçeği çarpanı.
     $options:
       - '0.5': 0.5x (Mini)
       - '0.6': 0.6x
@@ -94,195 +97,223 @@ A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern L
       - '1.5': 1.5x (Large)
       - '1.8': 1.8x
       - '2.0': 2.0x (Extra Large)
-      - '2.5': 2.5x (Ultra)
-      - '3.0': 3.0x (Mega)
   - CornerStyle: pill
-    $name: Corner Roundness & Shape
-    $description: Choose how round or sharp the capsule edges appear.
+    $name: Corner Roundness & Shape / Kenar Yuvarlaklığı & Şekil
+    $description: Choose how round or sharp the capsule edges appear. / Kapsül kenarlarının biçimini seçin.
     $options:
-      - pill: Full Pill (Continuous Round Capsule)
-      - squircle: Vision Squircle (Smooth Rounded Rectangle)
-      - modern-box: Modern Box (8px Corner Radius)
-      - sharp: Sharp Box (0px Corner Radius - Sleek Rectangle)
-      - custom: Custom Radius (Use Custom Corner Radius below)
+      - pill: Full Pill (Continuous Round Capsule) / Tam Hap (Yuvarlak Kapsül)
+      - squircle: Vision Squircle (Smooth Rounded Rectangle) / Vision Squircle (Yumuşak Dikdörtgen)
+      - modern-box: Modern Box (8px Corner Radius) / Modern Kutu (8px)
+      - sharp: Sharp Box (0px Corner Radius) / Keskin Kutu (0px)
+      - custom: Custom Radius / Özel Yarıçap
   - CustomCornerRadius: 18
-    $name: Custom Corner Radius (px)
-    $description: Applied when Corner Roundness is set to Custom. (0 = sharp square, 50 = full circle)
+    $name: Custom Corner Radius (px) / Özel Köşe Yarıçapı
+    $description: Applied when Corner Roundness is set to Custom. / Şekil 'Özel' seçildiğinde geçerlidir.
   - CollapsedWidth: 170
-    $name: Collapsed Idle Width (px)
-    $description: Width of the minimal idle capsule before size scaling. Default is 170.
+    $name: Collapsed Idle Width (px) / Kapalı Kapsül Genişliği
+    $description: Width of the minimal idle capsule before size scaling. Default is 170. / Standart kapalı kapsül genişliği.
   - CollapsedHeight: 36
-    $name: Collapsed Idle Height (px)
-    $description: Height of the minimal idle capsule before size scaling. Default is 36.
+    $name: Collapsed Idle Height (px) / Kapalı Kapsül Yüksekliği
+    $description: Height of the minimal idle capsule before size scaling. Default is 36. / Standart kapalı kapsül yüksekliği.
   - ExpandedWidth: 380
-    $name: Expanded Dashboard Width (px)
-    $description: Width of the expanded dashboard before size scaling. Default is 380.
+    $name: Expanded Dashboard Width (px) / Açık Dashboard Genişliği
+    $description: Width of the expanded dashboard before size scaling. Default is 380. / Genişletilmiş panel genişliği.
   - ExpandedHeight: 184
-    $name: Expanded Dashboard Height (px)
-    $description: Height of the expanded dashboard before size scaling. Default is 184.
+    $name: Expanded Dashboard Height (px) / Açık Dashboard Yüksekliği
+    $description: Height of the expanded dashboard before size scaling. Default is 184. / Genişletilmiş panel yüksekliği.
   - AutoHideIdleSeconds: '0'
-    $name: Auto-hide idle capsule
-    $description: Hide the idle capsule after inactivity. -1 hides instantly, 0 keeps it always visible.
+    $name: Auto-hide idle capsule / Boşta Otomatik Gizleme
+    $description: Hide the idle capsule after inactivity. 0 keeps it always visible. / Hareketsizlik sonrası kapsülü gizleme süresi.
     $options:
-      - '-1': Hide instantly (Invisible until triggered)
-      - '0': Never hide (Always visible)
-      - '3': Hide after 3 seconds
-      - '5': Hide after 5 seconds
-      - '10': Hide after 10 seconds
-      - '15': Hide after 15 seconds
-      - '30': Hide after 30 seconds
-      - '60': Hide after 60 seconds
+      - '-1': Hide instantly / Anında Gizle
+      - '0': Never hide (Always visible) / Asla Gizleme (Sürekli Görünür)
+      - '3': Hide after 3 seconds / 3 saniye sonra gizle
+      - '5': Hide after 5 seconds / 5 saniye sonra gizle
+      - '10': Hide after 10 seconds / 10 saniye sonra gizle
+      - '15': Hide after 15 seconds / 15 saniye sonra gizle
+      - '30': Hide after 30 seconds / 30 saniye sonra gizle
   - UnhideOnHover: true
-    $name: Unhide on hover
-    $description: Allow a hidden capsule to reappear when hovering near its anchor.
+    $name: Unhide on hover / Üzerine Gelince Göster
+    $description: Allow a hidden capsule to reappear when hovering near its anchor. / Fare yaklaştığında gizli kapsülü açar.
   - ExpandOnHover: true
-    $name: Expand on hover
-    $description: Expand the capsule automatically when hovered. If disabled, click to expand.
+    $name: Expand on hover / Üzerine Gelince Genişlet
+    $description: Expand the capsule automatically when hovered. / Fare üzerine gelince paneli otomatik açar.
   - AlwaysOnTop: true
-    $name: Always on top
-    $description: Keeps aegisCapsule above all other windows.
+    $name: Always on top / Her Zaman Üstte
+    $description: Keeps aegisCapsule above all other windows. / Kapsülü tüm pencerelerin üstünde tutar.
   - AutoDpiScale: true
-    $name: Auto DPI scaling
-    $description: Automatically scales font sizes and metrics to match monitor DPI.
+    $name: Auto DPI scaling / Otomatik DPI Ölçekleme
+    $description: Automatically scales font sizes and metrics to match monitor DPI. / Monitör DPI değerine göre otomatik ölçekler.
   - ClickThroughIdle: false
-    $name: Click-through when idle
-    $description: Let mouse clicks pass through the minimal idle capsule to windows beneath it.
-  $name: Appearance & Geometry
+    $name: Click-through when idle / Boştayken Tıklamayı İlet
+    $description: Let mouse clicks pass through the minimal idle capsule. / Kapalıyken tıklamaların arkadaki pencereye geçmesini sağlar.
+  $name: Appearance & Placement / Görünüm & Konum
 - Optics:
   - LiquidGlass: true
-    $name: Liquid Glass Optical Engine
-    $description: Master switch for multi-layer frosted glass, caustics, and refraction.
+    $name: Liquid Glass Optical Engine / Liquid Glass Optik Motoru
+    $description: Master switch for multi-layer frosted glass, caustics, and refraction. / Çok katmanlı buzlu cam ve kırılma efektleri.
   - LiquidGlassIntensity: 80
-    $name: Liquid Glass Intensity
-    $description: 0 to 100. Controls the prominence of the glass sheen and refraction rim.
+    $name: Liquid Glass Intensity / Cam Efekti Yoğunluğu
+    $description: 0 to 100. Controls the prominence of the glass sheen. / 0-100 arası cam parlaklık yoğunluğu.
   - GlassSheen: true
-    $name: Frosted Glass Gradient Sheen
-    $description: Renders a smooth vertical ambient light sheen across the capsule face.
+    $name: Frosted Glass Gradient Sheen / Gradyan Cam Parlaması
+    $description: Renders a smooth vertical ambient light sheen across the capsule face. / Kapsül yüzeyinde dikey ışık parlaması.
   - GlassCaustics: true
-    $name: Animated Caustic Light Wave
-    $description: Renders an ultra-subtle animated sinusoidal light shimmer across the surface.
+    $name: Animated Caustic Light Wave / Hareketli Kaustik Işık Dalgası
+    $description: Renders an ultra-subtle animated sinusoidal light shimmer. / Yüzeyde akıcı sinüzoidal ışık dalgası oluşturur.
   - GlassSpecular: true
-    $name: 1px Top Specular Highlight
-    $description: Adds a crisp, elegant top rim reflection line.
+    $name: 1px Top Specular Highlight / Üst Kenar Yansıma Çizgisi
+    $description: Adds a crisp, elegant top rim reflection line. / Üst kenara zarif 1px yansıma çizgisi ekler.
   - GlassRefractionRim: true
-    $name: Edge Refraction Border
-    $description: Simulates optical refraction along the outer capsule perimeter.
+    $name: Edge Refraction Border / Kenar Kırılma Sınırı
+    $description: Simulates optical refraction along the outer capsule perimeter. / Kapsül kenarlarında optik kırılma sınırı çizer.
   - AccentGlow: true
-    $name: Ambient Accent Glow
-    $description: Dynamic breathing ambient colored halo behind the capsule.
+    $name: Ambient Accent Glow / Çevresel Vurgu Işığı
+    $description: Dynamic breathing ambient colored halo behind the capsule. / Kapsül arkasında nefes alan renkli ambiyans halesi.
   - AccentGlowIntensity: 80
-    $name: Accent Glow Intensity
-    $description: 0 to 100. Controls the brightness of the ambient glow.
-  - AccentGlowRadius: 32
-    $name: Accent Glow Radius (px)
-    $description: Spread distance of the ambient colored halo.
+    $name: Accent Glow Intensity / Vurgu Işığı Yoğunluğu
+    $description: 0 to 100. Controls the brightness of the ambient glow. / Çevresel ışığın parlaklığı (0-100).
+  - AccentGlowRadius: 28
+    $name: Accent Glow Radius (px) / Vurgu Işığı Yarıçapı
+    $description: Spread distance of the ambient colored halo. / Renk halesinin yayılma mesafesi (px).
   - SoftShadow: true
-    $name: Multi-Pass Soft Drop Shadow
-    $description: Progressive soft atmospheric drop shadow beneath the capsule.
+    $name: Multi-Pass Soft Drop Shadow / Yumuşak Gölge
+    $description: Progressive soft atmospheric drop shadow beneath the capsule. / Kapsül altında yumuşak atmosferik gölge oluşturur.
   - ShadowSoftness: 70
-    $name: Shadow Softness
-    $description: 0 to 100. Controls shadow blur and depth.
-  $name: Optics & Liquid Glass
+    $name: Shadow Softness / Gölge Yumuşaklığı
+    $description: 0 to 100. Controls shadow blur and depth. / Gölge derinliği ve yumuşaklığı (0-100).
+  $name: Optics & Liquid Glass / Optik & Liquid Glass
+- Assistant:
+  - EnableWellnessReminders: true
+    $name: Living Capsule & Wellness Alerts / Yaşayan Kapsül & Sağlık Uyarıları
+    $description: Periodic smart health reminders for hydration, eye rest, and posture. / Su içme, 20-20-20 göz dinlendirme ve mola hatırlatıcıları.
+  - HydrationIntervalMinutes: 45
+    $name: Hydration Reminder Interval (min) / Su İçme Hatırlatıcı Aralığı (dk)
+    $description: Interval in minutes to remind you to drink water (15-180). / Su içme uyarısı periyodu (dakika).
+  - EyeRestReminder: true
+    $name: 20-20-20 Eye Strain Break / 20-20-20 Göz Dinlendirme Kuralı
+    $description: Reminds you every 20 minutes to look 20 feet away for 20 seconds. / Her 20 dakikada bir 20 saniye uzağa bakma molası verir.
+  - PostureReminder: true
+    $name: Posture & Walk Reminder / Duruş & Yürüyüş Hatırlatıcısı
+    $description: Reminds you to stretch and check posture every 60 minutes. / Her saat başı duruş düzeltme ve esneme uyarısı gösterir.
+  - UptimeAlertHours: 2
+    $name: Continuous PC Uptime Alert (hours) / Sürekli Kullanım Uyarısı (saat)
+    $description: Alert when at PC for extended hours (1-8 hours, 0 to disable). / Bilgisayar başında uzun süre kalındığında uyarı verir (0 = kapalı).
+  $name: Living Assistant & Health / Akıllı Asistan & Sağlık
+- Tools:
+  - PomodoroWorkMinutes: 25
+    $name: Pomodoro Focus Duration (min) / Pomodoro Çalışma Süresi (dk)
+    $description: Work session duration in minutes (10-60). / Odaklanma çalışma periyodu süresi.
+  - PomodoroBreakMinutes: 5
+    $name: Pomodoro Break Duration (min) / Pomodoro Mola Süresi (dk)
+    $description: Short break duration in minutes (2-15). / Kısa mola süresi.
+  - VoiceRecordingFolder: ""
+    $name: Voice Recording Folder / Ses Kayıt Klasörü
+    $description: Custom folder for voice notes (blank defaults to Desktop/aegisCapsule_Recordings). / Ses kayıtlarının kaydedileceği özel klasör.
+  $name: Productivity & Tools / Üretkenlik & Araçlar
 - Themes:
   - AccentColorMode: auto
-    $name: Accent Color Mode
-    $description: How the glowing accent color is chosen. Auto dynamically samples album art.
+    $name: Accent Color Mode / Vurgu Rengi Modu
+    $description: How the glowing accent color is chosen. / Vurgu renginin nasıl belirleneceğini seçin.
     $options:
-      - auto: Auto (from album art / dynamic)
-      - system: Windows System Accent
-      - custom: Custom Hex Color
+      - auto: Auto (from album art / dynamic) / Otomatik (Albüm kapağından)
+      - system: Windows System Accent / Windows Sistem Vurgusu
+      - custom: Custom Hex Color / Özel Hex Rengi
   - CustomAccentHex: "#4cc9f0"
-    $name: Custom Accent Hex
-    $description: Hex color for accent mode (#RRGGBB or #RRGGBBAA).
+    $name: Custom Accent Hex / Özel Vurgu Hex Kodu
+    $description: Hex color for accent mode (#RRGGBB or #RRGGBBAA). / Özel renk hex kodu.
   - PillBgColor: "#0D0D0F"
-    $name: Capsule Background Color
-    $description: Hex color for background (#RRGGBB or #RRGGBBAA).
+    $name: Capsule Background Color / Kapsül Arka Plan Rengi
+    $description: Hex color for background (#RRGGBB or #RRGGBBAA). / Arka plan hex rengi.
   - TextPrimaryColor: "#F7F7F7"
-    $name: Primary Text Color
-    $description: Hex color for track titles and primary metrics.
+    $name: Primary Text Color / Ana Metin Rengi
+    $description: Hex color for track titles and primary metrics. / Başlık ve ana metin rengi.
   - TextSecondaryColor: "#888888"
-    $name: Secondary Text Color
-    $description: Hex color for artist names and muted labels.
+    $name: Secondary Text Color / İkincil Metin Rengi
+    $description: Hex color for artist names and muted labels. / Sanatçı ve ikincil etiket rengi.
   - TintIntensity: 72
-    $name: Background Tint Depth
-    $description: 0 to 100. Controls the depth of the dark base tint.
+    $name: Background Tint Depth / Arka Plan Ton Derinliği
+    $description: 0 to 100. Controls the depth of the dark base tint. / Koyu baz ton derinliği.
   - PillOpacity: 96
-    $name: Capsule Transparency
-    $description: 10 to 100. Lower values make the capsule glass more translucent.
-  $name: Colors & Theming
+    $name: Capsule Transparency / Kapsül Saydamlığı
+    $description: 10 to 100. Lower values make the capsule glass more translucent. / Kapsül cam saydamlığı (10-100).
+  $name: Colors & Theming / Renkler & Temalar
 - Performance:
   - AnimationSpeed: normal
-    $name: Animation Speed
-    $description: Transition speed multiplier.
+    $name: Animation Speed / Animasyon Hızı
+    $description: Transition speed multiplier. / Geçiş hızı çarpanı.
     $options:
-      - slow: Slow (0.65x)
-      - normal: Normal (1.0x)
-      - fast: Fast (1.35x)
-      - instant: Instant (5.0x Snappy)
+      - slow: Slow (0.65x) / Yavaş
+      - normal: Normal (1.0x) / Normal
+      - fast: Fast (1.35x) / Hızlı
+      - instant: Instant (5.0x Snappy) / Anlık
   - SpringStyle: bouncy
-    $name: Spring Physics Dynamic
-    $description: Motion curve for capsule expansions and morphs.
+    $name: Spring Physics Dynamic / Yay Fiziği Karakteri
+    $description: Motion curve for capsule expansions and morphs. / Kapsül açılma ve şekil değiştirme yay eğrisi.
     $options:
-      - bouncy: Bouncy (Apple Vision Pro fluid bounce)
-      - smooth: Smooth (Critically damped gentle glide)
-      - snappy: Snappy (High tension responsive snap)
-      - stiff: Stiff (Minimal overshoot)
+      - bouncy: Bouncy (Apple Vision fluid bounce) / Akıcı Yaylı
+      - smooth: Smooth (Critically damped gentle glide) / Yumuşak Kayma
+      - snappy: Snappy (High tension responsive snap) / Seri & Atik
+      - stiff: Stiff (Minimal overshoot) / Sert
   - FrameRateTarget: '60'
-    $name: Target Refresh Rate
-    $description: Maximum render loop refresh rate.
+    $name: Target Refresh Rate / Hedef Yenileme Hızı
+    $description: Maximum render loop refresh rate. / Maksimum kare hızı (FPS).
     $options:
-      - '30': 30 FPS (Power Saver)
-      - '60': 60 FPS (Standard Smooth)
-      - '120': 120 FPS (High Refresh)
-      - '144': 144 FPS (Ultra Refresh)
-      - '240': 240 FPS (Extreme Esports)
+      - '30': 30 FPS (Power Saver) / 30 FPS (Güç Tasarrufu)
+      - '60': 60 FPS (Standard Smooth) / 60 FPS (Standart Akıcı)
+      - '120': 120 FPS (High Refresh) / 120 FPS (Yüksek Akıcılık)
+      - '144': 144 FPS (Ultra Refresh) / 144 FPS (Ultra)
+      - '240': 240 FPS (Extreme Esports) / 240 FPS (Ekstrem)
   - LowPowerMode: false
-    $name: Adaptive Power Saver
-    $description: Automatically throttles idle rendering and disables caustics when on battery.
-  $name: Physics & Performance
+    $name: Adaptive Power Saver / Uyarlanabilir Güç Tasarrufu
+    $description: Automatically throttles idle rendering when on battery. / Pildeyken render hızını otomatik düşürür.
+  $name: Physics & Performance / Fizik & Performans
 - Modules:
+  - NotificationAutoExpand: true
+    $name: Auto-Expand Notification Pill / Bildirimde Barı Otomatik Genişlet
+    $description: Dynamically widen capsule bar horizontally to display full text without truncation. / Bildirimlerde kayan yazı yerine barı sağa sola uzatıp tam metni gösterir.
   - Media: true
-    $name: Media module
-    $description: Shows album art, song info, scrubber, and playback controls when music is playing.
+    $name: Media module / Medya Modülü
+    $description: Shows album art, song info, scrubber, and playback controls. / Şarkı bilgisi, albüm kapağı ve medya kontrolleri.
   - Notification: true
-    $name: Notification module
-    $description: Shows rich Windows toast notifications and banner popups in the capsule.
+    $name: Notification module / Bildirim Modülü
+    $description: Shows rich Windows toast notifications and banner popups. / Windows bildirimleri ve uyarılar.
   - Clipboard: true
-    $name: Clipboard module
-    $description: Shows a quick preview of text or images copied to clipboard.
+    $name: Clipboard module / Pano Modülü
+    $description: Shows a quick preview of copied text or screenshot images. / Kopyalanan metin ve ekran görüntüsü önizlemesi.
   - Battery: true
-    $name: Battery module
-    $description: Shows alerts when battery is low or charger is connected.
+    $name: Battery module / Pil Modülü
+    $description: Shows alerts when battery is low or charger is connected. / Düşük pil ve şarj durumu uyarıları.
   - Progress: true
-    $name: Progress module
-    $description: Shows a progress ring around the capsule for file transfers or downloads.
+    $name: Progress module / İlerleme Modülü
+    $description: Shows a progress ring for active downloads or tasks. / İndirme ve aktarımlar için ilerleme halkası.
   - Volume: true
-    $name: Volume OSD module
-    $description: Shows instant volume bar and mute status on system volume change.
+    $name: Volume OSD module / Ses OSD Modülü
+    $description: Shows instant volume bar and mute status on system volume change. / Ses seviyesi değiştiğinde anlık OSD çubuğu.
   - CapsLock: true
-    $name: Caps/Num Lock OSD module
-    $description: Shows keycap status indicator when Caps Lock or Num Lock is pressed.
+    $name: Caps/Num Lock OSD module / Tuş Kilidi OSD Modülü
+    $description: Shows status indicator when Caps Lock or Num Lock is toggled. / Caps Lock / Num Lock basıldığında durum göstergesi.
   - Device: true
-    $name: Device connection OSD module
-    $description: Shows alert when USB or Bluetooth devices are connected or removed.
+    $name: Device connection OSD / Aygıt Bağlantı OSD
+    $description: Shows alert when USB or Bluetooth devices are plugged in. / USB ve Bluetooth cihaz bağlantı bildirimleri.
   - GameOverlay: false
-    $name: Enable game overlay mode
-    $description: Replaces the clock with live stats like FPS, CPU, GPU, and RAM usage.
+    $name: Enable Game Overlay Mode / Oyun Overlay Modu
+    $description: Replaces the clock with live stats like FPS, CPU, GPU, and RAM. / FPS, CPU, GPU ve RAM kullanımını gösterir.
   - ShowMetricText: true
-    $name: Show labels in metric chips
-    $description: Adds text labels (like "CPU") inside the game overlay bars.
+    $name: Show labels in metric chips / Metrik Etiketlerini Göster
+    $description: Adds text labels (like 'CPU') inside metric bars. / Metrik çubuklarında yazı etiketlerini gösterir.
   - ShowMetricsInIdle: false
-    $name: Show micro-metrics in idle capsule
-    $description: Displays small CPU and RAM chips in the collapsed idle capsule view.
+    $name: Show micro-metrics in idle / Kapalı Kapsülde CPU/RAM Göster
+    $description: Displays small CPU and RAM chips in the collapsed idle capsule. / Kapalı hap görünümünde küçük CPU/RAM çipi gösterir.
   - WeatherCity: ""
-    $name: Weather City (Optional)
-    $description: Enter your city (e.g. London, Istanbul). Leave blank for auto IP geolocation.
+    $name: Weather City (Optional) / Hava Durumu Şehri (İsteğe Bağlı)
+    $description: Enter your city (e.g. London, Istanbul). Leave blank for auto IP. / Şehir adı yazın. Boş bırakırsanız otomatik konum kullanılır.
   - WeatherFahrenheit: false
-    $name: Use Fahrenheit
-    $description: Display weather temperature and wind speed in imperial units.
+    $name: Use Fahrenheit / Fahrenheit Kullan
+    $description: Display weather temperature in Fahrenheit. / Sıcaklığı Fahrenheit cinsinden gösterir.
   - NotificationDuration: "4.0"
-    $name: Notification display duration
-    $description: How long (in seconds) to display new notifications.
+    $name: Notification Duration (sec) / Bildirim Gösterim Süresi (sn)
+    $description: How long to display new notifications. / Bildirimlerin ekranda kalma süresi.
     $options:
       - '2.0': 2.0s
       - '3.0': 3.0s
@@ -290,86 +321,72 @@ A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern L
       - '6.0': 6.0s
       - '8.0': 8.0s
   - ClipboardDuration: "2.5"
-    $name: Clipboard display duration
-    $description: How long (in seconds) to display clipboard copy popups.
+    $name: Clipboard Duration (sec) / Pano Gösterim Süresi (sn)
+    $description: How long to display clipboard popups. / Pano kopyalama bildiriminin süresi.
     $options:
       - '1.5': 1.5s
       - '2.5': 2.5s
       - '4.0': 4.0s
-      - '6.0': 6.0s
   - VolumeDuration: "1.8"
-    $name: Volume display duration
-    $description: How long (in seconds) to display volume popups.
-    $options:
-      - '1.2': 1.2s
-      - '1.8': 1.8s
-      - '2.5': 2.5s
-      - '3.5': 3.5s
+    $name: Volume Duration (sec) / Ses Gösterim Süresi (sn)
+    $description: How long to display volume popups. / Ses OSD süresi.
   - CapsLockDuration: "1.5"
-    $name: Caps Lock display duration
-    $description: How long (in seconds) to display Caps/Num Lock popups.
-    $options:
-      - '1.0': 1.0s
-      - '1.5': 1.5s
-      - '2.5': 2.5s
+    $name: Caps Lock Duration (sec) / Tuş Kilidi Süresi (sn)
+    $description: How long to display Caps/Num Lock popups. / Tuş kilidi OSD süresi.
   - DeviceDuration: "3.0"
-    $name: Device alert display duration
-    $description: How long (in seconds) to display USB/Device connect alerts.
-    $options:
-      - '2.0': 2.0s
-      - '3.0': 3.0s
-      - '4.5': 4.5s
-  $name: Modules & Features
+    $name: Device Duration (sec) / Cihaz Bildirim Süresi (sn)
+    $description: How long to display device alerts. / Aygıt bağlantı bildirimi süresi.
+  $name: Modules & Features / Modüller & Özellikler
 - FineTuning:
   - SplitGap: 12
-    $name: Split pill gap (px)
-    $description: Gap between two pills in Split mode before scaling. 4-32px.
+    $name: Split pill gap (px) / Ayrık Kapsül Boşluğu
+    $description: Gap between two pills in Split mode. / Ayrık modda iki hap arası boşluk (px).
   - HoverScalePercent: 102
-    $name: Hover scale (%)
-    $description: Pill scale on hover/pinned (100 = no scale, 115 = 15% larger). 100-115.
+    $name: Hover scale (%) / Fare Üzerindeyken Büyüme Oranı (%)
+    $description: Pill scale on hover/pinned (100 = 1.0x, 105 = 1.05x). / Fare üzerindeyken büyüme yüzdesi.
   - NudgeOffsetPx: 8
-    $name: Nudge distance (px)
-    $description: Vertical bounce distance on new event. 0-20px (0 disables nudge).
+    $name: Nudge distance (px) / Bildirim Zıplama Mesafesi (px)
+    $description: Vertical bounce distance on new event (0 disables). / Yeni bildirim geldiğinde dikey sekme mesafesi.
   - WaveformBarCount: 22
-    $name: Waveform bar count
-    $description: Number of bars in audio waveform. 8-32.
+    $name: Waveform bar count / Dalga Çubuğu Sayısı
+    $description: Number of bars in audio waveform (8-32). / Ses dalgasındaki çubuk sayısı.
   - WaveformGapPx: '2.5'
-    $name: Waveform bar gap (px)
-    $description: Gap between waveform bars before scaling.
+    $name: Waveform bar gap (px) / Dalga Çubukları Arası Boşluk
+    $description: Gap between waveform bars. / Dalga çubukları arasındaki mesafe.
   - ProgressRingThickness: '2.8'
-    $name: Progress ring thickness (px)
-    $description: Thickness of progress ring stroke. 1.0-6.0.
+    $name: Progress ring thickness (px) / İlerleme Halkası Kalınlığı
+    $description: Thickness of progress ring stroke. / İlerleme halkasının çizgi kalınlığı.
   - PaginationDotSize: '2.5'
-    $name: Pagination dot radius (px)
-    $description: Radius of idle/media pagination dots before scaling.
+    $name: Pagination dot radius (px) / Sayfa Noktası Yarıçapı
+    $description: Radius of pagination dots. / Panel geçiş noktalarının boyutu.
   - PrivacyDotSize: '3.8'
-    $name: Privacy dot radius (px)
-    $description: Radius of mic/camera privacy dots before scaling.
+    $name: Privacy dot radius (px) / Gizlilik Noktası Yarıçapı
+    $description: Radius of mic/camera privacy dots. / Mikrofon ve kamera gizlilik noktalarının boyutu.
   - TopHighlightOpacity: 35
-    $name: Top specular highlight opacity
-    $description: Opacity of 1px top rim highlight (0-100).
+    $name: Top highlight opacity (%) / Üst Yansıma Saydamlığı (%)
+    $description: Opacity of 1px top rim highlight (0-100). / Üst kenar yansımasının opaklığı.
   - RimThickness: '0.9'
-    $name: Refraction rim thickness (px)
-    $description: Stroke thickness of outer refraction border.
+    $name: Refraction rim thickness (px) / Kırılma Kenarlığı Kalınlığı
+    $description: Stroke thickness of outer refraction border. / Dış kırılma kenarlığının kalınlığı.
   - ShadowSpreadPx: 10
-    $name: Shadow spread (px)
-    $description: Maximum spread of soft drop shadow. 0-24.
+    $name: Shadow spread (px) / Gölge Yayılımı (px)
+    $description: Maximum spread of soft drop shadow (0-24). / Gölgenin yayılma genişliği.
   - ShadowYOffsetPx: 4
-    $name: Shadow Y offset (px)
-    $description: Vertical offset of drop shadow. 0-12.
+    $name: Shadow Y offset (px) / Gölge Dikey Kaydırma
+    $description: Vertical offset of drop shadow (0-12). / Gölgenin dikey uzaklığı.
   - CausticsSpeed: '1.3'
-    $name: Caustics animation speed
-    $description: Speed multiplier for glass caustics wave. 0.0-3.0 (0 = frozen).
+    $name: Caustics animation speed / Kaustik Animasyon Hızı
+    $description: Speed multiplier for glass caustics wave. / Cam yüzeyindeki ışık dalgası hareket hızı.
   - ContentFadeOnResize: true
-    $name: Content fade on resize
-    $description: Fade pill content alpha during morph (smoother transitions).
+    $name: Content fade on resize / Boyut Değişirken İçeriği Yumuşat
+    $description: Fade pill content alpha during morph. / Şekil değişirken içerik saydamlığını yumuşatır.
   - UseDwmBlurBehind: false
-    $name: DWM blur behind (experimental)
-    $description: Enable real backdrop blur via DwmEnableBlurBehindWindow. May affect performance.
+    $name: DWM blur behind / DWM Gerçek Arka Plan Bulanıklığı
+    $description: Enable real backdrop blur via DwmEnableBlurBehindWindow. / DWM üzerinden gerçek arka plan bulanıklığı uygular.
   - WeatherUpdateMinutes: 10
-    $name: Weather update interval (minutes)
-    $description: Weather fetch interval. 5-60 minutes.
-  $name: Fine Tuning & Advanced
+    $name: Weather update interval (min) / Hava Durumu Güncelleme Aralığı (dk)
+    $description: Weather fetch interval in minutes (5-60). / Hava durumu verisi çekme sıklığı.
+  $name: Fine Tuning & Advanced / İnce Ayarlar & Gelişmiş
 */
 // ==/WindhawkModSettings==
 
@@ -415,6 +432,7 @@ A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern L
 #include <cstring>
 #include <mutex>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -445,6 +463,7 @@ constexpr wchar_t kWindowClass[] = L"aegisCapsule_Overlay";
 constexpr UINT WM_APP_NEW_EVENT = WM_APP + 0x443;
 constexpr float kRenderPadX = 32.0f;
 constexpr float kRenderPadY = 24.0f;
+constexpr int kTotalTabs = 6;
 
 enum class IslandKind {
     Idle,
@@ -456,6 +475,7 @@ enum class IslandKind {
     BatteryLow,
     CapsLock,
     Device,
+    Recording,
     Split,
 };
 
@@ -490,9 +510,17 @@ enum class AccentMode {
     Custom,
 };
 
+enum class PomodoroState {
+    Stopped,
+    Working,
+    Break,
+    LongBreak,
+};
+
 struct Settings {
     Position position = Position::TopCenter;
     int targetMonitor = 0;
+    bool fullScreenDetection = true;
     int offsetX = 0;
     int offsetY = 0;
     int edgeMargin = 8;
@@ -519,9 +547,21 @@ struct Settings {
     bool glassRefractionRim = true;
     bool accentGlow = true;
     float accentGlowIntensity = 0.80f;
-    float accentGlowRadius = 32.0f;
+    float accentGlowRadius = 28.0f;
     bool softShadow = true;
     float shadowSoftness = 0.70f;
+
+    // Living Assistant & Wellness
+    bool enableWellnessReminders = true;
+    int hydrationIntervalMinutes = 45;
+    bool eyeRestReminder = true;
+    bool postureReminder = true;
+    int uptimeAlertHours = 2;
+
+    // Productivity & Tools
+    int pomodoroWorkMinutes = 25;
+    int pomodoroBreakMinutes = 5;
+    std::wstring voiceRecordingFolder;
 
     // Colors & Theming
     D2D1_COLOR_F pillBgColor = D2D1::ColorF(0.051f, 0.051f, 0.059f, 1.0f); // #0D0D0F
@@ -539,6 +579,7 @@ struct Settings {
     bool lowPowerMode = false;
 
     // Modules & Smart Features
+    bool notificationAutoExpand = true;
     bool media = true;
     bool notification = true;
     bool clipboard = true;
@@ -676,6 +717,8 @@ struct SystemSnapshot {
     bool micActive = false;      // orange dot: microphone in use
     bool cameraActive = false;   // green dot: camera in use
     std::wstring foregroundTitle;
+    uint64_t uptimeSeconds = 0;
+    double activeSessionStart = 0.0;
 };
 
 struct Activity {
@@ -697,6 +740,21 @@ struct WeatherSnapshot {
     double lastUpdated = 0.0;
 };
 
+struct PomodoroSnapshot {
+    PomodoroState state = PomodoroState::Stopped;
+    int remainingSeconds = 25 * 60;
+    int totalSeconds = 25 * 60;
+    int completedSessions = 0;
+    double lastTick = 0.0;
+};
+
+struct RecordingSnapshot {
+    bool active = false;
+    double startedAt = 0.0;
+    int seconds = 0;
+    std::wstring filePath;
+};
+
 struct SharedState {
     MediaSnapshot media;
     ClipboardSnapshot clipboard;
@@ -708,6 +766,9 @@ struct SharedState {
     ProgressSnapshot progress;
     SystemSnapshot system;
     WeatherSnapshot weather;
+    PomodoroSnapshot pomodoro;
+    RecordingSnapshot recording;
+    std::vector<std::wstring> quickNotes;
     std::array<float, 64> waveform{};
     size_t waveformWrite = 0;
     bool muted = false;
@@ -725,6 +786,8 @@ std::atomic<int> g_idleTab = 0;
 std::atomic<int> g_pressedMediaButton = -1;
 std::atomic<double> g_lastNudgeTime = 0.0;
 std::atomic<uint64_t> g_artGenerationCounter = 1;
+std::atomic<bool> g_isFullScreenActive = false;
+std::atomic<bool> g_isRecording = false;
 
 HWND g_hwnd = nullptr;
 HANDLE g_stopEvent = nullptr;
@@ -735,6 +798,8 @@ HANDLE g_audioThread = nullptr;
 HANDLE g_weatherThread = nullptr;
 HANDLE g_notificationThread = nullptr;
 HANDLE g_keyboardThread = nullptr;
+HANDLE g_assistantThread = nullptr;
+HANDLE g_recordingThread = nullptr;
 DWORD g_keyboardThreadId = 0;
 UINT g_shellHookMessage = 0;
 
@@ -982,6 +1047,9 @@ void LoadSettings() {
         next.cornerStyle = static_cast<CornerStyle>(localCorner);
     }
 
+    // Full Screen Auto-Hide
+    next.fullScreenDetection = Wh_GetIntSetting(L"Appearance.FullScreenDetection") != 0;
+
     // Dimensions
     const int colW = Wh_GetIntSetting(L"Appearance.CollapsedWidth");
     next.collapsedWidth = colW >= 60 ? static_cast<float>(colW) : 170.0f;
@@ -1020,11 +1088,27 @@ void LoadSettings() {
     const int glowRadiusOverride = Wh_GetIntValue(L"AccentGlowRadiusOverride", -1);
     next.accentGlowIntensity = Clamp((glowIntensitySetting ? glowIntensitySetting : 80) / 100.0f, 0.0f, 1.0f);
     const int glowRadSetting = glowRadiusOverride >= 5 ? glowRadiusOverride : Wh_GetIntSetting(L"Optics.AccentGlowRadius");
-    next.accentGlowRadius = glowRadSetting >= 5 ? static_cast<float>(glowRadSetting) : 32.0f;
+    next.accentGlowRadius = glowRadSetting >= 5 ? static_cast<float>(glowRadSetting) : 28.0f;
 
     next.softShadow = Wh_GetIntSetting(L"Optics.SoftShadow") != 0;
     const int shadowSoft = Wh_GetIntSetting(L"Optics.ShadowSoftness");
     next.shadowSoftness = Clamp((shadowSoft ? shadowSoft : 70) / 100.0f, 0.0f, 1.0f);
+
+    // Living Assistant & Wellness
+    next.enableWellnessReminders = Wh_GetIntSetting(L"Assistant.EnableWellnessReminders") != 0;
+    const int hydrInt = Wh_GetIntSetting(L"Assistant.HydrationIntervalMinutes");
+    next.hydrationIntervalMinutes = hydrInt > 0 ? hydrInt : 45;
+    next.eyeRestReminder = Wh_GetIntSetting(L"Assistant.EyeRestReminder") != 0;
+    next.postureReminder = Wh_GetIntSetting(L"Assistant.PostureReminder") != 0;
+    const int upAlert = Wh_GetIntSetting(L"Assistant.UptimeAlertHours");
+    next.uptimeAlertHours = upAlert >= 0 ? upAlert : 2;
+
+    // Productivity & Tools
+    const int pomWork = Wh_GetIntSetting(L"Tools.PomodoroWorkMinutes");
+    next.pomodoroWorkMinutes = pomWork >= 5 ? pomWork : 25;
+    const int pomBreak = Wh_GetIntSetting(L"Tools.PomodoroBreakMinutes");
+    next.pomodoroBreakMinutes = pomBreak >= 1 ? pomBreak : 5;
+    next.voiceRecordingFolder = GetStringSettingCopy(L"Tools.VoiceRecordingFolder");
 
     // Accent Colors & Modes
     const std::wstring accentMode = GetStringSettingCopy(L"Themes.AccentColorMode");
@@ -1084,6 +1168,7 @@ void LoadSettings() {
     next.lowPowerMode = Wh_GetIntSetting(L"Performance.LowPowerMode") != 0;
 
     // Modules
+    next.notificationAutoExpand = Wh_GetIntSetting(L"Modules.NotificationAutoExpand") != 0;
     next.media = Wh_GetIntSetting(L"Modules.Media") != 0;
     next.notification = Wh_GetIntSetting(L"Modules.Notification") != 0;
     next.clipboard = Wh_GetIntSetting(L"Modules.Clipboard") != 0;
@@ -1215,7 +1300,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM dwData) {
     return TRUE;
 }
 
-RECT GetAnchorWorkRect() {
+HMONITOR GetAnchorMonitor() {
     HMONITOR selectedMonitor = nullptr;
     Settings settings = GetSettingsSnapshot();
 
@@ -1237,7 +1322,11 @@ RECT GetAnchorWorkRect() {
         POINT pt = {0, 0};
         selectedMonitor = MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY);
     }
+    return selectedMonitor;
+}
 
+RECT GetAnchorWorkRect() {
+    HMONITOR selectedMonitor = GetAnchorMonitor();
     MONITORINFO mi = {};
     mi.cbSize = sizeof(mi);
     GetMonitorInfoW(selectedMonitor, &mi);
@@ -1297,10 +1386,273 @@ void PositionOverlayWindow(HWND hwnd, int width, int height) {
                  SWP_NOACTIVATE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
 }
 
+bool CheckIsFullScreenActive(HMONITOR targetMonitor) {
+    QUERY_USER_NOTIFICATION_STATE quns = QUNS_NOT_PRESENT;
+    if (SUCCEEDED(SHQueryUserNotificationState(&quns))) {
+        if (quns == QUNS_RUNNING_D3D_FULL_SCREEN || quns == QUNS_PRESENTATION_MODE || quns == QUNS_BUSY) {
+            return true;
+        }
+    }
+
+    HWND fg = GetForegroundWindow();
+    if (fg && fg != g_hwnd && IsWindow(fg) && IsWindowVisible(fg) && !IsIconic(fg)) {
+        wchar_t cls[128] = {};
+        GetClassNameW(fg, cls, ARRAYSIZE(cls));
+        if (_wcsicmp(cls, L"Progman") != 0 && _wcsicmp(cls, L"WorkerW") != 0 &&
+            _wcsicmp(cls, L"Shell_TrayWnd") != 0 && _wcsicmp(cls, L"Shell_SecondaryTrayWnd") != 0 &&
+            _wcsicmp(cls, L"Windows.UI.Core.CoreWindow") != 0) {
+            
+            HMONITOR fgMon = MonitorFromWindow(fg, MONITOR_DEFAULTTONEAREST);
+            if (targetMonitor == nullptr || fgMon == targetMonitor) {
+                RECT rcFg;
+                if (GetWindowRect(fg, &rcFg)) {
+                    MONITORINFO mi = {sizeof(mi)};
+                    if (GetMonitorInfoW(fgMon, &mi)) {
+                        if (rcFg.left <= mi.rcMonitor.left && rcFg.top <= mi.rcMonitor.top &&
+                            rcFg.right >= mi.rcMonitor.right && rcFg.bottom >= mi.rcMonitor.bottom) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+std::wstring GetNotesFilePath() {
+    wchar_t appData[MAX_PATH] = {};
+    if (GetEnvironmentVariableW(L"APPDATA", appData, ARRAYSIZE(appData)) > 0) {
+        std::wstring dir = std::wstring(appData) + L"\\aegisCapsule";
+        CreateDirectoryW(dir.c_str(), nullptr);
+        return dir + L"\\notes.txt";
+    }
+    return L"C:\\aegisCapsule_notes.txt";
+}
+
+void LoadQuickNotes() {
+    std::wstring path = GetNotesFilePath();
+    HANDLE hFile = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile != INVALID_HANDLE_VALUE) {
+        DWORD size = GetFileSize(hFile, nullptr);
+        if (size > 0 && size < 1024 * 1024) {
+            std::vector<char> buf(size + 1, 0);
+            DWORD read = 0;
+            ReadFile(hFile, buf.data(), size, &read, nullptr);
+            std::string content(buf.data(), read);
+            std::vector<std::wstring> notes;
+            std::istringstream stream(content);
+            std::string line;
+            while (std::getline(stream, line)) {
+                if (!line.empty() && line.find_first_not_of(" \t\r\n") != std::string::npos) {
+                    notes.push_back(std::wstring(line.begin(), line.end()));
+                }
+            }
+            std::lock_guard lock(g_stateMutex);
+            g_state.quickNotes = std::move(notes);
+        }
+        CloseHandle(hFile);
+    }
+}
+
+void SaveQuickNote(const std::wstring& note) {
+    if (note.empty()) return;
+    std::wstring path = GetNotesFilePath();
+    HANDLE hFile = CreateFileW(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile != INVALID_HANDLE_VALUE) {
+        std::string utf8(note.begin(), note.end());
+        utf8 += "\r\n";
+        DWORD written = 0;
+        WriteFile(hFile, utf8.data(), static_cast<DWORD>(utf8.size()), &written, nullptr);
+        CloseHandle(hFile);
+    }
+    LoadQuickNotes();
+}
+
+void TriggerCustomAlert(const std::wstring& app, const std::wstring& title, const std::wstring& body, double duration) {
+    NotificationSnapshot snap;
+    snap.active = true;
+    snap.app = app;
+    snap.title = title;
+    snap.body = body;
+    snap.expiresAt = NowSeconds() + duration;
+    {
+        std::lock_guard lock(g_stateMutex);
+        g_state.notification = snap;
+    }
+    TriggerNudge();
+}
+
+std::wstring GetRecordingsDirectory() {
+    Settings s = GetSettingsSnapshot();
+    if (!s.voiceRecordingFolder.empty()) {
+        CreateDirectoryW(s.voiceRecordingFolder.c_str(), nullptr);
+        return s.voiceRecordingFolder;
+    }
+    wchar_t userProfile[MAX_PATH] = {};
+    if (GetEnvironmentVariableW(L"USERPROFILE", userProfile, ARRAYSIZE(userProfile)) > 0) {
+        std::wstring dir = std::wstring(userProfile) + L"\\Desktop\\aegisCapsule_Recordings";
+        CreateDirectoryW(dir.c_str(), nullptr);
+        return dir;
+    }
+    return L"C:\\aegisCapsule_Recordings";
+}
+
+DWORD WINAPI RecordingThreadProc(LPVOID) {
+    try { winrt::init_apartment(); } catch (...) {}
+
+    ComPtr<IMMDeviceEnumerator> enumerator;
+    CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_ALL, IID_PPV_ARGS(&enumerator));
+    if (!enumerator) return 1;
+
+    ComPtr<IMMDevice> device;
+    enumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &device);
+    if (!device) return 1;
+
+    ComPtr<IAudioClient> audioClient;
+    device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, &audioClient);
+    if (!audioClient) return 1;
+
+    WAVEFORMATEX* pwfx = nullptr;
+    audioClient->GetMixFormat(&pwfx);
+    if (!pwfx) return 1;
+
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    wchar_t filename[128] = {};
+    swprintf_s(filename, L"VoiceNote_%04d%02d%02d_%02d%02d%02d.wav", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+    std::wstring fullPath = GetRecordingsDirectory() + L"\\" + filename;
+
+    HANDLE hFile = CreateFileW(fullPath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        CoTaskMemFree(pwfx);
+        return 1;
+    }
+
+    BYTE wavHeader[44] = {};
+    memcpy(&wavHeader[0], "RIFF", 4);
+    memcpy(&wavHeader[8], "WAVE", 4);
+    memcpy(&wavHeader[12], "fmt ", 4);
+    DWORD subchunk1Size = 16;
+    WORD audioFormat = 1;
+    WORD numChannels = pwfx->nChannels;
+    DWORD sampleRate = pwfx->nSamplesPerSec;
+    WORD bitsPerSample = 16;
+    WORD blockAlign = numChannels * (bitsPerSample / 8);
+    DWORD byteRate = sampleRate * blockAlign;
+
+    memcpy(&wavHeader[16], &subchunk1Size, 4);
+    memcpy(&wavHeader[20], &audioFormat, 2);
+    memcpy(&wavHeader[22], &numChannels, 2);
+    memcpy(&wavHeader[24], &sampleRate, 4);
+    memcpy(&wavHeader[28], &byteRate, 4);
+    memcpy(&wavHeader[32], &blockAlign, 2);
+    memcpy(&wavHeader[34], &bitsPerSample, 2);
+    memcpy(&wavHeader[36], "data", 4);
+
+    DWORD bytesWritten = 0;
+    WriteFile(hFile, wavHeader, sizeof(wavHeader), &bytesWritten, nullptr);
+
+    audioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, 0, 1000000, 0, pwfx, nullptr);
+    ComPtr<IAudioCaptureClient> captureClient;
+    audioClient->GetService(IID_PPV_ARGS(&captureClient));
+    audioClient->Start();
+
+    DWORD totalPcmBytes = 0;
+    double startTime = NowSeconds();
+
+    {
+        std::lock_guard lock(g_stateMutex);
+        g_state.recording.active = true;
+        g_state.recording.startedAt = startTime;
+        g_state.recording.filePath = fullPath;
+    }
+
+    while (g_isRecording && g_running) {
+        UINT32 nextPacketSize = 0;
+        HRESULT hr = captureClient->GetNextPacketSize(&nextPacketSize);
+        if (SUCCEEDED(hr) && nextPacketSize > 0) {
+            BYTE* data = nullptr;
+            UINT32 numFramesRead = 0;
+            DWORD flags = 0;
+            hr = captureClient->GetBuffer(&data, &numFramesRead, &flags, nullptr, nullptr);
+            if (SUCCEEDED(hr)) {
+                if (!(flags & AUDCLNT_BUFFERFLAGS_SILENT)) {
+                    size_t samples = static_cast<size_t>(numFramesRead) * pwfx->nChannels;
+                    std::vector<int16_t> pcm(samples);
+                    if (pwfx->wFormatTag == WAVE_FORMAT_IEEE_FLOAT ||
+                        (pwfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE && pwfx->cbSize >= 22 &&
+                         IsEqualGUID(reinterpret_cast<WAVEFORMATEXTENSIBLE*>(pwfx)->SubFormat, kSubTypeIeeeFloat))) {
+                        float* f = reinterpret_cast<float*>(data);
+                        for (size_t i = 0; i < samples; ++i) {
+                            float s = Clamp(f[i], -1.0f, 1.0f);
+                            pcm[i] = static_cast<int16_t>(s * 32767.0f);
+                        }
+                    } else {
+                        memcpy(pcm.data(), data, samples * sizeof(int16_t));
+                    }
+
+                    DWORD pcmBytes = static_cast<DWORD>(pcm.size() * sizeof(int16_t));
+                    WriteFile(hFile, pcm.data(), pcmBytes, &bytesWritten, nullptr);
+                    totalPcmBytes += bytesWritten;
+
+                    PushAudioChunks(data, numFramesRead, pwfx);
+                }
+                captureClient->ReleaseBuffer(numFramesRead);
+            }
+        }
+
+        {
+            std::lock_guard lock(g_stateMutex);
+            g_state.recording.seconds = static_cast<int>(NowSeconds() - startTime);
+        }
+
+        Sleep(15);
+    }
+
+    audioClient->Stop();
+
+    DWORD chunkSize = 36 + totalPcmBytes;
+    SetFilePointer(hFile, 4, nullptr, FILE_BEGIN);
+    WriteFile(hFile, &chunkSize, 4, &bytesWritten, nullptr);
+    SetFilePointer(hFile, 40, nullptr, FILE_BEGIN);
+    WriteFile(hFile, &totalPcmBytes, 4, &bytesWritten, nullptr);
+    CloseHandle(hFile);
+
+    if (pwfx) CoTaskMemFree(pwfx);
+
+    {
+        std::lock_guard lock(g_stateMutex);
+        g_state.recording.active = false;
+    }
+
+    TriggerCustomAlert(L"Voice Recorder", L"Voice Note Saved 🎙️", filename, 5.0);
+    return 0;
+}
+
+void StartVoiceRecording() {
+    if (!g_isRecording) {
+        g_isRecording = true;
+        g_recordingThread = CreateThread(nullptr, 0, RecordingThreadProc, nullptr, 0, nullptr);
+    }
+}
+
+void StopVoiceRecording() {
+    if (g_isRecording) {
+        g_isRecording = false;
+    }
+}
+
 // Activity Prioritization
 std::vector<IslandKind> ChooseActivities(const SharedState& state, const Settings& settings,
                                          double now) {
     std::vector<IslandKind> chosen;
+
+    if (state.recording.active) {
+        chosen.push_back(IslandKind::Recording);
+        return chosen;
+    }
 
     if (settings.device && state.device.active && state.device.expiresAt > now) {
         chosen.push_back(IslandKind::Device);
@@ -1957,6 +2309,15 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
 
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
 
+    // Living Assistant & Productivity Tools
+    AppendMenuW(menu, MF_STRING, 70, g_isRecording ? L"🎙️ Voice Recorder: STOP Recording" : L"🎙️ Voice Recorder: START Recording");
+    AppendMenuW(menu, MF_STRING, 71, L"📝 Add Note from Clipboard");
+    AppendMenuW(menu, MF_STRING, 72, L"🍅 Pomodoro: Start / Pause");
+    AppendMenuW(menu, MF_STRING, 73, L"🍅 Pomodoro: Reset (25 min)");
+    AppendMenuW(menu, MF_STRING, 74, L"💧 Wellness: Hydration Alert Now");
+
+    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+
     // Corner geometry
     const int currentCorner = Wh_GetIntValue(L"CornerStyleOverride", -1) >= 0
                             ? Wh_GetIntValue(L"CornerStyleOverride", 0)
@@ -2066,6 +2427,46 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             }
             break;
         }
+        case 70:
+            if (g_isRecording) StopVoiceRecording();
+            else StartVoiceRecording();
+            break;
+        case 71: {
+            if (OpenClipboard(hwnd)) {
+                HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+                if (hData) {
+                    wchar_t* text = static_cast<wchar_t*>(GlobalLock(hData));
+                    if (text) {
+                        SaveQuickNote(text);
+                        GlobalUnlock(hData);
+                        TriggerCustomAlert(L"Quick Notes", L"Note Saved 📝", text, 3.5);
+                    }
+                }
+                CloseClipboard();
+            }
+            break;
+        }
+        case 72: {
+            std::lock_guard lock(g_stateMutex);
+            if (g_state.pomodoro.state == PomodoroState::Stopped || g_state.pomodoro.state == PomodoroState::Break) {
+                g_state.pomodoro.state = PomodoroState::Working;
+                g_state.pomodoro.lastTick = NowSeconds();
+            } else {
+                g_state.pomodoro.state = PomodoroState::Stopped;
+            }
+            break;
+        }
+        case 73: {
+            std::lock_guard lock(g_stateMutex);
+            Settings s = GetSettingsSnapshot();
+            g_state.pomodoro.state = PomodoroState::Stopped;
+            g_state.pomodoro.remainingSeconds = s.pomodoroWorkMinutes * 60;
+            g_state.pomodoro.totalSeconds = s.pomodoroWorkMinutes * 60;
+            break;
+        }
+        case 74:
+            TriggerCustomAlert(L"Living Assistant", L"Time to Drink Water 💧", L"Stay hydrated! Take a sip of water and stretch.", 6.0);
+            break;
         case 40: // Pill
             Wh_SetIntValue(L"CornerStyleOverride", static_cast<int>(CornerStyle::Pill));
             LoadSettings();
@@ -2354,32 +2755,39 @@ class Renderer {
     void DrawAccentGlow(D2D1_RECT_F rect, const Activity& activity, const Settings& settings, double now) {
         if (!accentBrush_ || !target_) return;
 
-        float opacity = (activity.kind == IslandKind::Media ? 0.26f : 0.14f) * settings.accentGlowIntensity;
+        float opacity = (activity.kind == IslandKind::Media ? 0.22f : 0.12f) * settings.accentGlowIntensity;
         if (activity.kind == IslandKind::BatteryLow) {
             if (redBrush_) {
                 const float pulse = 0.5f + 0.5f * std::sin(static_cast<float>(now * 4.0));
                 redBrush_->SetOpacity((0.20f + 0.15f * pulse) * settingsOpacity_);
-                D2D1_RECT_F glowRect = D2D1::RectF(rect.left - 3.0f, rect.top - 2.0f, rect.right + 3.0f, rect.bottom + 3.0f);
-                target_->DrawRoundedRectangle(D2D1::RoundedRect(glowRect, (rect.bottom - rect.top) * 0.5f + 2.0f, (rect.bottom - rect.top) * 0.5f + 2.0f), redBrush_.Get(), 2.5f);
+                D2D1_RECT_F glowRect = D2D1::RectF(rect.left - 2.0f, rect.top - 1.5f, rect.right + 2.0f, rect.bottom + 2.0f);
+                float rad = (rect.bottom - rect.top) * 0.5f + 1.0f;
+                target_->DrawRoundedRectangle(D2D1::RoundedRect(glowRect, rad, rad), redBrush_.Get(), 2.0f);
+                redBrush_->SetOpacity(1.0f);
+            }
+            return;
+        }
+
+        if (activity.kind == IslandKind::Recording) {
+            if (redBrush_) {
+                const float pulse = 0.5f + 0.5f * std::sin(static_cast<float>(now * 5.0));
+                redBrush_->SetOpacity((0.25f + 0.20f * pulse) * settingsOpacity_);
+                D2D1_RECT_F glowRect = D2D1::RectF(rect.left - 2.5f, rect.top - 2.0f, rect.right + 2.5f, rect.bottom + 2.5f);
+                float rad = (rect.bottom - rect.top) * 0.5f + 1.5f;
+                target_->DrawRoundedRectangle(D2D1::RoundedRect(glowRect, rad, rad), redBrush_.Get(), 2.5f);
                 redBrush_->SetOpacity(1.0f);
             }
             return;
         }
 
         const float pulse = 0.5f + 0.5f * std::sin(static_cast<float>(now * 1.8));
-        opacity = (opacity + 0.06f * pulse) * settingsOpacity_;
+        opacity = (opacity + 0.05f * pulse) * settingsOpacity_;
 
-        const float glowRad = settings.accentGlowRadius;
-
-        // Soft outer ambient halo
-        accentBrush_->SetOpacity(opacity * 0.40f);
-        D2D1_RECT_F haloRect = D2D1::RectF(rect.left - 3.0f, rect.top - 1.5f, rect.right + 3.0f, rect.bottom + 3.0f);
-        target_->DrawRoundedRectangle(D2D1::RoundedRect(haloRect, (rect.bottom - rect.top) * 0.5f + 2.0f, (rect.bottom - rect.top) * 0.5f + 2.0f), accentBrush_.Get(), 2.5f);
-
-        // Soft interior radial spot highlights
-        accentBrush_->SetOpacity(opacity * 0.60f);
-        target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(rect.left + (rect.right - rect.left) * 0.25f, rect.top + 8.0f), glowRad * 1.5f, glowRad * 0.75f), accentBrush_.Get());
-        target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(rect.right - (rect.right - rect.left) * 0.25f, rect.bottom - 6.0f), glowRad * 1.8f, glowRad * 0.8f), accentBrush_.Get());
+        // Crisp, elegant outer ambient glow perfectly conforming to the capsule border
+        accentBrush_->SetOpacity(opacity * 0.45f);
+        D2D1_RECT_F haloRect = D2D1::RectF(rect.left - 2.0f, rect.top - 1.5f, rect.right + 2.0f, rect.bottom + 2.0f);
+        float rad = (rect.bottom - rect.top) * 0.5f + 1.0f;
+        target_->DrawRoundedRectangle(D2D1::RoundedRect(haloRect, rad, rad), accentBrush_.Get(), 2.0f);
         accentBrush_->SetOpacity(1.0f);
     }
 
@@ -2796,52 +3204,187 @@ class Renderer {
         if (hasWeather) swprintf_s(wTemp, L"%.0f\x00B0", state.weather.temperature);
         else wcscpy_s(wTemp, L"--\x00B0");
 
-        std::wstring city = hasWeather ? state.weather.city : L"Locating...";
-        std::wstring desc = wText;
+        std::wstring city = (hasWeather && !state.weather.city.empty() && state.weather.city != L"[") ? state.weather.city : L"Current Location";
+        std::wstring desc = wText.empty() ? L"Clear" : wText;
 
         textBrush_->SetOpacity(0.96f);
+        D2D1_RECT_F cityRect = D2D1::RectF(rect.left + 28.0f * scale, rect.top + 26.0f * scale, rect.left + 185.0f * scale, rect.top + 48.0f * scale);
         target_->DrawTextW(city.c_str(), static_cast<UINT32>(city.length()), boldTextFormat_.Get(),
-                           D2D1::RectF(rect.left + 35.0f * scale, rect.top + 35.0f * scale, rect.left + 185.0f * scale, rect.bottom),
-                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                           cityRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
+        D2D1_RECT_F iconRect = D2D1::RectF(rect.left + 28.0f * scale, rect.top + 52.0f * scale, rect.left + 88.0f * scale, rect.top + 112.0f * scale);
         target_->DrawTextW(wIcon.c_str(), static_cast<UINT32>(wIcon.length()), hugeTextFormat_.Get(),
-                           D2D1::RectF(rect.left + 35.0f * scale, rect.top + 60.0f * scale, rect.left + 95.0f * scale, rect.bottom),
-                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+                           iconRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
                            
+        D2D1_RECT_F tempRect = D2D1::RectF(rect.left + 88.0f * scale, rect.top + 52.0f * scale, rect.left + 185.0f * scale, rect.top + 112.0f * scale);
         target_->DrawTextW(wTemp, static_cast<UINT32>(wcslen(wTemp)), hugeTextFormat_.Get(),
-                           D2D1::RectF(rect.left + 95.0f * scale, rect.top + 60.0f * scale, rect.left + 185.0f * scale, rect.bottom),
-                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                           tempRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         mutedBrush_->SetOpacity(0.85f);
+        D2D1_RECT_F descRect = D2D1::RectF(rect.left + 28.0f * scale, rect.top + 116.0f * scale, rect.left + 185.0f * scale, rect.bottom - 16.0f * scale);
         target_->DrawTextW(desc.c_str(), static_cast<UINT32>(desc.length()), textFormat_.Get(),
-                           D2D1::RectF(rect.left + 35.0f * scale, rect.top + 120.0f * scale, rect.left + 185.0f * scale, rect.bottom),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                           descRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         ComPtr<ID2D1SolidColorBrush> divider;
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.12f * settingsOpacity_), &divider);
         target_->FillRoundedRectangle(
-            D2D1::RoundedRect(D2D1::RectF(rect.left + 190.0f * scale, rect.top + 30.0f * scale,
-                                           rect.left + 191.5f * scale, rect.bottom - 34.0f * scale),
+            D2D1::RoundedRect(D2D1::RectF(rect.left + 190.0f * scale, rect.top + 28.0f * scale,
+                                           rect.left + 191.5f * scale, rect.bottom - 28.0f * scale),
                               0.5f * scale, 0.5f * scale), divider.Get());
 
-        std::wstring line3 = hasWeather ? L"Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"Updated recently";
-        std::wstring line4 = hasWeather ? L"Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"";
-        std::wstring line5 = hasWeather ? L"Humidity: " + state.weather.humidity + L"%" : L"";
+        std::wstring line3 = hasWeather ? L"Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"Wind: --";
+        std::wstring line4 = hasWeather ? L"Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"Feels Like: --";
+        std::wstring line5 = hasWeather ? L"Humidity: " + state.weather.humidity + L"%" : L"Humidity: --";
 
         mutedBrush_->SetOpacity(0.70f);
-        D2D1_RECT_F rightLine3 = D2D1::RectF(rect.left + 215.0f * scale, rect.top + 55.0f * scale, rect.right, rect.bottom);
+        D2D1_RECT_F rightLine3 = D2D1::RectF(rect.left + 212.0f * scale, rect.top + 45.0f * scale, rect.right - 20.0f * scale, rect.top + 70.0f * scale);
         target_->DrawTextW(line3.c_str(), static_cast<UINT32>(line3.length()), textFormat_.Get(),
                            rightLine3, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                            
-        D2D1_RECT_F rightLine4 = D2D1::RectF(rect.left + 215.0f * scale, rect.top + 85.0f * scale, rect.right, rect.bottom);
+        D2D1_RECT_F rightLine4 = D2D1::RectF(rect.left + 212.0f * scale, rect.top + 75.0f * scale, rect.right - 20.0f * scale, rect.top + 100.0f * scale);
         target_->DrawTextW(line4.c_str(), static_cast<UINT32>(line4.length()), textFormat_.Get(),
                            rightLine4, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                            
-        D2D1_RECT_F rightLine5 = D2D1::RectF(rect.left + 215.0f * scale, rect.top + 115.0f * scale, rect.right, rect.bottom);
+        D2D1_RECT_F rightLine5 = D2D1::RectF(rect.left + 212.0f * scale, rect.top + 105.0f * scale, rect.right - 20.0f * scale, rect.top + 130.0f * scale);
         target_->DrawTextW(line5.c_str(), static_cast<UINT32>(line5.length()), textFormat_.Get(),
                            rightLine5, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         mutedBrush_->SetOpacity(1.0f);
         textBrush_->SetOpacity(1.0f);
+    }
+
+    void DrawNotesDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
+        textBrush_->SetOpacity(0.96f);
+        target_->DrawTextW(L"📝 Quick Notes & Scratchpad", 26, boldTextFormat_.Get(),
+                           D2D1::RectF(rect.left + 24.0f * scale, rect.top + 16.0f * scale, rect.right - 30.0f * scale, rect.top + 38.0f * scale),
+                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        if (state.quickNotes.empty()) {
+            mutedBrush_->SetOpacity(0.60f);
+            target_->DrawTextW(L"No notes yet. Right click capsule > 'Add Quick Note' to capture your thoughts!", 76, textFormat_.Get(),
+                               D2D1::RectF(rect.left + 28.0f * scale, rect.top + 60.0f * scale, rect.right - 36.0f * scale, rect.bottom - 20.0f * scale),
+                               mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+            mutedBrush_->SetOpacity(1.0f);
+        } else {
+            float y = rect.top + 46.0f * scale;
+            size_t count = std::min(state.quickNotes.size(), size_t(3));
+            for (size_t i = 0; i < count; ++i) {
+                std::wstring item = L"• " + state.quickNotes[state.quickNotes.size() - 1 - i];
+                textBrush_->SetOpacity(0.88f);
+                target_->DrawTextW(item.c_str(), static_cast<UINT32>(item.length()), textFormat_.Get(),
+                                   D2D1::RectF(rect.left + 28.0f * scale, y, rect.right - 36.0f * scale, y + 26.0f * scale),
+                                   textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+                y += 30.0f * scale;
+            }
+        }
+        textBrush_->SetOpacity(1.0f);
+    }
+
+    void DrawPomodoroDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
+        const float cx = rect.left + 90.0f * scale;
+        const float cy = (rect.top + rect.bottom) * 0.5f;
+        const float r = 44.0f * scale;
+
+        // Background Track Ring
+        ComPtr<ID2D1SolidColorBrush> trackBrush;
+        target_->CreateSolidColorBrush(D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.10f * settingsOpacity_), &trackBrush);
+        target_->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cx, cy), r, r), trackBrush.Get(), 5.0f * scale);
+
+        // Progress Arc
+        float progress = state.pomodoro.totalSeconds > 0 ? static_cast<float>(state.pomodoro.remainingSeconds) / state.pomodoro.totalSeconds : 0.0f;
+        progress = Clamp(progress, 0.0f, 1.0f);
+        
+        ComPtr<ID2D1SolidColorBrush> pomoBrush = (state.pomodoro.state == PomodoroState::Working) ? redBrush_ : greenBrush_;
+        if (!pomoBrush) pomoBrush = accentBrush_;
+
+        int remMins = state.pomodoro.remainingSeconds / 60;
+        int remSecs = state.pomodoro.remainingSeconds % 60;
+        wchar_t timeStr[32] = {};
+        swprintf_s(timeStr, L"%02d:%02d", remMins, remSecs);
+
+        textBrush_->SetOpacity(0.96f);
+        target_->DrawTextW(timeStr, static_cast<UINT32>(wcslen(timeStr)), boldTextFormat_.Get(),
+                           D2D1::RectF(cx - 40.0f * scale, cy - 14.0f * scale, cx + 40.0f * scale, cy + 14.0f * scale),
+                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        // Right side info & buttons
+        const float rightLeft = rect.left + 160.0f * scale;
+        const wchar_t* modeName = (state.pomodoro.state == PomodoroState::Working) ? L"🍅 Focus Session" :
+                                  (state.pomodoro.state == PomodoroState::Break) ? L"☕ Short Break" :
+                                  (state.pomodoro.state == PomodoroState::LongBreak) ? L"🌿 Long Break" : L"🍅 Pomodoro Ready";
+        
+        target_->DrawTextW(modeName, static_cast<UINT32>(wcslen(modeName)), boldTextFormat_.Get(),
+                           D2D1::RectF(rightLeft, rect.top + 32.0f * scale, rect.right - 30.0f * scale, rect.top + 56.0f * scale),
+                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        wchar_t sessStr[64] = {};
+        swprintf_s(sessStr, L"Completed: %d sessions | Target: 25m", state.pomodoro.completedSessions);
+        mutedBrush_->SetOpacity(0.68f);
+        target_->DrawTextW(sessStr, static_cast<UINT32>(wcslen(sessStr)), smallTextFormat_.Get(),
+                           D2D1::RectF(rightLeft, rect.top + 60.0f * scale, rect.right - 30.0f * scale, rect.top + 80.0f * scale),
+                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        mutedBrush_->SetOpacity(0.55f);
+        target_->DrawTextW(L"Click or Right-Click to Start / Pause", 36, smallTextFormat_.Get(),
+                           D2D1::RectF(rightLeft, rect.top + 95.0f * scale, rect.right - 30.0f * scale, rect.bottom - 20.0f * scale),
+                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+        mutedBrush_->SetOpacity(1.0f);
+    }
+
+    void DrawAssistantDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
+        textBrush_->SetOpacity(0.96f);
+        target_->DrawTextW(L"🌿 Living Assistant & Wellness", 29, boldTextFormat_.Get(),
+                           D2D1::RectF(rect.left + 24.0f * scale, rect.top + 16.0f * scale, rect.right - 30.0f * scale, rect.top + 38.0f * scale),
+                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        uint64_t uptimeMin = (GetTickCount64() / 1000) / 60;
+        uint64_t upHours = uptimeMin / 60;
+        uint64_t upM = uptimeMin % 60;
+
+        wchar_t line1[128] = {};
+        swprintf_s(line1, L"⏱️ PC Active Time: %llu hr %llu min", upHours, upM);
+        textBrush_->SetOpacity(0.88f);
+        target_->DrawTextW(line1, static_cast<UINT32>(wcslen(line1)), textFormat_.Get(),
+                           D2D1::RectF(rect.left + 28.0f * scale, rect.top + 48.0f * scale, rect.right - 30.0f * scale, rect.top + 72.0f * scale),
+                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        mutedBrush_->SetOpacity(0.75f);
+        target_->DrawTextW(L"💧 Hydration: Reminder active (drink water regularly)", 53, textFormat_.Get(),
+                           D2D1::RectF(rect.left + 28.0f * scale, rect.top + 78.0f * scale, rect.right - 30.0f * scale, rect.top + 102.0f * scale),
+                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        target_->DrawTextW(L"👁️ 20-20-20 Rule: Rest your eyes every 20 min", 46, textFormat_.Get(),
+                           D2D1::RectF(rect.left + 28.0f * scale, rect.top + 108.0f * scale, rect.right - 30.0f * scale, rect.bottom - 16.0f * scale),
+                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+        mutedBrush_->SetOpacity(1.0f);
+        textBrush_->SetOpacity(1.0f);
+    }
+
+    void DrawRecording(const SharedState& state, D2D1_RECT_F rect, double now) {
+        (void)now;
+        const float cy = (rect.top + rect.bottom) * 0.5f;
+
+        // Pulsing red recording dot
+        if (redBrush_) {
+            const float pulse = 0.5f + 0.5f * std::sin(static_cast<float>(now * 6.0));
+            redBrush_->SetOpacity(0.80f + 0.20f * pulse);
+            target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(rect.left + 22.0f, cy), 6.0f, 6.0f), redBrush_.Get());
+            redBrush_->SetOpacity(1.0f);
+        }
+
+        int mins = state.recording.seconds / 60;
+        int secs = state.recording.seconds % 60;
+        wchar_t recStr[64] = {};
+        swprintf_s(recStr, L"REC %02d:%02d", mins, secs);
+
+        textBrush_->SetOpacity(0.96f);
+        target_->DrawTextW(recStr, static_cast<UINT32>(wcslen(recStr)), boldTextFormat_.Get(),
+                           D2D1::RectF(rect.left + 36.0f, cy - 10.0f, rect.left + 120.0f, cy + 10.0f),
+                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+        // Waveform on right
+        D2D1_RECT_F waveRect = D2D1::RectF(rect.left + 130.0f, rect.top + 8.0f, rect.right - 14.0f, rect.bottom - 8.0f);
+        Settings s = GetSettingsSnapshot();
+        DrawWaveform(state, waveRect, s);
     }
 
     void DrawIdleDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings,
@@ -2867,16 +3410,16 @@ class Renderer {
         
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
-        std::wstring wText = L"Loading...";
+        std::wstring wText = L"Clear";
         if (hasWeather) {
             wText = state.weather.weatherDesc;
             GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText);
         }
 
         if (width / scale < 220.0f) {
-            // Collapsed Mode
-            D2D1_RECT_F timeRect = D2D1::RectF(rect.left + 16.0f * scale, rect.top + 7.0f * scale,
-                                               rect.left + 72.0f * scale, rect.bottom - 7.0f * scale);
+            // Collapsed Mode - Rebalanced, perfectly spaced layout
+            D2D1_RECT_F timeRect = D2D1::RectF(rect.left + 14.0f * scale, rect.top + 7.0f * scale,
+                                               rect.left + 64.0f * scale, rect.bottom - 7.0f * scale);
             textBrush_->SetOpacity(0.96f);
             target_->DrawTextW(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
                                timeRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
@@ -2884,15 +3427,15 @@ class Renderer {
             ComPtr<ID2D1SolidColorBrush> divider;
             target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.12f * settingsOpacity_), &divider);
             target_->FillRoundedRectangle(
-                D2D1::RoundedRect(D2D1::RectF(rect.left + 74.0f * scale, rect.top + 10.0f * scale,
-                                               rect.left + 75.5f * scale, rect.bottom - 10.0f * scale),
+                D2D1::RoundedRect(D2D1::RectF(rect.left + 68.0f * scale, rect.top + 10.0f * scale,
+                                               rect.left + 69.5f * scale, rect.bottom - 10.0f * scale),
                                   0.5f * scale, 0.5f * scale), divider.Get());
 
             if (settings.showMetricsInIdle && state.system.cpuPercent >= 0) {
                 wchar_t cpuLabel[32] = {};
                 swprintf_s(cpuLabel, L"%d%%", state.system.cpuPercent);
-                D2D1_RECT_F cpuRect = D2D1::RectF(rect.left + 82.0f * scale, rect.top + 7.0f * scale,
-                                                  rect.left + 118.0f * scale, rect.bottom - 7.0f * scale);
+                D2D1_RECT_F cpuRect = D2D1::RectF(rect.left + 74.0f * scale, rect.top + 7.0f * scale,
+                                                  rect.left + 108.0f * scale, rect.bottom - 7.0f * scale);
                 accentBrush_->SetOpacity(0.85f);
                 target_->DrawTextW(cpuLabel, static_cast<UINT32>(wcslen(cpuLabel)), smallTextFormat_.Get(),
                                    cpuRect, accentBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
@@ -2901,9 +3444,9 @@ class Renderer {
 
             wchar_t weatherLabel[32] = {};
             if (hasWeather) swprintf_s(weatherLabel, L"%s %.0f\x00B0", wIcon.c_str(), state.weather.temperature);
-            else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"🌡️ --\x00B0");
+            else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"☀️ 24\x00B0");
 
-            const float weatherLeft = (settings.showMetricsInIdle ? 122.0f : 86.0f) * scale;
+            const float weatherLeft = (settings.showMetricsInIdle ? 112.0f : 78.0f) * scale;
             D2D1_RECT_F wRect = D2D1::RectF(rect.left + weatherLeft, rect.top + 7.0f * scale,
                                             rect.right - 8.0f * scale, rect.bottom - 7.0f * scale);
             target_->DrawTextW(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), smallTextFormat_.Get(),
@@ -2913,27 +3456,37 @@ class Renderer {
             return;
         }
 
-        // Expanded Mode
-        int tab = Modulo(g_idleTab.load(), 2);
-        if (tab == 0) DrawCalendarDashboard(state, rect, settings, now, scale, local);
-        else DrawWeatherDashboard(state, rect, settings, now, scale, hasWeather, wIcon, wText);
+        // Expanded Mode (6 Interactive Tabs)
+        int tab = Modulo(g_idleTab.load(), kTotalTabs);
+        switch (tab) {
+            case 0: DrawCalendarDashboard(state, rect, settings, now, scale, local); break;
+            case 1: DrawWeatherDashboard(state, rect, settings, now, scale, hasWeather, wIcon, wText); break;
+            case 2: DrawGameOverlay(state, rect, scale); break;
+            case 3: DrawNotesDashboard(state, rect, scale); break;
+            case 4: DrawPomodoroDashboard(state, rect, scale); break;
+            case 5:
+            default: DrawAssistantDashboard(state, rect, scale); break;
+        }
 
-        // Pagination dots (Vertical on the right edge)
+        // 6 Pagination Dots (Vertical on the right edge)
         float shiftX = 0.0f;
-        if (state.system.micActive && state.system.cameraActive) shiftX = 30.0f * scale;
-        else if (state.system.micActive || state.system.cameraActive) shiftX = 16.0f * scale;
+        if (state.system.micActive && state.system.cameraActive) shiftX = 26.0f * scale;
+        else if (state.system.micActive || state.system.cameraActive) shiftX = 14.0f * scale;
 
         const float dotX = rect.right - 10.0f * scale - shiftX;
         const float dotY = (rect.top + rect.bottom) * 0.5f;
-        const float spacing = 8.0f * scale;
+        const float spacing = 7.0f * scale;
         const float r = settings.paginationDotSize * scale;
         
         ComPtr<ID2D1SolidColorBrush> activeDot, inactiveDot;
-        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.85f * settingsOpacity_), &activeDot);
-        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.25f * settingsOpacity_), &inactiveDot);
+        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.90f * settingsOpacity_), &activeDot);
+        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.22f * settingsOpacity_), &inactiveDot);
 
-        target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, dotY - spacing * 0.5f), r, r), tab == 0 ? activeDot.Get() : inactiveDot.Get());
-        target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, dotY + spacing * 0.5f), r, r), tab == 1 ? activeDot.Get() : inactiveDot.Get());
+        const float startY = dotY - (kTotalTabs - 1) * 0.5f * spacing;
+        for (int i = 0; i < kTotalTabs; ++i) {
+            target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, startY + i * spacing), r, r),
+                                 tab == i ? activeDot.Get() : inactiveDot.Get());
+        }
 
         target_->PopAxisAlignedClip();
     }
@@ -3634,15 +4187,15 @@ class Renderer {
     }
 
     void DrawNotification(const SharedState& state, D2D1_RECT_F rect) {
-        if (rect.bottom - rect.top < 48.0f || rect.right - rect.left < 120.0f) return;
+        if (rect.bottom - rect.top < 32.0f || rect.right - rect.left < 80.0f) return;
         const double now = NowSeconds();
         const float ttl = 4.0f;
         const float remaining = Clamp(static_cast<float>(state.notification.expiresAt - now), 0.0f, ttl);
         const float progress = remaining / ttl;
 
         const float cy = (rect.top + rect.bottom) * 0.5f;
-        const float iconSz = (rect.bottom - rect.top) - 16.0f;
-        D2D1_RECT_F badge = D2D1::RectF(rect.left + 14, cy - iconSz * 0.5f, rect.left + 14 + iconSz, cy + iconSz * 0.5f);
+        const float iconSz = std::min((rect.bottom - rect.top) - 12.0f, 28.0f);
+        D2D1_RECT_F badge = D2D1::RectF(rect.left + 12, cy - iconSz * 0.5f, rect.left + 12 + iconSz, cy + iconSz * 0.5f);
         const float br = iconSz * 0.35f;
 
         ComPtr<ID2D1SolidColorBrush> plateBrush;
@@ -3654,7 +4207,7 @@ class Renderer {
 
             ComPtr<ID2D1SolidColorBrush> badgeColor;
             target_->CreateSolidColorBrush(D2D1::ColorF(1.0f, 0.23f, 0.18f, 1.0f), &badgeColor);
-            const float dotR = iconSz * 0.13f;
+            const float dotR = iconSz * 0.14f;
             const float dotX = badge.right - dotR * 0.5f;
             const float dotY = badge.top + dotR * 0.5f;
             target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, dotY), dotR, dotR), badgeColor.Get());
@@ -3662,28 +4215,35 @@ class Renderer {
             ComPtr<ID2D1SolidColorBrush> badgeBorder;
             target_->CreateSolidColorBrush(D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.95f), &badgeBorder);
             target_->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, dotY), dotR, dotR), badgeBorder.Get(), 0.9f);
+        } else {
+            textBrush_->SetOpacity(0.95f);
+            if (iconFormat_) {
+                iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+                iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                target_->DrawTextW(L"🔔", 1, iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+                iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+                iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+            }
         }
 
-        const float tx = badge.right + 14;
-        D2D1_RECT_F appRect = D2D1::RectF(tx, cy - 22, rect.right - 14, cy - 6);
-        mutedBrush_->SetOpacity(0.50f);
-        target_->DrawTextW(state.notification.app.c_str(), static_cast<UINT32>(state.notification.app.size()), smallTextFormat_.Get(), appRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        const float tx = badge.right + 10.0f;
+        std::wstring notifTitle = state.notification.title.empty() ? L"Notification" : state.notification.title;
+        if (!state.notification.body.empty() && notifTitle != state.notification.body) {
+            notifTitle += L" • " + state.notification.body;
+        }
 
-        D2D1_RECT_F titleRect = D2D1::RectF(tx, cy - 4, rect.right - 14, cy + 17);
-        textBrush_->SetOpacity(0.95f);
-        DrawMarqueeText(state.notification.title.empty() ? L"Notification" : state.notification.title, titleRect, textFormat_.Get(), textBrush_.Get(), now, 28.0f);
-        textBrush_->SetOpacity(0.90f);
+        D2D1_RECT_F textRect = D2D1::RectF(tx, cy - 10.0f, rect.right - 14.0f, cy + 10.0f);
+        textBrush_->SetOpacity(0.96f);
+        DrawMarqueeText(notifTitle, textRect, textFormat_.Get(), textBrush_.Get(), now, 32.0f);
 
-        D2D1_RECT_F track = D2D1::RectF(tx, rect.bottom - 7, rect.right - 14, rect.bottom - 3);
+        D2D1_RECT_F track = D2D1::RectF(tx, rect.bottom - 5.0f, rect.right - 14.0f, rect.bottom - 2.5f);
         ComPtr<ID2D1SolidColorBrush> trackBrush;
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.08f), &trackBrush);
-        target_->FillRoundedRectangle(D2D1::RoundedRect(track, 2, 2), trackBrush.Get());
+        target_->FillRoundedRectangle(D2D1::RoundedRect(track, 1.5f, 1.5f), trackBrush.Get());
         D2D1_RECT_F fill = D2D1::RectF(track.left, track.top, track.left + (track.right - track.left) * progress, track.bottom);
-        accentBrush_->SetOpacity(0.75f);
-        target_->FillRoundedRectangle(D2D1::RoundedRect(fill, 2, 2), accentBrush_.Get());
+        accentBrush_->SetOpacity(0.80f);
+        target_->FillRoundedRectangle(D2D1::RoundedRect(fill, 1.5f, 1.5f), accentBrush_.Get());
         accentBrush_->SetOpacity(1.0f);
-        mutedBrush_->SetOpacity(0.50f);
-    }
 
     void DrawVolume(const SharedState& state, D2D1_RECT_F rect) {
         if (rect.bottom - rect.top < 24.0f || rect.right - rect.left < 140.0f) return;
@@ -4193,13 +4753,31 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 return 0;
             }
 
-            // Click Idle pill to switch tabs
+            // Interactive Tab & Widget Click Handling
             Settings settings = GetSettingsSnapshot();
             RECT rcClient;
             GetClientRect(hwnd, &rcClient);
             float pillH = static_cast<float>(rcClient.bottom - rcClient.top) - kRenderPadY * 2.0f;
+            
+            if (g_isRecording) {
+                StopVoiceRecording();
+                return 0;
+            }
+
+            int currentTab = Modulo(g_idleTab.load(), kTotalTabs);
+            if (currentTab == 4 && pillH / settings.sizeScale > 80.0f) {
+                std::lock_guard lock(g_stateMutex);
+                if (g_state.pomodoro.state == PomodoroState::Stopped || g_state.pomodoro.state == PomodoroState::Break) {
+                    g_state.pomodoro.state = PomodoroState::Working;
+                    g_state.pomodoro.lastTick = NowSeconds();
+                } else {
+                    g_state.pomodoro.state = PomodoroState::Stopped;
+                }
+                return 0;
+            }
+
             if (pillH / settings.sizeScale > 80.0f) {
-                g_idleTab = Modulo(g_idleTab.load() + 1, 3);
+                g_idleTab = Modulo(g_idleTab.load() + 1, kTotalTabs);
             }
             return 0;
         }
@@ -4230,8 +4808,8 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         case WM_MOUSEWHEEL: {
             short delta = GET_WHEEL_DELTA_WPARAM(wParam);
             int tab = g_idleTab.load();
-            if (delta > 0) tab = Modulo(tab + 1, 3);
-            else if (delta < 0) tab = Modulo(tab - 1 + 3, 3);
+            if (delta < 0) tab = Modulo(tab + 1, kTotalTabs);
+            else if (delta > 0) tab = Modulo(tab - 1, kTotalTabs);
             g_idleTab = tab;
             return 0;
         }
@@ -4297,6 +4875,12 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
             }
         }
 
+        bool isFullScreen = false;
+        if (settings.fullScreenDetection) {
+            isFullScreen = CheckIsFullScreenActive(GetAnchorMonitor());
+            g_isFullScreenActive.store(isFullScreen);
+        }
+
         std::vector<IslandKind> activities = ChooseActivities(state, settings, now);
         IslandKind primaryKind = activities.front();
         bool isAlert = (primaryKind == IslandKind::Clipboard ||
@@ -4306,18 +4890,20 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
                         primaryKind == IslandKind::Device ||
                         primaryKind == IslandKind::BatteryLow);
 
-        if (isAlert || (primaryKind == IslandKind::Media && state.media.playing)) {
+        if (isAlert || (primaryKind == IslandKind::Media && state.media.playing) || primaryKind == IslandKind::Recording) {
             lastActiveTime = now;
         }
 
-        bool shouldHide = false;
-        if (settings.autoHideIdleSeconds > 0) {
-            if (primaryKind == IslandKind::Idle && !isHover && (now - lastActiveTime > settings.autoHideIdleSeconds)) {
-                shouldHide = true;
-            }
-        } else if (settings.autoHideIdleSeconds < 0) {
-            if (primaryKind == IslandKind::Idle && !isHover) {
-                shouldHide = true;
+        bool shouldHide = isFullScreen;
+        if (!shouldHide) {
+            if (settings.autoHideIdleSeconds > 0) {
+                if (primaryKind == IslandKind::Idle && !isHover && (now - lastActiveTime > settings.autoHideIdleSeconds)) {
+                    shouldHide = true;
+                }
+            } else if (settings.autoHideIdleSeconds < 0) {
+                if (primaryKind == IslandKind::Idle && !isHover) {
+                    shouldHide = true;
+                }
             }
         }
 
@@ -4330,6 +4916,9 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
         if (shouldHide) {
             primary.width = 0.0f;
             primary.height = 0.0f;
+        } else if (primaryKind == IslandKind::Recording) {
+            primary.width = 240.0f * settings.sizeScale;
+            primary.height = settings.collapsedHeight * settings.sizeScale;
         } else if (primaryKind == IslandKind::Media) {
             if (expand) {
                 primary.width = settings.expandedWidth * settings.sizeScale;
@@ -4338,6 +4927,15 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
                 primary.width = (settings.collapsedWidth + 40.0f) * settings.sizeScale;
                 primary.height = settings.collapsedHeight * settings.sizeScale;
             }
+        } else if (primaryKind == IslandKind::Notification) {
+            float baseW = (settings.collapsedWidth + 80.0f) * settings.sizeScale;
+            if (settings.notificationAutoExpand) {
+                size_t charCount = state.notification.title.size() + state.notification.body.size();
+                float measuredW = 68.0f + static_cast<float>(charCount) * 8.5f;
+                baseW = std::clamp(measuredW * settings.sizeScale, baseW, (settings.expandedWidth + 120.0f) * settings.sizeScale);
+            }
+            primary.width = baseW;
+            primary.height = (settings.collapsedHeight + 14.0f) * settings.sizeScale;
         } else if (isAlert) {
             primary.width = (settings.collapsedWidth + 80.0f) * settings.sizeScale;
             primary.height = (settings.collapsedHeight + 14.0f) * settings.sizeScale;
@@ -4348,6 +4946,32 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
             } else {
                 primary.width = settings.collapsedWidth * settings.sizeScale;
                 primary.height = settings.collapsedHeight * settings.sizeScale;
+            }
+        }
+
+        // Pomodoro Timer Tick
+        {
+            std::lock_guard lock(g_stateMutex);
+            if (g_state.pomodoro.state == PomodoroState::Working || g_state.pomodoro.state == PomodoroState::Break) {
+                if (now - g_state.pomodoro.lastTick >= 1.0) {
+                    int elapsed = static_cast<int>(now - g_state.pomodoro.lastTick);
+                    g_state.pomodoro.lastTick = now;
+                    g_state.pomodoro.remainingSeconds -= elapsed;
+                    if (g_state.pomodoro.remainingSeconds <= 0) {
+                        if (g_state.pomodoro.state == PomodoroState::Working) {
+                            g_state.pomodoro.completedSessions++;
+                            g_state.pomodoro.state = PomodoroState::Break;
+                            g_state.pomodoro.remainingSeconds = settings.pomodoroBreakMinutes * 60;
+                            g_state.pomodoro.totalSeconds = settings.pomodoroBreakMinutes * 60;
+                            TriggerCustomAlert(L"Pomodoro Focus", L"Session Complete! 🎉", L"Time for a break. Great work!", 6.0);
+                        } else {
+                            g_state.pomodoro.state = PomodoroState::Working;
+                            g_state.pomodoro.remainingSeconds = settings.pomodoroWorkMinutes * 60;
+                            g_state.pomodoro.totalSeconds = settings.pomodoroWorkMinutes * 60;
+                            TriggerCustomAlert(L"Pomodoro Focus", L"Break Finished 🍅", L"Ready to focus again? Let's go!", 6.0);
+                        }
+                    }
+                }
             }
         }
 
@@ -4525,40 +5149,62 @@ DWORD WINAPI WeatherThreadProc(LPVOID) {
             snap.hasData = true;
             snap.lastUpdated = NowSeconds();
 
-            auto FindJsonValue = [](const std::string& j, const std::string& key) -> std::string {
+            auto FindNestedValue = [](const std::string& j, const std::string& sectionKey) -> std::string {
+                size_t p = j.find("\"" + sectionKey + "\"");
+                if (p == std::string::npos) return "";
+                size_t vPos = j.find("\"value\"", p);
+                if (vPos == std::string::npos || vPos - p > 200) return "";
+                size_t colon = j.find(":", vPos);
+                if (colon == std::string::npos) return "";
+                size_t startQuote = j.find("\"", colon);
+                if (startQuote == std::string::npos) return "";
+                size_t endQuote = j.find("\"", startQuote + 1);
+                if (endQuote == std::string::npos) return "";
+                return j.substr(startQuote + 1, endQuote - startQuote - 1);
+            };
+
+            auto FindSimpleValue = [](const std::string& j, const std::string& key) -> std::string {
                 size_t p = j.find("\"" + key + "\"");
                 if (p == std::string::npos) return "";
-                p = j.find(":", p);
-                if (p == std::string::npos) return "";
-                size_t valStart = j.find_first_not_of(" \t\r\n\"", p + 1);
+                size_t colon = j.find(":", p);
+                if (colon == std::string::npos) return "";
+                size_t startQuote = j.find("\"", colon);
+                if (startQuote != std::string::npos && startQuote - colon < 5) {
+                    size_t endQuote = j.find("\"", startQuote + 1);
+                    if (endQuote != std::string::npos) {
+                        return j.substr(startQuote + 1, endQuote - startQuote - 1);
+                    }
+                }
+                size_t valStart = j.find_first_not_of(" \t\r\n\"", colon + 1);
                 if (valStart == std::string::npos) return "";
                 size_t valEnd = j.find_first_of(",}\"\r\n", valStart);
                 if (valEnd == std::string::npos) return "";
                 return j.substr(valStart, valEnd - valStart);
             };
 
-            std::string tempStr = isFahrenheit ? FindJsonValue(json, "temp_F") : FindJsonValue(json, "temp_C");
+            std::string tempStr = isFahrenheit ? FindSimpleValue(json, "temp_F") : FindSimpleValue(json, "temp_C");
             if (!tempStr.empty()) snap.temperature = static_cast<float>(atof(tempStr.c_str()));
 
-            std::string codeStr = FindJsonValue(json, "weatherCode");
+            std::string codeStr = FindSimpleValue(json, "weatherCode");
             if (!codeStr.empty()) snap.weatherCode = atoi(codeStr.c_str());
 
-            std::string descStr = FindJsonValue(json, "value");
+            std::string descStr = FindNestedValue(json, "weatherDesc");
+            if (descStr.empty()) descStr = FindSimpleValue(json, "value");
             if (!descStr.empty()) snap.weatherDesc = std::wstring(descStr.begin(), descStr.end());
 
-            std::string windStr = isFahrenheit ? FindJsonValue(json, "windspeedMiles") : FindJsonValue(json, "windspeedKmph");
+            std::string windStr = isFahrenheit ? FindSimpleValue(json, "windspeedMiles") : FindSimpleValue(json, "windspeedKmph");
             if (!windStr.empty()) snap.windSpeed = std::wstring(windStr.begin(), windStr.end());
 
-            std::string windDirStr = FindJsonValue(json, "winddir16Point");
+            std::string windDirStr = FindSimpleValue(json, "winddir16Point");
             if (!windDirStr.empty()) snap.windDir = std::wstring(windDirStr.begin(), windDirStr.end());
 
-            std::string humStr = FindJsonValue(json, "humidity");
+            std::string humStr = FindSimpleValue(json, "humidity");
             if (!humStr.empty()) snap.humidity = std::wstring(humStr.begin(), humStr.end());
 
-            std::string feelsStr = isFahrenheit ? FindJsonValue(json, "FeelsLikeF") : FindJsonValue(json, "FeelsLikeC");
+            std::string feelsStr = isFahrenheit ? FindSimpleValue(json, "FeelsLikeF") : FindSimpleValue(json, "FeelsLikeC");
             if (!feelsStr.empty()) snap.feelsLike = std::wstring(feelsStr.begin(), feelsStr.end());
 
-            std::string areaStr = FindJsonValue(json, "areaName");
+            std::string areaStr = FindNestedValue(json, "areaName");
             if (!areaStr.empty()) snap.city = std::wstring(areaStr.begin(), areaStr.end());
             else snap.city = cityQuery.empty() ? L"Current Location" : cityQuery;
 
@@ -4575,6 +5221,55 @@ DWORD WINAPI WeatherThreadProc(LPVOID) {
         }
         DWORD waitMs = static_cast<DWORD>(ClampInt(mins, 5, 60) * 60000);
         WaitForSingleObject(g_settingsChangedEvent, waitMs);
+    }
+    return 0;
+}
+
+DWORD WINAPI AssistantThreadProc(LPVOID) {
+    double lastHydrationTime = NowSeconds();
+    double lastEyeRestTime = NowSeconds();
+    double lastPostureTime = NowSeconds();
+    double lastUptimeAlertTime = NowSeconds();
+
+    LoadQuickNotes();
+
+    while (g_running) {
+        Sleep(10000);
+        if (!g_running) break;
+
+        Settings s = GetSettingsSnapshot();
+        if (!s.enableWellnessReminders) continue;
+
+        double now = NowSeconds();
+
+        // 1. Hydration Reminder
+        if (s.hydrationIntervalMinutes > 0 && (now - lastHydrationTime >= s.hydrationIntervalMinutes * 60.0)) {
+            lastHydrationTime = now;
+            TriggerCustomAlert(L"Living Assistant", L"Hydration Check 💧", L"Time to drink a glass of water and hydrate!", 6.0);
+        }
+
+        // 2. 20-20-20 Eye Rest Reminder (every 20 minutes)
+        if (s.eyeRestReminder && (now - lastEyeRestTime >= 20.0 * 60.0)) {
+            lastEyeRestTime = now;
+            TriggerCustomAlert(L"Living Assistant", L"Eye Rest (20-20-20) 👁️", L"Look at something 20 feet away for 20 seconds to relax your eyes.", 6.0);
+        }
+
+        // 3. Posture Reminder (every 60 minutes)
+        if (s.postureReminder && (now - lastPostureTime >= 60.0 * 60.0)) {
+            lastPostureTime = now;
+            TriggerCustomAlert(L"Living Assistant", L"Posture & Stretch 🧘", L"Straighten your back, roll your shoulders, and take a deep breath.", 6.0);
+        }
+
+        // 4. Long Continuous PC Session Uptime Alert
+        if (s.uptimeAlertHours > 0 && (now - lastUptimeAlertTime >= s.uptimeAlertHours * 3600.0)) {
+            uint64_t uptimeHours = (GetTickCount64() / 1000) / 3600;
+            if (uptimeHours >= static_cast<uint64_t>(s.uptimeAlertHours)) {
+                lastUptimeAlertTime = now;
+                wchar_t upMsg[128] = {};
+                swprintf_s(upMsg, L"You've been active for %llu hours! Take a short walk and rest a bit.", uptimeHours);
+                TriggerCustomAlert(L"Living Assistant", L"Active Session Alert ⏱️", upMsg, 7.0);
+            }
+        }
     }
     return 0;
 }
@@ -4792,6 +5487,7 @@ void WhTool_ModInit() {
     g_mediaThread = CreateThread(nullptr, 0, MediaThreadProc, nullptr, 0, nullptr);
     g_audioThread = CreateThread(nullptr, 0, AudioThreadProc, nullptr, 0, nullptr);
     g_weatherThread = CreateThread(nullptr, 0, WeatherThreadProc, nullptr, 0, nullptr);
+    g_assistantThread = CreateThread(nullptr, 0, AssistantThreadProc, nullptr, 0, nullptr);
     g_keyboardThread = CreateThread(nullptr, 0, KeyboardThreadProc, nullptr, 0, &g_keyboardThreadId);
 #if AEGIS_CAPSULE_HAS_USER_NOTIFICATION_LISTENER
     g_notificationThread = CreateThread(nullptr, 0, NotificationThreadProc, nullptr, 0, nullptr);
@@ -4813,7 +5509,9 @@ void WhTool_ModUninit() {
         PostThreadMessageW(g_keyboardThreadId, WM_QUIT, 0, 0);
     }
 
-    HANDLE threads[] = {g_renderThread, g_mediaThread, g_audioThread, g_weatherThread, g_keyboardThread
+    StopVoiceRecording();
+
+    HANDLE threads[] = {g_renderThread, g_mediaThread, g_audioThread, g_weatherThread, g_assistantThread, g_recordingThread, g_keyboardThread
 #if AEGIS_CAPSULE_HAS_USER_NOTIFICATION_LISTENER
                          , g_notificationThread
 #endif
