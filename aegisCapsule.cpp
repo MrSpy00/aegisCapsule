@@ -2,7 +2,7 @@
 // @id              aegis-capsule
 // @name            aegisCapsule
 // @description     aegisCapsule - Next-generation fluid Liquid Glass dynamic capsule for Windows desktops with full-screen auto-hide, living assistant, smart voice recorder, quick notes, pomodoro focus, hardware metrics, and buttery-smooth physics animations.
-// @version         0.0.2
+// @version         0.0.1
 // @author          aegis
 // @github          https://github.com/MrSpy00/aegisCapsule
 // @include         windhawk.exe
@@ -12,7 +12,7 @@
 
 // ==WindhawkModReadme==
 /*
-# aegisCapsule v0.0.2
+# aegisCapsule v0.0.1
 
 *Dynamic Liquid Glass Companion & Productivity Capsule for Windows Desktop*  
 *Windows Masaüstü için Yeni Nesil Dinamik Liquid Glass Kapsülü ve Üretkenlik Asistanı*
@@ -24,17 +24,18 @@
 **aegisCapsule**, Apple Vision Pro estetiği ve Liquid Glass optik teknolojisi ile geliştirilmiş, donanım hızlandırmalı (Direct2D/DirectWrite), ultra akıcı ve çok amaçlı bir dinamik masaüstü kapsülüdür. 60-240 FPS aralığında neredeyse sıfır CPU kullanımıyla çalışır.
 
 ### ✨ Temel Özellikler
-- **💎 Liquid Glass Optik Motoru:** Çok katmanlı buzlu cam yansımaları, hareketli kaustik ışık dalgaları, çevresel ambiyans aydınlatması ve kristal berraklığında kenar kırılmaları.
+- **💎 Liquid Glass Optik Motoru:** Çok katmanlı sıvı damla cam yansımaları, hareketli kaustik ışık dalgaları, çevresel ambiyans aydınlatması ve kristal berraklığında kenar kırılmaları.
 - **🎮 Tam Ekran Otomatik Gizleme (Full-Screen Auto-Hide):** Oyunlarda, tam ekran video oynatıcılarda (YouTube, Netflix, VLC) ve tam ekran uygulamalarda kapsül kendiliğinden tamamen kapanır; masaüstüne dönüldüğünde pürüzsüzce geri gelir.
 - **📢 Dinamik Bildirim Genişlemesi:** Ekran alıntısı, bildirim veya kopyalama işlemlerinde kapsül metnin uzunluğuna göre sağa-sola dinamik olarak genişler; yazılar asla kesilmez.
-- **🌿 Sağlık & Yaşam Asistanı (Living Wellness):** Sürekli PC açık kalma sayacı, düzenli su içme hatırlatıcıları, 20-20-20 göz dinlendirme ve saatlik esneme molaları.
+- **🔕 Sistem Bildirimlerini Gizleme (Opsiyonel):** Windows'un standart açılır bildirim pencerelerini susturup tüm bildirimleri yalnızca kapsülde zarifçe gösterme desteği.
+- **🌿 Sağlık & Yaşam Asistanı (Living Wellness):** Sürekli PC açık kalma sayacı, ayarlanabilir ve hazır süreli su içme hatırlatıcıları (15/30/45/60/90/120 dk), 20-20-20 göz dinlendirme ve saatlik esneme molaları.
 - **🎙️ Akıllı Ses Kaydedici:** Kapsül üzerinden tek tıkla mikrofon kaydı başlatma, canlı dalga formu görselleştirmesi ve masaüstüne yüksek kaliteli WAV kaydı.
 - **📝 Hızlı Notlar & Karalama:** Panodaki metinleri veya notları anında kapsüle kaydetme ve görüntüleme.
 - **🍅 Pomodoro Odak Sayacı:** 15/25/45/60 dakikalık odaklanma seansları, kısa/uzun molalar ve dairesel ilerleme halkası.
 - **⛅ Canlı Hava Durumu & Atmosfer:** Şehir, sıcaklık, hissedilen, rüzgar, nem ve durum ikonları.
 - **📊 6 Sekmeli Gelişmiş Dashboard:** Takvim & Saat, Hava Durumu, Donanım & Oyun Overlay (FPS, CPU, RAM, GPU, Disk), Hızlı Notlar, Pomodoro, Yaşam Asistanı.
 - **🖱️ Doğal Kaydırma (Natural Scroll):** Fare tekerleği aşağı = Sonraki Sekme, yukarı = Önceki Sekme.
-- **🌐 Çift Dilli Yapı:** Hem Türkçe hem İngilizce tam arayüz ve sağ tık menü desteği.
+- **🌐 Çift Dilli Yapı:** Hem 🇹🇷 Türkçe hem 🇬🇧 İngilizce tam arayüz ve sağ tık menü desteği.
 
 ---
 
@@ -43,17 +44,18 @@
 **aegisCapsule** is an ultra-fluid, hardware-accelerated dynamic capsule companion for Windows, featuring Apple Vision Pro aesthetics, pristine Liquid Glass optics, and an intelligent living assistant.
 
 ### ✨ Key Capabilities
-- **💎 Liquid Glass Optical Engine:** Multi-layer frosted glass refractions, animated caustic light waves, ambient accent glow, and crisp specular rim highlights.
+- **💎 Liquid Glass Optical Engine:** Multi-layer liquid droplet glass refractions, animated caustic light waves, ambient accent glow, and crisp dual-rim specular highlights.
 - **🎮 Full-Screen Auto-Hide:** Automatically hides completely when games, full-screen video players (YouTube, Netflix, VLC), or full-screen apps are active. Restores seamlessly upon returning to desktop.
 - **📢 Dynamic Island Notification Expansion:** Dynamically adjusts capsule width to fit notifications, screenshot alerts, and clipboard events with zero clipping.
-- **🌿 Living Assistant & Wellness:** Continuous PC uptime tracking, hydration reminders, 20-20-20 eye strain breaks, and posture stretch alerts.
+- **🔕 Suppress Native Toast Popups (Optional):** Suppress default Windows toast banners so all alerts display exclusively inside the capsule island.
+- **🌿 Living Assistant & Wellness:** Continuous PC uptime tracking, customizable hydration intervals (15/30/45/60/90/120 min presets), 20-20-20 eye strain breaks, and posture stretch alerts.
 - **🎙️ Smart Voice Recorder:** One-click WASAPI microphone recording saving crystal-clear WAV audio to Desktop with live animated audio waveforms.
 - **📝 Quick Notes & Scratchpad:** Instant clipboard note capturing and storage directly on the capsule.
 - **🍅 Pomodoro Productivity Timer:** 15/25/45/60 min focus intervals, short/long breaks, and live circular progress rings.
 - **⛅ Real-Time Weather Hub:** Location-aware temperature, feels-like, wind speed, humidity, and condition glyphs.
 - **📊 6-Tab Expanded Dashboard:** Calendar, Weather, Hardware/Game Overlay (FPS, CPU, RAM, GPU, Disk), Notes, Pomodoro, Living Assistant.
 - **🖱️ Natural Wheel Scroll:** Mouse wheel down = next tab, mouse wheel up = previous tab.
-- **🌐 Full Bilingual Support:** Seamless Turkish and English localization across all cards, alerts, and settings.
+- **🌐 Full Bilingual Support:** Seamless 🇹🇷 Turkish and 🇬🇧 English localization across all cards, alerts, and settings.
 */
 // ==/WindhawkModReadme==
 
@@ -64,9 +66,12 @@
     $name: Language / Dil Seçimi
     $description: Display language for all dashboard cards, health assistant, alerts, and menus. / Tüm panel kartları, sağlık asistanı, uyarılar ve menüler için dil seçimi.
     $options:
-      - auto: Auto (Match Windows System) / Otomatik (Windows Sistem Dili)
-      - tr: Turkish / Türkçe
-      - en: English / İngilizce
+      - auto: 🌐 Auto (Match Windows System) / Otomatik (Windows Sistem Dili)
+      - tr: 🇹🇷 Türkçe (Turkish)
+      - en: 🇬🇧 English (İngilizce)
+  - SuppressSystemToasts: false
+    $name: Suppress Windows Native Toast Popups / Windows Sistem Bildirim Barlarını Gizle
+    $description: Hide default Windows toast banners so all notifications display exclusively in the aegisCapsule island. / Windows'un açılır bildirim pencerelerini gizler; tüm bildirimler yalnızca kapsülde gösterilir.
   $name: General & Language / Genel & Dil
 - Appearance:
   - Position: top-center
@@ -219,18 +224,45 @@
   - EnableWellnessReminders: true
     $name: Living Capsule & Wellness Alerts / Yaşayan Kapsül & Sağlık Uyarıları
     $description: Periodic smart health reminders for hydration, eye rest, and posture. / Su içme, 20-20-20 göz dinlendirme ve mola hatırlatıcıları.
+  - HydrationPreset: '45'
+    $name: Hydration Reminder Timing / Su İçme Hatırlatıcı Aralığı
+    $description: Choose a preset interval or custom timing. / Hazır süre seçin veya özel dakika girin.
+    $options:
+      - '15': 15 min / 15 dakika
+      - '30': 30 min / 30 dakika
+      - '45': 45 min (Standard) / 45 dakika (Standart)
+      - '60': 60 min (1 Hour) / 1 Saat
+      - '90': 90 min (1.5 Hours) / 1.5 Saat
+      - '120': 120 min (2 Hours) / 2 Saat
+      - 'custom': Custom Minutes (below) / Özel Dakika
   - HydrationIntervalMinutes: 45
-    $name: Hydration Reminder Interval (min) / Su İçme Hatırlatıcı Aralığı (dk)
-    $description: Interval in minutes to remind you to drink water (15-180). / Su içme uyarısı periyodu (dakika).
+    $name: Hydration Custom Minutes / Su İçme Özel Dakika (Özel Seçildiğinde)
+    $description: Custom interval in minutes (5-360 min). / Özel su içme periyodu (5-360 dk).
   - EyeRestReminder: true
     $name: 20-20-20 Eye Strain Break / 20-20-20 Göz Dinlendirme Kuralı
-    $description: Reminds you every 20 minutes to look 20 feet away for 20 seconds. / Her 20 dakikada bir 20 saniye uzağa bakma molası verir.
+    $description: Reminds you to look 20 feet away for 20 seconds. / Düzenli aralıklarla 20 saniye uzağa bakma molası verir.
+  - EyeRestMinutes: 20
+    $name: Eye Rest Interval (min) / Göz Dinlendirme Süresi (dk)
+    $description: Interval in minutes (10-60 min). / Göz dinlendirme periyodu (dakika).
   - PostureReminder: true
     $name: Posture & Walk Reminder / Duruş & Yürüyüş Hatırlatıcısı
-    $description: Reminds you to stretch and check posture every 60 minutes. / Her saat başı duruş düzeltme ve esneme uyarısı gösterir.
+    $description: Reminds you to stretch and check posture. / Duruş düzeltme ve esneme uyarısı gösterir.
+  - PosturePreset: '60'
+    $name: Posture Reminder Timing / Duruş & Esneme Süresi
+    $description: Choose a preset interval or custom timing. / Hazır süre seçin veya özel dakika girin.
+    $options:
+      - '30': 30 min / 30 dakika
+      - '45': 45 min / 45 dakika
+      - '60': 60 min (1 Hour) / 1 Saat
+      - '90': 90 min (1.5 Hours) / 1.5 Saat
+      - '120': 120 min (2 Hours) / 2 Saat
+      - 'custom': Custom Minutes (below) / Özel Dakika
+  - PostureIntervalMinutes: 60
+    $name: Posture Custom Minutes / Duruş Özel Dakika (Özel Seçildiğinde)
+    $description: Custom interval in minutes (15-360 min). / Özel duruş esneme periyodu (15-360 dk).
   - UptimeAlertHours: 2
     $name: Continuous PC Uptime Alert (hours) / Sürekli Kullanım Uyarısı (saat)
-    $description: Alert when at PC for extended hours (1-8 hours, 0 to disable). / Bilgisayar başında uzun süre kalındığında uyarı verir (0 = kapalı).
+    $description: Alert when at PC for extended hours (1-12 hours, 0 to disable). / Bilgisayar başında uzun süre kalındığında uyarı verir (0 = kapalı).
   $name: Living Assistant & Health / Akıllı Asistan & Sağlık
 - Tools:
   - PomodoroWorkMinutes: 25
@@ -602,8 +634,13 @@ struct Settings {
     bool enableWellnessReminders = true;
     int hydrationIntervalMinutes = 45;
     bool eyeRestReminder = true;
+    int eyeRestMinutes = 20;
     bool postureReminder = true;
+    int postureIntervalMinutes = 60;
     int uptimeAlertHours = 2;
+
+    // Notifications & Toast Suppression
+    bool suppressSystemToasts = false;
 
     // Productivity & Tools
     int pomodoroWorkMinutes = 25;
@@ -1071,6 +1108,9 @@ void LoadSettings() {
         }
     }
 
+    // Suppress System Toast Popups
+    next.suppressSystemToasts = Wh_GetIntSetting(L"General.SuppressSystemToasts") != 0;
+
     // Position
     const std::wstring position = GetStringSettingCopy(L"Appearance.Position");
     if (EqualsNoCase(position, L"top-left")) next.position = Position::TopLeft;
@@ -1175,12 +1215,54 @@ void LoadSettings() {
 
     // Living Assistant & Wellness
     next.enableWellnessReminders = Wh_GetIntSetting(L"Assistant.EnableWellnessReminders") != 0;
-    const int hydrInt = Wh_GetIntSetting(L"Assistant.HydrationIntervalMinutes");
-    next.hydrationIntervalMinutes = hydrInt > 0 ? hydrInt : 45;
-    next.eyeRestReminder = Wh_GetIntSetting(L"Assistant.EyeRestReminder") != 0;
-    next.postureReminder = Wh_GetIntSetting(L"Assistant.PostureReminder") != 0;
-    const int upAlert = Wh_GetIntSetting(L"Assistant.UptimeAlertHours");
-    next.uptimeAlertHours = upAlert >= 0 ? upAlert : 2;
+
+    // Hydration
+    const std::wstring hydPreset = GetStringSettingCopy(L"Assistant.HydrationPreset");
+    const int localHydOverride = Wh_GetIntValue(L"HydrationIntervalOverride", -1);
+    if (localHydOverride >= 0) {
+        next.hydrationIntervalMinutes = localHydOverride;
+    } else if (!hydPreset.empty() && hydPreset != L"custom") {
+        next.hydrationIntervalMinutes = _wtoi(hydPreset.c_str());
+    } else {
+        const int hydrInt = Wh_GetIntSetting(L"Assistant.HydrationIntervalMinutes");
+        next.hydrationIntervalMinutes = hydrInt > 0 ? hydrInt : 45;
+    }
+
+    // Eye rest
+    const int localEyeOverride = Wh_GetIntValue(L"EyeRestIntervalOverride", -1);
+    if (localEyeOverride >= 0) {
+        next.eyeRestReminder = localEyeOverride > 0;
+        next.eyeRestMinutes = localEyeOverride > 0 ? localEyeOverride : 20;
+    } else {
+        next.eyeRestReminder = Wh_GetIntSetting(L"Assistant.EyeRestReminder") != 0;
+        const int eyeMin = Wh_GetIntSetting(L"Assistant.EyeRestMinutes");
+        next.eyeRestMinutes = eyeMin > 0 ? eyeMin : 20;
+    }
+
+    // Posture
+    const std::wstring postPreset = GetStringSettingCopy(L"Assistant.PosturePreset");
+    const int localPostOverride = Wh_GetIntValue(L"PostureIntervalOverride", -1);
+    if (localPostOverride >= 0) {
+        next.postureReminder = localPostOverride > 0;
+        next.postureIntervalMinutes = localPostOverride > 0 ? localPostOverride : 60;
+    } else {
+        next.postureReminder = Wh_GetIntSetting(L"Assistant.PostureReminder") != 0;
+        if (!postPreset.empty() && postPreset != L"custom") {
+            next.postureIntervalMinutes = _wtoi(postPreset.c_str());
+        } else {
+            const int postInt = Wh_GetIntSetting(L"Assistant.PostureIntervalMinutes");
+            next.postureIntervalMinutes = postInt > 0 ? postInt : 60;
+        }
+    }
+
+    // Uptime Alert
+    const int localUptimeOverride = Wh_GetIntValue(L"UptimeAlertOverride", -1);
+    if (localUptimeOverride >= 0) {
+        next.uptimeAlertHours = localUptimeOverride;
+    } else {
+        const int upAlert = Wh_GetIntSetting(L"Assistant.UptimeAlertHours");
+        next.uptimeAlertHours = upAlert >= 0 ? upAlert : 2;
+    }
 
     // Productivity & Tools
     const int pomWork = Wh_GetIntSetting(L"Tools.PomodoroWorkMinutes");
@@ -2317,6 +2399,16 @@ void UpdatePrivacyIndicators() {
     g_state.system.cameraActive = cam;
 }
 
+void SetSystemToastSuppression(bool suppress) {
+    HKEY hKey = nullptr;
+    if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+                        0, nullptr, 0, KEY_SET_VALUE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+        DWORD val = suppress ? 0 : 1;
+        RegSetValueExW(hKey, L"ToastEnabled", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+        RegCloseKey(hKey);
+    }
+}
+
 bool HttpGet(const std::wstring& host, const std::wstring& path, std::string& responseBody) {
     HINTERNET hSession = WinHttpOpen(L"aegisCapsule/0.0.1", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
                                      WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
@@ -2407,11 +2499,57 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(hPomoMenu, MF_STRING, 93, tr ? L"⏱️ 60 Dakika (Geniş Seans)" : L"⏱️ 60 min (Extended)");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hPomoMenu), tr ? L"🍅 Odaklanma & Pomodoro" : L"🍅 Pomodoro & Focus");
 
-    // Submenu 2: Living Wellness
+    // Submenu 2: Living Wellness & Health
     HMENU hWellnessMenu = CreatePopupMenu();
-    AppendMenuW(hWellnessMenu, MF_STRING, 74, tr ? L"💧 Su İçme Uyarısı Gönder" : L"💧 Hydration Alert Now");
-    AppendMenuW(hWellnessMenu, MF_STRING, 75, tr ? L"👁️ 20-20-20 Göz Dinlendirme Uyarısı" : L"👁️ 20-20-20 Eye Rest Alert");
-    AppendMenuW(hWellnessMenu, MF_STRING, 76, tr ? L"🧘 Duruş & Esneme Uyarısı" : L"🧘 Posture & Stretch Alert");
+    AppendMenuW(hWellnessMenu, MF_STRING, 74, tr ? L"💧 Anlık Su İçme Uyarısı Gönder" : L"💧 Trigger Hydration Alert Now");
+    AppendMenuW(hWellnessMenu, MF_STRING, 75, tr ? L"👁️ Anlık 20-20-20 Göz Molası Gönder" : L"👁️ Trigger 20-20-20 Eye Rest");
+    AppendMenuW(hWellnessMenu, MF_STRING, 76, tr ? L"🧘 Anlık Duruş & Esneme Uyarısı Gönder" : L"🧘 Trigger Posture & Stretch Alert");
+    AppendMenuW(hWellnessMenu, MF_SEPARATOR, 0, nullptr);
+
+    // Hydration Timing Submenu
+    HMENU hHydMenu = CreatePopupMenu();
+    const int curHyd = currentSettings.hydrationIntervalMinutes;
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 15 ? MF_CHECKED : 0), 110, tr ? L"⏱️ 15 Dakika" : L"⏱️ 15 Minutes");
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 30 ? MF_CHECKED : 0), 111, tr ? L"⏱️ 30 Dakika" : L"⏱️ 30 Minutes");
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 45 ? MF_CHECKED : 0), 112, tr ? L"⏱️ 45 Dakika (Standart) ✓" : L"⏱️ 45 Minutes (Standard) ✓");
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 60 ? MF_CHECKED : 0), 113, tr ? L"⏱️ 60 Dakika (1 Saat)" : L"⏱️ 60 Minutes (1 Hour)");
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 90 ? MF_CHECKED : 0), 114, tr ? L"⏱️ 90 Dakika (1.5 Saat)" : L"⏱️ 90 Minutes (1.5 Hours)");
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 120 ? MF_CHECKED : 0), 115, tr ? L"⏱️ 120 Dakika (2 Saat)" : L"⏱️ 120 Minutes (2 Hours)");
+    AppendMenuW(hHydMenu, MF_STRING | (curHyd == 0 ? MF_CHECKED : 0), 116, tr ? L"❌ Hatırlatıcıyı Kapat" : L"❌ Disable Hydration Alert");
+    AppendMenuW(hWellnessMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(hHydMenu), tr ? L"💧 Su İçme Aralığı" : L"💧 Hydration Interval");
+
+    // Eye Rest Timing Submenu
+    HMENU hEyeMenu = CreatePopupMenu();
+    const int curEye = currentSettings.eyeRestReminder ? currentSettings.eyeRestMinutes : 0;
+    AppendMenuW(hEyeMenu, MF_STRING | (curEye == 10 ? MF_CHECKED : 0), 120, tr ? L"⏱️ 10 Dakika" : L"⏱️ 10 Minutes");
+    AppendMenuW(hEyeMenu, MF_STRING | (curEye == 15 ? MF_CHECKED : 0), 121, tr ? L"⏱️ 15 Dakika" : L"⏱️ 15 Minutes");
+    AppendMenuW(hEyeMenu, MF_STRING | (curEye == 20 ? MF_CHECKED : 0), 122, tr ? L"⏱️ 20 Dakika (Standart 20-20-20) ✓" : L"⏱️ 20 Minutes (Standard) ✓");
+    AppendMenuW(hEyeMenu, MF_STRING | (curEye == 30 ? MF_CHECKED : 0), 123, tr ? L"⏱️ 30 Dakika" : L"⏱️ 30 Minutes");
+    AppendMenuW(hEyeMenu, MF_STRING | (curEye == 0 ? MF_CHECKED : 0), 124, tr ? L"❌ Göz Molasını Kapat" : L"❌ Disable Eye Strain Break");
+    AppendMenuW(hWellnessMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(hEyeMenu), tr ? L"👁️ 20-20-20 Göz Dinlendirme" : L"👁️ 20-20-20 Eye Strain Break");
+
+    // Posture Timing Submenu
+    HMENU hPostMenu = CreatePopupMenu();
+    const int curPost = currentSettings.postureReminder ? currentSettings.postureIntervalMinutes : 0;
+    AppendMenuW(hPostMenu, MF_STRING | (curPost == 30 ? MF_CHECKED : 0), 130, tr ? L"⏱️ 30 Dakika" : L"⏱️ 30 Minutes");
+    AppendMenuW(hPostMenu, MF_STRING | (curPost == 45 ? MF_CHECKED : 0), 131, tr ? L"⏱️ 45 Dakika" : L"⏱️ 45 Minutes");
+    AppendMenuW(hPostMenu, MF_STRING | (curPost == 60 ? MF_CHECKED : 0), 132, tr ? L"⏱️ 60 Dakika (1 Saat Standart) ✓" : L"⏱️ 60 Minutes (1 Hour) ✓");
+    AppendMenuW(hPostMenu, MF_STRING | (curPost == 90 ? MF_CHECKED : 0), 133, tr ? L"⏱️ 90 Dakika (1.5 Saat)" : L"⏱️ 90 Minutes (1.5 Hours)");
+    AppendMenuW(hPostMenu, MF_STRING | (curPost == 120 ? MF_CHECKED : 0), 134, tr ? L"⏱️ 120 Dakika (2 Saat)" : L"⏱️ 120 Minutes (2 Hours)");
+    AppendMenuW(hPostMenu, MF_STRING | (curPost == 0 ? MF_CHECKED : 0), 135, tr ? L"❌ Duruş Uyarısını Kapat" : L"❌ Disable Posture Alert");
+    AppendMenuW(hWellnessMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(hPostMenu), tr ? L"🧘 Duruş & Esneme Süresi" : L"🧘 Posture & Stretch Interval");
+
+    // Uptime Alert Submenu
+    HMENU hUpMenu = CreatePopupMenu();
+    const int curUp = currentSettings.uptimeAlertHours;
+    AppendMenuW(hUpMenu, MF_STRING | (curUp == 1 ? MF_CHECKED : 0), 140, tr ? L"⏱️ 1 Saat" : L"⏱️ 1 Hour");
+    AppendMenuW(hUpMenu, MF_STRING | (curUp == 2 ? MF_CHECKED : 0), 141, tr ? L"⏱️ 2 Saat (Standart) ✓" : L"⏱️ 2 Hours (Standard) ✓");
+    AppendMenuW(hUpMenu, MF_STRING | (curUp == 3 ? MF_CHECKED : 0), 142, tr ? L"⏱️ 3 Saat" : L"⏱️ 3 Hours");
+    AppendMenuW(hUpMenu, MF_STRING | (curUp == 4 ? MF_CHECKED : 0), 143, tr ? L"⏱️ 4 Saat" : L"⏱️ 4 Hours");
+    AppendMenuW(hUpMenu, MF_STRING | (curUp == 6 ? MF_CHECKED : 0), 144, tr ? L"⏱️ 6 Saat" : L"⏱️ 6 Hours");
+    AppendMenuW(hUpMenu, MF_STRING | (curUp == 0 ? MF_CHECKED : 0), 145, tr ? L"❌ Oturum Uyarısını Kapat" : L"❌ Disable Uptime Alert");
+    AppendMenuW(hWellnessMenu, MF_POPUP, reinterpret_cast<UINT_PTR>(hUpMenu), tr ? L"⏱️ Uzun Oturum Uyarısı" : L"⏱️ Active PC Session Alert");
+
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hWellnessMenu), tr ? L"🌿 Sağlık & Yaşam Asistanı" : L"🌿 Living Wellness & Health");
 
     // Submenu 3: Quick Notes
@@ -2473,14 +2611,14 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(hShapeMenu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Sharp) ? MF_CHECKED : 0), 43, tr ? L"📐 Keskin Minimal Kutu" : L"📐 Sharp Minimal Box");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hShapeMenu), tr ? L"📐 Kapsül Şekli" : L"📐 Shape & Geometry");
 
-    // Submenu 8: Language
+    // Submenu 8: Language with full flag icons
     HMENU hLangMenu = CreatePopupMenu();
     const int curLang = Wh_GetIntValue(L"LanguageOverride", -1) >= 0
                       ? Wh_GetIntValue(L"LanguageOverride", 0)
                       : static_cast<int>(currentSettings.language);
     AppendMenuW(hLangMenu, MF_STRING | (curLang == 0 ? MF_CHECKED : 0), 100, L"🌐 Otomatik (Sistem Dili) / Auto");
-    AppendMenuW(hLangMenu, MF_STRING | (curLang == 1 ? MF_CHECKED : 0), 101, L"🇹🇷 Türkçe");
-    AppendMenuW(hLangMenu, MF_STRING | (curLang == 2 ? MF_CHECKED : 0), 102, L"🇬🇧 English");
+    AppendMenuW(hLangMenu, MF_STRING | (curLang == 1 ? MF_CHECKED : 0), 101, L"🇹🇷 Türkçe (Turkish)");
+    AppendMenuW(hLangMenu, MF_STRING | (curLang == 2 ? MF_CHECKED : 0), 102, L"🇬🇧 English (İngilizce)");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hLangMenu), tr ? L"🌐 Dil / Language" : L"🌐 Language / Dil");
 
     // Submenu 9: Opacity
@@ -2631,6 +2769,39 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
         case 100: Wh_SetIntValue(L"LanguageOverride", 0); LoadSettings(); g_layoutDirty = true; break;
         case 101: Wh_SetIntValue(L"LanguageOverride", 1); LoadSettings(); g_layoutDirty = true; break;
         case 102: Wh_SetIntValue(L"LanguageOverride", 2); LoadSettings(); g_layoutDirty = true; break;
+
+        // Hydration timing overrides
+        case 110: Wh_SetIntValue(L"HydrationIntervalOverride", 15); LoadSettings(); break;
+        case 111: Wh_SetIntValue(L"HydrationIntervalOverride", 30); LoadSettings(); break;
+        case 112: Wh_SetIntValue(L"HydrationIntervalOverride", 45); LoadSettings(); break;
+        case 113: Wh_SetIntValue(L"HydrationIntervalOverride", 60); LoadSettings(); break;
+        case 114: Wh_SetIntValue(L"HydrationIntervalOverride", 90); LoadSettings(); break;
+        case 115: Wh_SetIntValue(L"HydrationIntervalOverride", 120); LoadSettings(); break;
+        case 116: Wh_SetIntValue(L"HydrationIntervalOverride", 0); LoadSettings(); break;
+
+        // Eye rest timing overrides
+        case 120: Wh_SetIntValue(L"EyeRestIntervalOverride", 10); LoadSettings(); break;
+        case 121: Wh_SetIntValue(L"EyeRestIntervalOverride", 15); LoadSettings(); break;
+        case 122: Wh_SetIntValue(L"EyeRestIntervalOverride", 20); LoadSettings(); break;
+        case 123: Wh_SetIntValue(L"EyeRestIntervalOverride", 30); LoadSettings(); break;
+        case 124: Wh_SetIntValue(L"EyeRestIntervalOverride", 0); LoadSettings(); break;
+
+        // Posture timing overrides
+        case 130: Wh_SetIntValue(L"PostureIntervalOverride", 30); LoadSettings(); break;
+        case 131: Wh_SetIntValue(L"PostureIntervalOverride", 45); LoadSettings(); break;
+        case 132: Wh_SetIntValue(L"PostureIntervalOverride", 60); LoadSettings(); break;
+        case 133: Wh_SetIntValue(L"PostureIntervalOverride", 90); LoadSettings(); break;
+        case 134: Wh_SetIntValue(L"PostureIntervalOverride", 120); LoadSettings(); break;
+        case 135: Wh_SetIntValue(L"PostureIntervalOverride", 0); LoadSettings(); break;
+
+        // Uptime alert overrides
+        case 140: Wh_SetIntValue(L"UptimeAlertOverride", 1); LoadSettings(); break;
+        case 141: Wh_SetIntValue(L"UptimeAlertOverride", 2); LoadSettings(); break;
+        case 142: Wh_SetIntValue(L"UptimeAlertOverride", 3); LoadSettings(); break;
+        case 143: Wh_SetIntValue(L"UptimeAlertOverride", 4); LoadSettings(); break;
+        case 144: Wh_SetIntValue(L"UptimeAlertOverride", 6); LoadSettings(); break;
+        case 145: Wh_SetIntValue(L"UptimeAlertOverride", 0); LoadSettings(); break;
+
         case 40: // Pill
             Wh_SetIntValue(L"CornerStyleOverride", static_cast<int>(CornerStyle::Pill));
             LoadSettings();
@@ -3045,16 +3216,18 @@ class Renderer {
         // 3. Liquid Glass Multi-Layer Optics Pipeline
         if (settings.liquidGlass && target_) {
             const float intensity = Clamp(settings.liquidGlassIntensity, 0.0f, 1.0f);
+            const float iOp = intensity * settingsOpacity_;
 
+            // A. Surface Meniscus Curvature Sheen (Curved vertical droplet reflection)
             if (settings.glassSheen) {
-                const float iOp = intensity * settingsOpacity_;
                 if (!sheenBrush_ || cachedSheenIntensity_ != intensity || cachedSheenOpacity_ != settingsOpacity_) {
-                    D2D1_GRADIENT_STOP stops[3];
-                    stops[0] = {0.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.16f * iOp)};
-                    stops[1] = {0.45f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.03f * iOp)};
-                    stops[2] = {1.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.08f * iOp)};
+                    D2D1_GRADIENT_STOP stops[4];
+                    stops[0] = {0.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.22f * iOp)};
+                    stops[1] = {0.35f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.04f * iOp)};
+                    stops[2] = {0.80f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.02f * iOp)};
+                    stops[3] = {1.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.12f * iOp)};
                     sheenStops_ = nullptr;
-                    if (SUCCEEDED(target_->CreateGradientStopCollection(stops, 3, &sheenStops_))) {
+                    if (SUCCEEDED(target_->CreateGradientStopCollection(stops, 4, &sheenStops_))) {
                         sheenBrush_ = nullptr;
                         target_->CreateLinearGradientBrush(
                             D2D1::LinearGradientBrushProperties(
@@ -3070,33 +3243,27 @@ class Renderer {
                 }
             }
 
+            // B. Animated Organic Liquid Caustic Light Waves
             if (settings.glassCaustics && !settings.lowPowerMode && settings.causticsSpeed > 0.01f) {
                 const float pillW = rect.right - rect.left;
                 if (pillW > 40.0f) {
-                    const float wavePhase = static_cast<float>(std::sin(now * settings.causticsSpeed));
-                    const float waveCenterX = rect.left + pillW * 0.5f + wavePhase * (pillW * 0.35f);
-                    const float waveW = std::min(60.0f, pillW * 0.35f);
+                    const float wavePhase = static_cast<float>(std::sin(now * settings.causticsSpeed * 1.2));
+                    const float waveCenterX = rect.left + pillW * 0.5f + wavePhase * (pillW * 0.38f);
+                    const float waveW = std::min(75.0f, pillW * 0.40f);
 
                     const float sOp = intensity * settingsOpacity_;
-                    if (!shimmerBrush_ || cachedShimmerIntensity_ != intensity || cachedShimmerOpacity_ != settingsOpacity_) {
-                        D2D1_GRADIENT_STOP shimmerStops[3];
-                        shimmerStops[0] = {0.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.0f)};
-                        shimmerStops[1] = {0.5f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.08f * sOp)};
-                        shimmerStops[2] = {1.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.0f)};
-                        shimmerStops_ = nullptr;
-                        if (SUCCEEDED(target_->CreateGradientStopCollection(shimmerStops, 3, &shimmerStops_))) {
-                            shimmerBrush_ = nullptr;
-                            cachedShimmerIntensity_ = intensity;
-                            cachedShimmerOpacity_ = settingsOpacity_;
-                        }
-                    }
-                    if (shimmerStops_) {
+                    D2D1_GRADIENT_STOP shimmerStops[3];
+                    shimmerStops[0] = {0.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.0f)};
+                    shimmerStops[1] = {0.5f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.09f * sOp)};
+                    shimmerStops[2] = {1.0f, D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.0f)};
+                    ComPtr<ID2D1GradientStopCollection> sStops;
+                    if (SUCCEEDED(target_->CreateGradientStopCollection(shimmerStops, 3, &sStops))) {
                         ComPtr<ID2D1LinearGradientBrush> tmpBrush;
                         target_->CreateLinearGradientBrush(
                             D2D1::LinearGradientBrushProperties(
                                 D2D1::Point2F(waveCenterX - waveW, rect.top),
-                                D2D1::Point2F(waveCenterX + waveW, rect.top)),
-                            shimmerStops_.Get(), &tmpBrush);
+                                D2D1::Point2F(waveCenterX + waveW, rect.bottom)),
+                            sStops.Get(), &tmpBrush);
                         if (tmpBrush) {
                             target_->FillRoundedRectangle(D2D1::RoundedRect(rect, radius, radius), tmpBrush.Get());
                         }
@@ -3104,16 +3271,23 @@ class Renderer {
                 }
             }
 
-            // Crisp 1px Top Specular Rim Reflection
+            // C. Crisp Dual Top & Bottom Liquid Surface Specular Rims
             if (settings.glassSpecular && glassGlossBrush_) {
+                // Top rim reflection
                 glassGlossBrush_->SetOpacity(settings.topHighlightOpacity * intensity * settingsOpacity_);
-                D2D1_RECT_F glossLine = D2D1::RectF(rect.left + radius * 0.8f, rect.top + 0.6f,
-                                                    rect.right - radius * 0.8f, rect.top + 1.5f);
-                target_->FillRectangle(glossLine, glassGlossBrush_.Get());
+                D2D1_RECT_F topGloss = D2D1::RectF(rect.left + radius * 0.75f, rect.top + 0.5f,
+                                                  rect.right - radius * 0.75f, rect.top + 1.5f);
+                target_->FillRectangle(topGloss, glassGlossBrush_.Get());
+
+                // Bottom subtle meniscus reflection
+                glassGlossBrush_->SetOpacity(settings.topHighlightOpacity * 0.35f * intensity * settingsOpacity_);
+                D2D1_RECT_F botGloss = D2D1::RectF(rect.left + radius * 0.85f, rect.bottom - 1.5f,
+                                                  rect.right - radius * 0.85f, rect.bottom - 0.5f);
+                target_->FillRectangle(botGloss, glassGlossBrush_.Get());
                 glassGlossBrush_->SetOpacity(1.0f);
             }
 
-            // Sub-Pixel Edge Refraction Border
+            // D. Sub-Pixel Edge Refraction Border
             if (settings.glassRefractionRim && glassBorderBrush_) {
                 target_->DrawRoundedRectangle(
                     D2D1::RoundedRect(D2D1::RectF(rect.left + 0.5f, rect.top + 0.5f,
@@ -3362,24 +3536,63 @@ class Renderer {
         }
     }
 
-    void DrawFittedLine(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale, bool wrap = false) {
+    void DrawCenteredGlyph(const std::wstring& glyph, D2D1_RECT_F badgeRect, IDWriteTextFormat* format, ID2D1Brush* brush, bool isEmoji = true) {
+        if (!target_ || !dwriteFactory_ || !format || !brush || glyph.empty()) return;
+        const float w = badgeRect.right - badgeRect.left;
+        const float h = badgeRect.bottom - badgeRect.top;
+        if (w <= 0.0f || h <= 0.0f) return;
+
+        ComPtr<IDWriteTextLayout> layout;
+        HRESULT hr = dwriteFactory_->CreateTextLayout(glyph.c_str(), static_cast<UINT32>(glyph.length()), format, w, h, &layout);
+        if (SUCCEEDED(hr) && layout) {
+            layout->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            layout->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+            layout->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+            DWRITE_TEXT_METRICS tm = {};
+            layout->GetMetrics(&tm);
+
+            // Compute exact geometric center inside the badge
+            float glyphCenterX = tm.left + tm.width * 0.5f;
+            float glyphCenterY = tm.top + tm.height * 0.5f;
+            float targetCenterX = w * 0.5f;
+            float targetCenterY = h * 0.5f;
+
+            float offsetX = targetCenterX - glyphCenterX;
+            float offsetY = targetCenterY - glyphCenterY;
+
+            // Optical compensation for Segoe UI Emoji glyphs
+            if (isEmoji) {
+                offsetY += 0.5f;
+            }
+
+            D2D1_POINT_2F pt = D2D1::Point2F(badgeRect.left + offsetX, badgeRect.top + offsetY);
+            target_->DrawTextLayout(pt, layout.Get(), brush, isEmoji ? D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT : D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
+    }
+
+    void DrawFittedLine(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale,
+                        DWRITE_TEXT_ALIGNMENT align = DWRITE_TEXT_ALIGNMENT_LEADING,
+                        DWRITE_FONT_WEIGHT weight = DWRITE_FONT_WEIGHT_NORMAL, bool wrap = false) {
         if (text.empty() || !dwriteFactory_ || !target_ || !brush) return;
         float availW = rect.right - rect.left;
         float availH = rect.bottom - rect.top;
-        if (availW <= 10.0f || availH <= 10.0f) return;
+        if (availW <= 4.0f || availH <= 4.0f) return;
 
         float fontSize = baseFontSize * scale;
         ComPtr<IDWriteTextFormat> fmt;
         HRESULT hr = dwriteFactory_->CreateTextFormat(
-            L"Segoe UI Variable Text", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
+            L"Segoe UI Variable Text", nullptr, weight, DWRITE_FONT_STYLE_NORMAL,
             DWRITE_FONT_STRETCH_NORMAL, fontSize, L"", &fmt);
         if (FAILED(hr) || !fmt) return;
 
         if (wrap) {
             fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
+            fmt->SetTextAlignment(align);
             fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
         } else {
             fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            fmt->SetTextAlignment(align);
             fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
             ComPtr<IDWriteTextLayout> layout;
@@ -3389,12 +3602,13 @@ class Renderer {
                 if (SUCCEEDED(layout->GetMetrics(&metrics))) {
                     if (metrics.widthIncludingTrailingWhitespace > availW && metrics.widthIncludingTrailingWhitespace > 1.0f) {
                         float factor = availW / metrics.widthIncludingTrailingWhitespace;
-                        fontSize = std::max(fontSize * factor * 0.96f, 9.5f * scale);
+                        fontSize = std::max(fontSize * factor * 0.95f, 7.5f * scale);
                         dwriteFactory_->CreateTextFormat(
-                            L"Segoe UI Variable Text", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
+                            L"Segoe UI Variable Text", nullptr, weight, DWRITE_FONT_STYLE_NORMAL,
                             DWRITE_FONT_STRETCH_NORMAL, fontSize, L"", &fmt);
                         if (fmt) {
                             fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+                            fmt->SetTextAlignment(align);
                             fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                         }
                     }
@@ -3799,39 +4013,33 @@ class Renderer {
                     boldTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
                 }
             } else if (displayMode == 3 || (settings.showMetricsInIdle && state.system.cpuPercent >= 0)) {
-                // System Telemetry HUD with high contrast and clear icons
-                const float colW = (rect.right - rect.left - 24.0f * scale) / 3.0f;
-                const float d1 = rect.left + 12.0f * scale + colW;
-                const float d2 = rect.left + 12.0f * scale + colW * 2.0f;
+                // System Telemetry HUD with high contrast, precise 3 columns and zero overlap
+                const float pad = 8.0f * scale;
+                const float totalW = (rect.right - rect.left) - pad * 2.0f;
+                const float colW = totalW / 3.0f;
+                const float d1 = rect.left + pad + colW;
+                const float d2 = rect.left + pad + colW * 2.0f;
 
                 ComPtr<ID2D1SolidColorBrush> divider;
                 target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d1 - 0.75f * scale, cy - 6.0f * scale, d1 + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
-                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d2 - 0.75f * scale, cy - 6.0f * scale, d2 + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d1 - 0.5f * scale, cy - 6.0f * scale, d1 + 0.5f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d2 - 0.5f * scale, cy - 6.0f * scale, d2 + 0.5f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
 
-                if (smallTextFormat_) {
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                // Col 1: Time
+                D2D1_RECT_F col1 = D2D1::RectF(rect.left + pad, cy - 10.0f * scale, d1 - 3.0f * scale, cy + 10.0f * scale);
+                DrawFittedLine(timeBuf, col1, textBrush_.Get(), 11.5f, scale, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                    // Col 1: Time
-                    target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
-                                      D2D1::RectF(rect.left + 4.0f * scale, cy - 10.0f * scale, d1 - 2.0f * scale, cy + 10.0f * scale), textBrush_.Get());
+                // Col 2: CPU %
+                wchar_t cpuLabel[32] = {};
+                swprintf_s(cpuLabel, L"CPU %d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
+                D2D1_RECT_F col2 = D2D1::RectF(d1 + 3.0f * scale, cy - 10.0f * scale, d2 - 3.0f * scale, cy + 10.0f * scale);
+                DrawFittedLine(cpuLabel, col2, cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get(), 11.0f, scale, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
-                    // Col 2: CPU %
-                    wchar_t cpuLabel[32] = {};
-                    swprintf_s(cpuLabel, L"CPU %d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
-                    target_->DrawText(cpuLabel, static_cast<UINT32>(wcslen(cpuLabel)), smallTextFormat_.Get(),
-                                      D2D1::RectF(d1 + 2.0f * scale, cy - 10.0f * scale, d2 - 2.0f * scale, cy + 10.0f * scale), cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get());
-
-                    // Col 3: RAM %
-                    wchar_t memLabel[32] = {};
-                    swprintf_s(memLabel, L"RAM %d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
-                    target_->DrawText(memLabel, static_cast<UINT32>(wcslen(memLabel)), smallTextFormat_.Get(),
-                                      D2D1::RectF(d2 + 2.0f * scale, cy - 10.0f * scale, rect.right - 4.0f * scale, cy + 10.0f * scale), orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get());
-
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-                }
+                // Col 3: RAM %
+                wchar_t memLabel[32] = {};
+                swprintf_s(memLabel, L"RAM %d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
+                D2D1_RECT_F col3 = D2D1::RectF(d2 + 3.0f * scale, cy - 10.0f * scale, rect.right - pad, cy + 10.0f * scale);
+                DrawFittedLine(memLabel, col3, orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get(), 11.0f, scale, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
             } else if (displayMode == 4) {
                 // Weather Focus: [ ☀️ Istanbul 28° | 17:09 ]
                 wchar_t weatherLabel[64] = {};
@@ -4571,11 +4779,7 @@ class Renderer {
             textBrush_->SetOpacity(0.95f);
             
             if (iconFormat_) {
-                iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-                iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                target_->DrawText(glyph, static_cast<UINT32>(wcslen(glyph)), iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-                iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+                DrawCenteredGlyph(glyph, badge, iconFormat_.Get(), textBrush_.Get(), false);
             }
             textBrush_->SetOpacity(0.90f);
         }
@@ -4633,7 +4837,7 @@ class Renderer {
         } else {
             textBrush_->SetOpacity(0.95f);
             std::wstring glyph = L"🔔";
-            if (state.notification.title.find(L"Screen") != std::wstring::npos || state.notification.title.find(L"Ekran") != std::wstring::npos || state.notification.title.find(L"Snip") != std::wstring::npos) {
+            if (state.notification.title.find(L"Screen") != std::wstring::npos || state.notification.title.find(L"Ekran") != std::wstring::npos || state.notification.title.find(L"Snip") != std::wstring::npos || state.notification.title.find(L"Alıntı") != std::wstring::npos) {
                 glyph = L"📸";
             } else if (state.notification.title.find(L"Pomodoro") != std::wstring::npos) {
                 glyph = L"🍅";
@@ -4644,15 +4848,9 @@ class Renderer {
             }
 
             if (emojiFormat_) {
-                emojiFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-                emojiFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                target_->DrawText(glyph.c_str(), static_cast<UINT32>(glyph.length()), emojiFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+                DrawCenteredGlyph(glyph, badge, emojiFormat_.Get(), textBrush_.Get(), true);
             } else if (iconFormat_) {
-                iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-                iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                target_->DrawText(L"\uEA8F", 1, iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-                iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-                iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+                DrawCenteredGlyph(L"\uEA8F", badge, iconFormat_.Get(), textBrush_.Get(), false);
             }
         }
 
@@ -4691,11 +4889,7 @@ class Renderer {
         const wchar_t* glyph = muted ? L"\uE74F" : L"\uE993";
         textBrush_->SetOpacity(0.95f);
         if (iconFormat_) {
-            iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-            iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-            target_->DrawText(glyph, static_cast<UINT32>(wcslen(glyph)), iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-            iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+            DrawCenteredGlyph(glyph, badge, iconFormat_.Get(), textBrush_.Get(), false);
         }
 
         const float tx = badge.right + 14;
@@ -4741,7 +4935,9 @@ class Renderer {
         bool isOn = state.capsLock.isNumEvent ? state.capsLock.numOn : state.capsLock.capsOn;
 
         textBrush_->SetOpacity(0.95f);
-        target_->DrawText(glyph, static_cast<UINT32>(wcslen(glyph)), clockFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (clockFormat_) {
+            DrawCenteredGlyph(glyph, badge, clockFormat_.Get(), textBrush_.Get(), false);
+        }
 
         ComPtr<ID2D1SolidColorBrush> ledBrush;
         D2D1_COLOR_F ledColor = isOn ? D2D1::ColorF(0.19f, 0.83f, 0.38f, 1.0f) : D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.22f);
@@ -4770,6 +4966,10 @@ class Renderer {
         ComPtr<ID2D1SolidColorBrush> badgeBg;
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.10f), &badgeBg);
         target_->FillRoundedRectangle(D2D1::RoundedRect(badge, br, br), badgeBg.Get());
+
+        if (iconFormat_) {
+            DrawCenteredGlyph(connected ? L"\uE88E" : L"\uE711", badge, iconFormat_.Get(), textBrush_.Get(), false);
+        }
 
         ComPtr<ID2D1SolidColorBrush> dotBrush;
         D2D1_COLOR_F dotColor = connected ? D2D1::ColorF(0.19f, 0.83f, 0.38f, 1.0f) : D2D1::ColorF(1.0f, 0.27f, 0.22f, 1.0f);
@@ -5625,15 +5825,15 @@ DWORD WINAPI AssistantThreadProc(LPVOID) {
                                tr ? L"Bir bardak su içme ve vücudunuzu nemlendirme vakti!" : L"Time to drink a glass of water and hydrate!", 6.0);
         }
 
-        // 2. 20-20-20 Eye Rest Reminder (every 20 minutes)
-        if (s.eyeRestReminder && (now - lastEyeRestTime >= 20.0 * 60.0)) {
+        // 2. 20-20-20 Eye Rest Reminder
+        if (s.eyeRestReminder && s.eyeRestMinutes > 0 && (now - lastEyeRestTime >= s.eyeRestMinutes * 60.0)) {
             lastEyeRestTime = now;
             TriggerCustomAlert(L"Living Assistant", tr ? L"Göz Dinlendirme (20-20-20) 👁️" : L"Eye Rest (20-20-20) 👁️",
                                tr ? L"Gözlerinizi dinlendirmek için 20 saniye boyunca 6 metre uzağa bakın." : L"Look at something 20 feet away for 20 seconds to relax your eyes.", 6.0);
         }
 
-        // 3. Posture Reminder (every 60 minutes)
-        if (s.postureReminder && (now - lastPostureTime >= 60.0 * 60.0)) {
+        // 3. Posture Reminder
+        if (s.postureReminder && s.postureIntervalMinutes > 0 && (now - lastPostureTime >= s.postureIntervalMinutes * 60.0)) {
             lastPostureTime = now;
             TriggerCustomAlert(L"Living Assistant", tr ? L"Duruş & Esneme 🧘" : L"Posture & Stretch 🧘",
                                tr ? L"Sırtınızı dikleştirin, omuzlarınızı geriye alın ve derin bir nefes alın." : L"Straighten your back, roll your shoulders, and take a deep breath.", 6.0);
@@ -5838,6 +6038,8 @@ void UpdateBatteryMetrics() {
 
 // Windhawk Module Lifecycle
 
+std::atomic<bool> g_modInitialized{false};
+
 void WhTool_ModInit() {
     g_running = true;
     if (!g_stopEvent) g_stopEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
@@ -5847,6 +6049,10 @@ void WhTool_ModInit() {
     else ResetEvent(g_settingsChangedEvent);
 
     LoadSettings();
+    Settings initSettings = GetSettingsSnapshot();
+    if (initSettings.suppressSystemToasts) {
+        SetSystemToastSuppression(true);
+    }
 
     // Clean unregister previous class if lingering
     UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
@@ -5888,6 +6094,8 @@ void WhTool_ModInit() {
 
 void WhTool_ModSettingsChanged() {
     LoadSettings();
+    Settings currentSettings = GetSettingsSnapshot();
+    SetSystemToastSuppression(currentSettings.suppressSystemToasts);
     if (g_hwnd) EnableBlurBehind(g_hwnd);
     if (g_settingsChangedEvent) SetEvent(g_settingsChangedEvent);
     g_layoutDirty = true;
@@ -5897,6 +6105,9 @@ void WhTool_ModUninit() {
     g_running = false;
     if (g_stopEvent) SetEvent(g_stopEvent);
     if (g_settingsChangedEvent) SetEvent(g_settingsChangedEvent);
+
+    // Restore Windows native toast popups on unload
+    SetSystemToastSuppression(false);
 
     if (g_keyboardThreadId) {
         PostThreadMessageW(g_keyboardThreadId, WM_QUIT, 0, 0);
@@ -5914,7 +6125,7 @@ void WhTool_ModUninit() {
 
     for (HANDLE& t : threads) {
         if (t) {
-            WaitForSingleObject(t, 2500);
+            WaitForSingleObject(t, 2000);
             CloseHandle(t);
             t = nullptr;
         }
@@ -5933,6 +6144,7 @@ void WhTool_ModUninit() {
 
     if (g_hwnd) {
         DeregisterShellHookWindow(g_hwnd);
+        SendMessageW(g_hwnd, WM_CLOSE, 0, 0);
         DestroyWindow(g_hwnd);
         g_hwnd = nullptr;
     }
@@ -5953,18 +6165,35 @@ void WhTool_ModUninit() {
     }
 }
 
+void StartMod() {
+    bool expected = false;
+    if (!g_modInitialized.compare_exchange_strong(expected, true)) {
+        return;
+    }
+    WhTool_ModInit();
+}
+
+void StopMod() {
+    bool expected = true;
+    if (!g_modInitialized.compare_exchange_strong(expected, false)) {
+        return;
+    }
+    WhTool_ModUninit();
+}
+
 } // namespace
 
 // Windhawk Entry Points
 
 BOOL Wh_ModInit() {
     Wh_Log(L"aegisCapsule: Initializing module...");
+    StartMod();
     return TRUE;
 }
 
 void Wh_ModAfterInit() {
-    Wh_Log(L"aegisCapsule: Starting overlay engine...");
-    WhTool_ModInit();
+    Wh_Log(L"aegisCapsule: ModAfterInit called.");
+    StartMod();
 }
 
 void Wh_ModSettingsChanged() {
@@ -5974,5 +6203,5 @@ void Wh_ModSettingsChanged() {
 
 void Wh_ModUninit() {
     Wh_Log(L"aegisCapsule: Shutting down module.");
-    WhTool_ModUninit();
+    StopMod();
 }
