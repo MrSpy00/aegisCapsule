@@ -14,46 +14,59 @@
 /*
 # aegisCapsule v0.0.2
 
-A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern Liquid Glass optics, Apple Vision Pro aesthetics, intelligent living assistant, smart voice recorder, quick notes, Pomodoro focus timer, hardware dashboards, media controls, and buttery-smooth physics animations. Built natively with hardware-accelerated Direct2D rendering for an uncompromising 60-240 FPS experience with near-zero CPU usage.
+*Dynamic Liquid Glass Companion & Productivity Capsule for Windows Desktop*  
+*Windows Masaüstü için Yeni Nesil Dinamik Liquid Glass Kapsülü ve Üretkenlik Asistanı*
 
 ---
 
-## 💎 Liquid Glass & Optical Design Engine
-- **Multi-Layer Optics:** Dynamic specular highlights, soft ambient drop shadows, light refraction rims, and subtle animated shimmer caustics.
-- **Pristine Border & Artifact-Free:** Zero halo bleeding, clean sub-pixel anti-aliased glass geometry.
-- **Customizable Corner Geometry:** Switch freely between Full Pill, Vision Squircle, Modern 8px Box, Sharp Minimal Box, or custom radius (0-60px).
-- **Adaptive Accent Illumination:** Dynamic ambient backglow reacting to album artwork or system accent colors.
+## 🇹🇷 Türkçe Açıklama & Özellikler
 
-## 🚀 Living Capsule & Intelligent Modules
-- **Full-Screen Auto-Hide (Tam Ekran Algılama):** Automatically hides completely when games, movies (VLC, YouTube full screen, Netflix), or full-screen apps are active, and seamlessly restores when returning to the desktop.
-- **Dynamic Island Notification Expansion (Bar Genişlemesi):** Smoothly expands capsule width dynamically to show full notification/screenshot text without truncation or marquee clipping.
-- **Living Assistant & Wellness (Sağlık & Mola Asistanı):** Continuous PC uptime tracker, hydration reminders (Su İç), 20-20-20 eye strain breaks, posture and walking alerts.
-- **Smart Voice Recorder (Akıllı Ses Kaydı):** One-click WASAPI microphone recording saving crystal-clear WAV audio to Desktop with live animated waveform in the capsule.
-- **Quick Notes & Scratchpad (Hızlı Notlar):** Instant note taking and viewing directly from the capsule, stored locally in `%APPDATA%\aegisCapsule\notes.txt`.
-- **Pomodoro Productivity Timer (Odak Zamanlayıcı):** 25m Focus / 5m Short Break / 15m Long Break with live circular progress and completion chime.
-- **Real-Time Weather Hub:** Robust JSON parser (no `[` errors), live temp, feels-like, wind, humidity, and condition icons.
-- **6-Tab Expanded Dashboard:** 
-  1. 📅 Calendar & Time
-  2. ☀️ Weather & Atmosphere
-  3. ⚡ Hardware & Game Overlay (FPS, CPU, RAM, GPU, Disk)
-  4. 📝 Quick Notes
-  5. 🍅 Pomodoro Focus Timer
-  6. 🌿 Living Assistant & Wellness
-- **Natural Scroll Wheel:** Fixed natural mouse wheel navigation (Wheel Down = Next Tab, Wheel Up = Previous Tab).
-- **Bilingual Settings:** Full Turkish and English configuration in Windhawk.
+**aegisCapsule**, Apple Vision Pro estetiği ve Liquid Glass optik teknolojisi ile geliştirilmiş, donanım hızlandırmalı (Direct2D/DirectWrite), ultra akıcı ve çok amaçlı bir dinamik masaüstü kapsülüdür. 60-240 FPS aralığında neredeyse sıfır CPU kullanımıyla çalışır.
+
+### ✨ Temel Özellikler
+- **💎 Liquid Glass Optik Motoru:** Çok katmanlı buzlu cam yansımaları, hareketli kaustik ışık dalgaları, çevresel ambiyans aydınlatması ve kristal berraklığında kenar kırılmaları.
+- **🎮 Tam Ekran Otomatik Gizleme (Full-Screen Auto-Hide):** Oyunlarda, tam ekran video oynatıcılarda (YouTube, Netflix, VLC) ve tam ekran uygulamalarda kapsül kendiliğinden tamamen kapanır; masaüstüne dönüldüğünde pürüzsüzce geri gelir.
+- **📢 Dinamik Bildirim Genişlemesi:** Ekran alıntısı, bildirim veya kopyalama işlemlerinde kapsül metnin uzunluğuna göre sağa-sola dinamik olarak genişler; yazılar asla kesilmez.
+- **🌿 Sağlık & Yaşam Asistanı (Living Wellness):** Sürekli PC açık kalma sayacı, düzenli su içme hatırlatıcıları, 20-20-20 göz dinlendirme ve saatlik esneme molaları.
+- **🎙️ Akıllı Ses Kaydedici:** Kapsül üzerinden tek tıkla mikrofon kaydı başlatma, canlı dalga formu görselleştirmesi ve masaüstüne yüksek kaliteli WAV kaydı.
+- **📝 Hızlı Notlar & Karalama:** Panodaki metinleri veya notları anında kapsüle kaydetme ve görüntüleme.
+- **🍅 Pomodoro Odak Sayacı:** 15/25/45/60 dakikalık odaklanma seansları, kısa/uzun molalar ve dairesel ilerleme halkası.
+- **⛅ Canlı Hava Durumu & Atmosfer:** Şehir, sıcaklık, hissedilen, rüzgar, nem ve durum ikonları.
+- **📊 6 Sekmeli Gelişmiş Dashboard:** Takvim & Saat, Hava Durumu, Donanım & Oyun Overlay (FPS, CPU, RAM, GPU, Disk), Hızlı Notlar, Pomodoro, Yaşam Asistanı.
+- **🖱️ Doğal Kaydırma (Natural Scroll):** Fare tekerleği aşağı = Sonraki Sekme, yukarı = Önceki Sekme.
+- **🌐 Çift Dilli Yapı:** Hem Türkçe hem İngilizce tam arayüz ve sağ tık menü desteği.
+
+---
+
+## 🇬🇧 English Description & Features
+
+**aegisCapsule** is an ultra-fluid, hardware-accelerated dynamic capsule companion for Windows, featuring Apple Vision Pro aesthetics, pristine Liquid Glass optics, and an intelligent living assistant.
+
+### ✨ Key Capabilities
+- **💎 Liquid Glass Optical Engine:** Multi-layer frosted glass refractions, animated caustic light waves, ambient accent glow, and crisp specular rim highlights.
+- **🎮 Full-Screen Auto-Hide:** Automatically hides completely when games, full-screen video players (YouTube, Netflix, VLC), or full-screen apps are active. Restores seamlessly upon returning to desktop.
+- **📢 Dynamic Island Notification Expansion:** Dynamically adjusts capsule width to fit notifications, screenshot alerts, and clipboard events with zero clipping.
+- **🌿 Living Assistant & Wellness:** Continuous PC uptime tracking, hydration reminders, 20-20-20 eye strain breaks, and posture stretch alerts.
+- **🎙️ Smart Voice Recorder:** One-click WASAPI microphone recording saving crystal-clear WAV audio to Desktop with live animated audio waveforms.
+- **📝 Quick Notes & Scratchpad:** Instant clipboard note capturing and storage directly on the capsule.
+- **🍅 Pomodoro Productivity Timer:** 15/25/45/60 min focus intervals, short/long breaks, and live circular progress rings.
+- **⛅ Real-Time Weather Hub:** Location-aware temperature, feels-like, wind speed, humidity, and condition glyphs.
+- **📊 6-Tab Expanded Dashboard:** Calendar, Weather, Hardware/Game Overlay (FPS, CPU, RAM, GPU, Disk), Notes, Pomodoro, Living Assistant.
+- **🖱️ Natural Wheel Scroll:** Mouse wheel down = next tab, mouse wheel up = previous tab.
+- **🌐 Full Bilingual Support:** Seamless Turkish and English localization across all cards, alerts, and settings.
 */
 // ==/WindhawkModReadme==
 
 // ==WindhawkModSettings==
 /*
 - General:
-  - Language: 0
+  - Language: auto
     $name: Language / Dil Seçimi
     $description: Display language for all dashboard cards, health assistant, alerts, and menus. / Tüm panel kartları, sağlık asistanı, uyarılar ve menüler için dil seçimi.
     $options:
-      - 0: Auto (Match Windows System) / Otomatik (Windows Sistem Dili)
-      - 1: Turkish / Türkçe
-      - 2: English / İngilizce
+      - auto: Auto (Match Windows System) / Otomatik (Windows Sistem Dili)
+      - tr: Turkish / Türkçe
+      - en: English / İngilizce
   $name: General & Language / Genel & Dil
 - Appearance:
   - Position: top-center
@@ -118,16 +131,16 @@ A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern L
   - CustomCornerRadius: 18
     $name: Custom Corner Radius (px) / Özel Köşe Yarıçapı
     $description: Applied when Corner Roundness is set to Custom. / Şekil 'Özel' seçildiğinde geçerlidir.
-  - IdleDisplayMode: 0
+  - IdleDisplayMode: '0'
     $name: Default Idle Display Style / Varsayılan Bekleme Modu Görünümü
     $description: Choose what the capsule shows by default when collapsed. / Kapsül beklemedeyken varsayılan olarak ne göstereceğini seçin.
     $options:
-      - 0: Smart Dynamic (Auto-adapts to Pomodoro / Weather) / Akıllı Dinamik
-      - 1: Clock & Weather Duo (Centered 50/50 Classic) / Saat ve Hava Durumu
-      - 2: Clock Only (Minimalist Large Time) / Sadece Saat
-      - 3: System Telemetry HUD (Clock + CPU + RAM) / Sistem Durum Bilgisi
-      - 4: Weather & Atmosphere Focus / Hava Durumu Odaklı
-      - 5: Live Pomodoro Focus / Canlı Pomodoro Sayacı
+      - '0': Smart Dynamic (Auto-adapts to Pomodoro / Weather) / Akıllı Dinamik
+      - '1': Clock & Weather Duo (Centered 50/50 Classic) / Saat ve Hava Durumu
+      - '2': Clock Only (Minimalist Large Time) / Sadece Saat
+      - '3': System Telemetry HUD (Clock + CPU + RAM) / Sistem Durum Bilgisi
+      - '4': Weather & Atmosphere Focus / Hava Durumu Odaklı
+      - '5': Live Pomodoro Focus / Canlı Pomodoro Sayacı
   - CollapsedWidth: 200
     $name: Collapsed Idle Width (px) / Kapalı Kapsül Genişliği
     $description: Width of the minimal idle capsule before size scaling. Default is 200. / Standart kapalı kapsül genişliği.
@@ -1039,12 +1052,24 @@ void LoadSettings() {
     Settings next;
 
     // Language
-    const int langSetting = Wh_GetIntSetting(L"General.Language");
     const int localLang = Wh_GetIntValue(L"LanguageOverride", -1);
-    const int effectiveLang = localLang >= 0 ? localLang : langSetting;
-    if (effectiveLang == 1) next.language = Language::Turkish;
-    else if (effectiveLang == 2) next.language = Language::English;
-    else next.language = Language::Auto;
+    if (localLang >= 0) {
+        if (localLang == 1) next.language = Language::Turkish;
+        else if (localLang == 2) next.language = Language::English;
+        else next.language = Language::Auto;
+    } else {
+        std::wstring langStr = GetStringSettingCopy(L"General.Language");
+        if (EqualsNoCase(langStr, L"tr") || EqualsNoCase(langStr, L"1") || EqualsNoCase(langStr, L"turkish")) {
+            next.language = Language::Turkish;
+        } else if (EqualsNoCase(langStr, L"en") || EqualsNoCase(langStr, L"2") || EqualsNoCase(langStr, L"english")) {
+            next.language = Language::English;
+        } else {
+            const int langInt = Wh_GetIntSetting(L"General.Language");
+            if (langInt == 1) next.language = Language::Turkish;
+            else if (langInt == 2) next.language = Language::English;
+            else next.language = Language::Auto;
+        }
+    }
 
     // Position
     const std::wstring position = GetStringSettingCopy(L"Appearance.Position");
@@ -1662,7 +1687,8 @@ DWORD WINAPI RecordingThreadProc(LPVOID) {
             g_state.recording.seconds = static_cast<int>(NowSeconds() - startTime);
         }
 
-        Sleep(15);
+        if (g_stopEvent && WaitForSingleObject(g_stopEvent, 15) == WAIT_OBJECT_0) break;
+        else if (!g_stopEvent) Sleep(15);
     }
 
     audioClient->Stop();
@@ -5350,7 +5376,8 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
             targetFps = 30;
         }
         int frameMs = std::max(1, 1000 / targetFps);
-        Sleep(frameMs);
+        if (g_stopEvent && WaitForSingleObject(g_stopEvent, frameMs) == WAIT_OBJECT_0) break;
+        else if (!g_stopEvent) Sleep(frameMs);
     }
 
     return 0;
@@ -5414,7 +5441,8 @@ DWORD WINAPI MediaThreadProc(LPVOID) {
             }
         } catch (...) {}
 
-        Sleep(500);
+        if (g_stopEvent && WaitForSingleObject(g_stopEvent, 500) == WAIT_OBJECT_0) break;
+        else if (!g_stopEvent) Sleep(500);
     }
     return 0;
 }
@@ -5460,9 +5488,11 @@ DWORD WINAPI AudioThreadProc(LPVOID) {
                 captureClient->ReleaseBuffer(numFramesRead);
             }
         }
-        Sleep(15);
+        if (g_stopEvent && WaitForSingleObject(g_stopEvent, 15) == WAIT_OBJECT_0) break;
+        else if (!g_stopEvent) Sleep(15);
     }
 
+    if (audioClient) audioClient->Stop();
     if (pwfx) CoTaskMemFree(pwfx);
     return 0;
 }
@@ -5558,7 +5588,13 @@ DWORD WINAPI WeatherThreadProc(LPVOID) {
             mins = g_settings.weatherUpdateMinutes;
         }
         DWORD waitMs = static_cast<DWORD>(ClampInt(mins, 5, 60) * 60000);
-        WaitForSingleObject(g_settingsChangedEvent, waitMs);
+        if (g_stopEvent && g_settingsChangedEvent) {
+            HANDLE events[] = { g_stopEvent, g_settingsChangedEvent };
+            DWORD waitRes = WaitForMultipleObjects(2, events, FALSE, waitMs);
+            if (waitRes == WAIT_OBJECT_0) break;
+        } else {
+            Sleep(1000);
+        }
     }
     return 0;
 }
@@ -5572,7 +5608,8 @@ DWORD WINAPI AssistantThreadProc(LPVOID) {
     LoadQuickNotes();
 
     while (g_running) {
-        Sleep(10000);
+        if (g_stopEvent && WaitForSingleObject(g_stopEvent, 10000) == WAIT_OBJECT_0) break;
+        else if (!g_stopEvent) Sleep(1000);
         if (!g_running) break;
 
         Settings s = GetSettingsSnapshot();
@@ -5728,7 +5765,8 @@ DWORD WINAPI NotificationThreadProc(LPVOID) {
                 }
             }
         } catch (...) {}
-        Sleep(3000);
+        if (g_stopEvent && WaitForSingleObject(g_stopEvent, 2000) == WAIT_OBJECT_0) break;
+        else if (!g_stopEvent) Sleep(2000);
     }
     return 0;
 }
@@ -5802,10 +5840,16 @@ void UpdateBatteryMetrics() {
 
 void WhTool_ModInit() {
     g_running = true;
-    g_stopEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-    g_settingsChangedEvent = CreateEventW(nullptr, FALSE, FALSE, nullptr);
+    if (!g_stopEvent) g_stopEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
+    else ResetEvent(g_stopEvent);
+
+    if (!g_settingsChangedEvent) g_settingsChangedEvent = CreateEventW(nullptr, FALSE, FALSE, nullptr);
+    else ResetEvent(g_settingsChangedEvent);
 
     LoadSettings();
+
+    // Clean unregister previous class if lingering
+    UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
 
     WNDCLASSEXW wc = {};
     wc.cbSize = sizeof(wc);
@@ -5815,18 +5859,20 @@ void WhTool_ModInit() {
     wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
     RegisterClassExW(&wc);
 
-    g_hwnd = CreateWindowExW(
-        WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
-        kWindowClass, L"aegisCapsule",
-        WS_POPUP, 0, 0, 520, 140,
-        nullptr, nullptr, wc.hInstance, nullptr);
+    if (!g_hwnd) {
+        g_hwnd = CreateWindowExW(
+            WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+            kWindowClass, L"aegisCapsule",
+            WS_POPUP, 0, 0, 520, 140,
+            nullptr, nullptr, wc.hInstance, nullptr);
 
-    if (g_hwnd) {
-        EnableBlurBehind(g_hwnd);
-        ShowWindow(g_hwnd, SW_SHOWNOACTIVATE);
-        UpdateWindow(g_hwnd);
-        g_shellHookMessage = RegisterWindowMessageW(L"SHELLHOOK");
-        RegisterShellHookWindow(g_hwnd);
+        if (g_hwnd) {
+            EnableBlurBehind(g_hwnd);
+            ShowWindow(g_hwnd, SW_SHOWNOACTIVATE);
+            UpdateWindow(g_hwnd);
+            g_shellHookMessage = RegisterWindowMessageW(L"SHELLHOOK");
+            RegisterShellHookWindow(g_hwnd);
+        }
     }
 
     g_renderThread = CreateThread(nullptr, 0, RenderThreadProc, nullptr, 0, nullptr);
@@ -5843,6 +5889,7 @@ void WhTool_ModInit() {
 void WhTool_ModSettingsChanged() {
     LoadSettings();
     if (g_hwnd) EnableBlurBehind(g_hwnd);
+    if (g_settingsChangedEvent) SetEvent(g_settingsChangedEvent);
     g_layoutDirty = true;
 }
 
@@ -5857,17 +5904,32 @@ void WhTool_ModUninit() {
 
     StopVoiceRecording();
 
-    HANDLE threads[] = {g_renderThread, g_mediaThread, g_audioThread, g_weatherThread, g_assistantThread, g_recordingThread, g_keyboardThread
+    HANDLE threads[] = {
+        g_renderThread, g_mediaThread, g_audioThread, g_weatherThread,
+        g_assistantThread, g_recordingThread, g_keyboardThread
 #if AEGIS_CAPSULE_HAS_USER_NOTIFICATION_LISTENER
-                         , g_notificationThread
+        , g_notificationThread
 #endif
     };
-    for (HANDLE t : threads) {
+
+    for (HANDLE& t : threads) {
         if (t) {
-            WaitForSingleObject(t, 1000);
+            WaitForSingleObject(t, 2500);
             CloseHandle(t);
+            t = nullptr;
         }
     }
+    g_renderThread = nullptr;
+    g_mediaThread = nullptr;
+    g_audioThread = nullptr;
+    g_weatherThread = nullptr;
+    g_assistantThread = nullptr;
+    g_recordingThread = nullptr;
+    g_keyboardThread = nullptr;
+    g_keyboardThreadId = 0;
+#if AEGIS_CAPSULE_HAS_USER_NOTIFICATION_LISTENER
+    g_notificationThread = nullptr;
+#endif
 
     if (g_hwnd) {
         DeregisterShellHookWindow(g_hwnd);
@@ -5877,8 +5939,14 @@ void WhTool_ModUninit() {
 
     UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
 
-    if (g_stopEvent) CloseHandle(g_stopEvent);
-    if (g_settingsChangedEvent) CloseHandle(g_settingsChangedEvent);
+    if (g_stopEvent) {
+        CloseHandle(g_stopEvent);
+        g_stopEvent = nullptr;
+    }
+    if (g_settingsChangedEvent) {
+        CloseHandle(g_settingsChangedEvent);
+        g_settingsChangedEvent = nullptr;
+    }
     if (g_gpuQuery) {
         PdhCloseQuery(g_gpuQuery);
         g_gpuQuery = NULL;
