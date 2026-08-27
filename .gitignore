@@ -8,6 +8,4 @@
 !/.gitignore
 !/LICENSE
 !/README.md
-!/aegisCapsule.cpp
 !/aegis-capsule.cpp
-!/aegis-capsule.wh.cpp
