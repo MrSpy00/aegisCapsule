@@ -6958,16 +6958,20 @@ void UpdateSystemMetrics() {
         g_state.system.memoryPercent = static_cast<int>(mem.dwMemoryLoad);
     }
 
-    // Detect the actual Windows system drive instead of assuming C:\
-    union _ULARGE_INTEGER freeBytes = {}, totalBytes = {};
+    // Detect the actual Windows system drive and query free space using uint64_t to avoid type mismatch
+    uint64_t freeBytes = 0;
+    uint64_t totalBytes = 0;
     wchar_t sysDir[MAX_PATH] = {};
     const wchar_t* diskRoot = L"C:\\"; // fallback
     if (GetWindowsDirectoryW(sysDir, ARRAYSIZE(sysDir)) > 0 && sysDir[0] && sysDir[1] == L':') {
         sysDir[2] = L'\\'; sysDir[3] = L'\0'; // ensure trailing backslash
         diskRoot = sysDir;
     }
-    if (GetDiskFreeSpaceExW(diskRoot, reinterpret_cast<PULARGE_INTEGER>(&freeBytes), reinterpret_cast<PULARGE_INTEGER>(&totalBytes), nullptr) && totalBytes.QuadPart > 0) {
-        int freePct = static_cast<int>(freeBytes.QuadPart * 100 / totalBytes.QuadPart);
+    using GetDiskFreeSpaceExW_t = BOOL(WINAPI*)(LPCWSTR, void*, void*, void*);
+    static auto pGetDiskFreeSpaceExW = reinterpret_cast<GetDiskFreeSpaceExW_t>(
+        GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "GetDiskFreeSpaceExW"));
+    if (pGetDiskFreeSpaceExW && pGetDiskFreeSpaceExW(diskRoot, &freeBytes, &totalBytes, nullptr) && totalBytes > 0) {
+        int freePct = static_cast<int>(freeBytes * 100 / totalBytes);
         std::lock_guard lock(g_stateMutex);
         g_state.system.diskFreePercent = freePct;
     }
