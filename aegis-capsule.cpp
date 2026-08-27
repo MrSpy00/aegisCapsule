@@ -4239,25 +4239,31 @@ class Renderer {
             for (int i = 0; monthName[i]; ++i) monthName[i] = towupper(monthName[i]);
         }
         
-        target_->DrawText(monthName, static_cast<UINT32>(wcslen(monthName)), boldTextFormat_.Get(),
-                           D2D1::RectF(leftBlock.left, leftBlock.top + 6.0f * scale, leftBlock.right, leftBlock.top + 24.0f * scale),
-                           calHeader, D2D1_DRAW_TEXT_OPTIONS_NONE);
+        if (wcslen(monthName) > 0 && boldTextFormat_ && calHeader) {
+            target_->DrawText(monthName, static_cast<UINT32>(wcslen(monthName)), boldTextFormat_.Get(),
+                               D2D1::RectF(leftBlock.left, leftBlock.top + 6.0f * scale, leftBlock.right, leftBlock.top + 24.0f * scale),
+                               calHeader, D2D1_DRAW_TEXT_OPTIONS_NONE);
+        }
 
         wchar_t yearStr[16] = {};
         swprintf_s(yearStr, L"%d", local.wYear);
-        mutedBrush_->SetOpacity(0.45f);
-        target_->DrawText(yearStr, static_cast<UINT32>(wcslen(yearStr)), boldTextFormat_.Get(),
-                           D2D1::RectF(leftBlock.left, leftBlock.top + 20.0f * scale, leftBlock.right, leftBlock.top + 38.0f * scale),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-        mutedBrush_->SetOpacity(1.0f);
+        if (wcslen(yearStr) > 0 && boldTextFormat_ && mutedBrush_) {
+            mutedBrush_->SetOpacity(0.45f);
+            target_->DrawText(yearStr, static_cast<UINT32>(wcslen(yearStr)), boldTextFormat_.Get(),
+                               D2D1::RectF(leftBlock.left, leftBlock.top + 20.0f * scale, leftBlock.right, leftBlock.top + 38.0f * scale),
+                               mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+            mutedBrush_->SetOpacity(1.0f);
+        }
 
         wchar_t dayStr[16] = {};
         swprintf_s(dayStr, L"%d", local.wDay);
-        textBrush_->SetOpacity(0.96f);
-        target_->DrawText(dayStr, static_cast<UINT32>(wcslen(dayStr)), hugeTextFormat_.Get(),
-                           D2D1::RectF(leftBlock.left, leftBlock.top + 32.0f * scale, leftBlock.right, leftBlock.top + 82.0f * scale),
-                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-        textBrush_->SetOpacity(1.0f);
+        if (wcslen(dayStr) > 0 && hugeTextFormat_ && textBrush_) {
+            textBrush_->SetOpacity(0.96f);
+            target_->DrawText(dayStr, static_cast<UINT32>(wcslen(dayStr)), hugeTextFormat_.Get(),
+                               D2D1::RectF(leftBlock.left, leftBlock.top + 32.0f * scale, leftBlock.right, leftBlock.top + 82.0f * scale),
+                               textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+            textBrush_->SetOpacity(1.0f);
+        }
 
         wchar_t weekdayName[32] = {};
         if (!GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"dddd", weekdayName, ARRAYSIZE(weekdayName), nullptr)) {
@@ -4359,12 +4365,11 @@ class Renderer {
         D2D1_RECT_F descRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 108.0f * scale, midX - 10.0f * scale, rect.bottom - 16.0f * scale);
         DrawFittedLine(desc, descRect, mutedBrush_.Get(), 12.5f, scale, false);
 
-        ComPtr<ID2D1SolidColorBrush> divider;
-        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.12f * settingsOpacity_), &divider);
+        ID2D1SolidColorBrush* divB = dividerBrush_ ? dividerBrush_.Get() : textBrush_.Get();
         target_->FillRoundedRectangle(
             D2D1::RoundedRect(D2D1::RectF(midX, rect.top + 24.0f * scale,
                                            midX + 1.5f * scale, rect.bottom - 24.0f * scale),
-                              0.5f * scale, 0.5f * scale), divider.Get());
+                              0.5f * scale, 0.5f * scale), divB);
 
         std::wstring line3 = hasWeather
             ? (tr ? L"💨 Rüzgar: " : L"💨 Wind: ") + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir
@@ -4430,10 +4435,12 @@ class Renderer {
         const float cy = (rect.top + rect.bottom) * 0.5f;
         const float r = std::clamp(totalH * 0.26f, 22.0f * scale, 48.0f * scale);
 
-        // Background Track Ring
-        ComPtr<ID2D1SolidColorBrush> trackBrush;
-        target_->CreateSolidColorBrush(D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.10f * settingsOpacity_), &trackBrush);
-        target_->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cx, cy), r, r), trackBrush.Get(), 5.0f * scale);
+        // Background Track Ring (Reuse whiteBrush_ to avoid per-frame allocation)
+        if (whiteBrush_) {
+            whiteBrush_->SetOpacity(0.10f * settingsOpacity_);
+            target_->DrawEllipse(D2D1::Ellipse(D2D1::Point2F(cx, cy), r, r), whiteBrush_.Get(), 5.0f * scale);
+            whiteBrush_->SetOpacity(1.0f);
+        }
 
         // Progress Arc (360° Smooth Path Geometry)
         float progress = state.pomodoro.totalSeconds > 0 ? static_cast<float>(state.pomodoro.remainingSeconds) / state.pomodoro.totalSeconds : 0.0f;
@@ -4615,7 +4622,13 @@ class Renderer {
                 swprintf_s(timeBuf, L"%d:%02d %s", h12, local.wMinute, ampm);
             }
         } else {
-            GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, timeFlags, &local, nullptr, timeBuf, ARRAYSIZE(timeBuf));
+            if (!GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, timeFlags, &local, nullptr, timeBuf, ARRAYSIZE(timeBuf))) {
+                if (settings.idleClockShowSeconds) {
+                    swprintf_s(timeBuf, L"%02d:%02d:%02d", local.wHour, local.wMinute, local.wSecond);
+                } else {
+                    swprintf_s(timeBuf, L"%02d:%02d", local.wHour, local.wMinute);
+                }
+            }
         }
 
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
@@ -5079,7 +5092,7 @@ class Renderer {
                 if (seconds <= 0.0 || _isnan(seconds)) return L"0:00";
                 int m = static_cast<int>(seconds) / 60;
                 int s = static_cast<int>(seconds) % 60;
-                wchar_t buf[16];
+                wchar_t buf[16] = {};
                 swprintf_s(buf, L"%d:%02d", m, s);
                 return buf;
             };
@@ -5633,13 +5646,17 @@ class Renderer {
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 58, cy - 6);
         mutedBrush_->SetOpacity(0.50f);
         const std::wstring deviceLabel = state.volume.deviceName.empty() ? (tr ? std::wstring(L"Ses Seviyesi") : std::wstring(L"Volume")) : state.volume.deviceName;
-        target_->DrawText(deviceLabel.c_str(), static_cast<UINT32>(deviceLabel.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!deviceLabel.empty() && smallTextFormat_ && mutedBrush_) {
+            target_->DrawText(deviceLabel.c_str(), static_cast<UINT32>(deviceLabel.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
 
         wchar_t value[16] = {};
         if (muted) wcscpy_s(value, ARRAYSIZE(value), tr ? L"Sessiz" : L"Muted");
         else swprintf_s(value, L"%d%%", state.volume.percent);
         D2D1_RECT_F valueRect = D2D1::RectF(rect.right - 58, cy - 22, rect.right - 14, cy - 6);
-        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), smallTextFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (wcslen(value) > 0 && smallTextFormat_ && textBrush_) {
+            target_->DrawText(value, static_cast<UINT32>(wcslen(value)), smallTextFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
         textBrush_->SetOpacity(0.90f);
 
         D2D1_RECT_F track = D2D1::RectF(tx, cy + 2, rect.right - 14, cy + 6);
@@ -5685,12 +5702,16 @@ class Renderer {
 
         const float tx = badge.right + 14;
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 10, rect.right - 44, cy + 10);
-        target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!label.empty() && smallTextFormat_ && textBrush_) {
+            target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
 
         std::wstring status = isOn ? (tr ? L"AÇIK" : L"ON") : (tr ? L"KAPALI" : L"OFF");
         D2D1_RECT_F statusRect = D2D1::RectF(rect.right - 44, cy - 10, rect.right - 14, cy + 10);
         mutedBrush_->SetOpacity(0.80f);
-        target_->DrawText(status.c_str(), static_cast<UINT32>(status.size()), smallTextFormat_.Get(), statusRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!status.empty() && smallTextFormat_ && mutedBrush_) {
+            target_->DrawText(status.c_str(), static_cast<UINT32>(status.size()), smallTextFormat_.Get(), statusRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
     }
 
     void DrawDevice(const SharedState& state, D2D1_RECT_F rect, const Settings& settings) {
@@ -5721,14 +5742,18 @@ class Renderer {
         mutedBrush_->SetOpacity(0.50f);
         std::wstring label = connected ? (tr ? L"Cihaz Bağlandı" : L"Device Connected") : (tr ? L"Cihaz Çıkarıldı" : L"Device Removed");
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 14, cy - 5);
-        target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!label.empty() && smallTextFormat_ && mutedBrush_) {
+            target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
 
         textBrush_->SetOpacity(0.95f);
         const std::wstring& name = state.device.deviceName.empty()
             ? (state.device.isBluetoothLike ? (tr ? std::wstring(L"Bluetooth Cihazı") : std::wstring(L"Bluetooth Device")) : (tr ? std::wstring(L"USB Cihazı") : std::wstring(L"USB Device")))
             : state.device.deviceName;
         D2D1_RECT_F nameRect = D2D1::RectF(tx, cy - 3, rect.right - 14, cy + 17);
-        target_->DrawText(name.c_str(), static_cast<UINT32>(name.size()), textFormat_.Get(), nameRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!name.empty() && textFormat_ && textBrush_) {
+            target_->DrawText(name.c_str(), static_cast<UINT32>(name.size()), textFormat_.Get(), nameRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
         textBrush_->SetOpacity(0.90f);
         mutedBrush_->SetOpacity(0.58f);
     }
@@ -5771,7 +5796,9 @@ class Renderer {
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 14, cy - 6);
         mutedBrush_->SetOpacity(0.50f);
         std::wstring label = state.battery.charging ? (tr ? L"Güç Bağlandı" : L"Power Connected") : (tr ? L"Pil Uyarısı" : L"Battery Alert");
-        target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!label.empty() && smallTextFormat_ && mutedBrush_) {
+            target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
 
         wchar_t value[128] = {};
         if (state.battery.secondsRemaining != BATTERY_LIFE_UNKNOWN && !state.battery.charging) {
@@ -5784,7 +5811,9 @@ class Renderer {
 
         D2D1_RECT_F valueRect = D2D1::RectF(tx, cy - 4, rect.right - 14, cy + 17);
         textBrush_->SetOpacity(0.95f);
-        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (wcslen(value) > 0 && textFormat_ && textBrush_) {
+            target_->DrawText(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
         textBrush_->SetOpacity(0.90f);
     }
 
@@ -5809,12 +5838,16 @@ class Renderer {
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 58, cy - 6);
         mutedBrush_->SetOpacity(0.50f);
         const std::wstring procTitle = state.progress.appName.empty() ? (tr ? std::wstring(L"İşlem Sürüyor") : std::wstring(L"Progress")) : state.progress.appName;
-        target_->DrawText(procTitle.c_str(), static_cast<UINT32>(procTitle.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (!procTitle.empty() && smallTextFormat_ && mutedBrush_) {
+            target_->DrawText(procTitle.c_str(), static_cast<UINT32>(procTitle.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
 
         wchar_t value[16] = {};
         swprintf_s(value, L"%d%%", state.progress.percent);
         D2D1_RECT_F valueRect = D2D1::RectF(rect.right - 58, cy - 22, rect.right - 14, cy - 6);
-        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), smallTextFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (wcslen(value) > 0 && smallTextFormat_ && textBrush_) {
+            target_->DrawText(value, static_cast<UINT32>(wcslen(value)), smallTextFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        }
         textBrush_->SetOpacity(0.90f);
 
         D2D1_RECT_F track = D2D1::RectF(tx, cy + 2, rect.right - 14, cy + 6);
@@ -6926,14 +6959,14 @@ void UpdateSystemMetrics() {
     }
 
     // Detect the actual Windows system drive instead of assuming C:\
-    ULARGE_INTEGER freeBytes, totalBytes;
+    union _ULARGE_INTEGER freeBytes = {}, totalBytes = {};
     wchar_t sysDir[MAX_PATH] = {};
     const wchar_t* diskRoot = L"C:\\"; // fallback
     if (GetWindowsDirectoryW(sysDir, ARRAYSIZE(sysDir)) > 0 && sysDir[0] && sysDir[1] == L':') {
         sysDir[2] = L'\\'; sysDir[3] = L'\0'; // ensure trailing backslash
         diskRoot = sysDir;
     }
-    if (GetDiskFreeSpaceExW(diskRoot, &freeBytes, &totalBytes, nullptr) && totalBytes.QuadPart > 0) {
+    if (GetDiskFreeSpaceExW(diskRoot, reinterpret_cast<PULARGE_INTEGER>(&freeBytes), reinterpret_cast<PULARGE_INTEGER>(&totalBytes), nullptr) && totalBytes.QuadPart > 0) {
         int freePct = static_cast<int>(freeBytes.QuadPart * 100 / totalBytes.QuadPart);
         std::lock_guard lock(g_stateMutex);
         g_state.system.diskFreePercent = freePct;
