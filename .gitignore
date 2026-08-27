@@ -1,0 +1,10 @@
+# Ignore everything by default
+*
+.*
+.omo/
+.vscode/
+
+# Whitelist allowed repository files
+!/.gitignore
+!/README.md
+!/aegisCapsule.cpp
