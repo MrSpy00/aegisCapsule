@@ -46,6 +46,15 @@ A cutting-edge, ultra-fluid desktop dynamic capsule companion featuring modern L
 
 // ==WindhawkModSettings==
 /*
+- General:
+  - Language: 0
+    $name: Language / Dil Seçimi
+    $description: Display language for all dashboard cards, health assistant, alerts, and menus. / Tüm panel kartları, sağlık asistanı, uyarılar ve menüler için dil seçimi.
+    $options:
+      - 0: Auto (Match Windows System) / Otomatik (Windows Sistem Dili)
+      - 1: Turkish / Türkçe
+      - 2: English / İngilizce
+  $name: General & Language / Genel & Dil
 - Appearance:
   - Position: top-center
     $name: Position / Konum
@@ -489,6 +498,19 @@ enum class IslandKind {
     Split,
 };
 
+enum class Language {
+    Auto = 0,
+    Turkish = 1,
+    English = 2,
+};
+
+inline bool IsTurkish(Language lang) {
+    if (lang == Language::Turkish) return true;
+    if (lang == Language::English) return false;
+    LANGID langId = GetUserDefaultUILanguage();
+    return (PRIMARYLANGID(langId) == LANG_TURKISH);
+}
+
 enum class CornerStyle {
     Pill,
     Squircle,
@@ -528,6 +550,7 @@ enum class PomodoroState {
 };
 
 struct Settings {
+    Language language = Language::Auto;
     Position position = Position::TopCenter;
     int targetMonitor = 0;
     bool fullScreenDetection = true;
@@ -1014,6 +1037,14 @@ std::wstring GetStringSettingCopy(PCWSTR name) {
 
 void LoadSettings() {
     Settings next;
+
+    // Language
+    const int langSetting = Wh_GetIntSetting(L"General.Language");
+    const int localLang = Wh_GetIntValue(L"LanguageOverride", -1);
+    const int effectiveLang = localLang >= 0 ? localLang : langSetting;
+    if (effectiveLang == 1) next.language = Language::Turkish;
+    else if (effectiveLang == 2) next.language = Language::English;
+    else next.language = Language::Auto;
 
     // Position
     const std::wstring position = GetStringSettingCopy(L"Appearance.Position");
@@ -2319,106 +2350,124 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     HMENU menu = CreatePopupMenu();
     if (!menu) return;
 
-    AppendMenuW(menu, MF_STRING, 1, L"Dismiss current alert / OSD");
+    Settings currentSettings = GetSettingsSnapshot();
+    bool tr = IsTurkish(currentSettings.language);
+
+    // Root Action 1: Dismiss
+    AppendMenuW(menu, MF_STRING, 1, tr ? L"✕ Uyarıyı / OSD'yi Kapat" : L"✕ Dismiss current alert / OSD");
+    
+    // Root Action 2: Pin / Expand / Game switches
     const int pinned = Wh_GetIntValue(L"PinnedExpanded", 0);
-    AppendMenuW(menu, MF_STRING, 2, pinned ? L"Pinned Expanded: ON ✓" : L"Pinned Expanded: OFF");
+    AppendMenuW(menu, MF_STRING | (pinned ? MF_CHECKED : 0), 2, tr ? (pinned ? L"📌 Kapsülü Açık Sabitle: AÇIK ✓" : L"📌 Kapsülü Açık Sabitle: KAPALI") : (pinned ? L"📌 Pinned Expanded: ON ✓" : L"📌 Pinned Expanded: OFF"));
+
     const int gameOverlayPinned = Wh_GetIntValue(L"GameOverlayPinned", 0);
-    AppendMenuW(menu, MF_STRING, 3, gameOverlayPinned ? L"Game Overlay Mode: ON ✓" : L"Game Overlay Mode: OFF");
+    AppendMenuW(menu, MF_STRING | (gameOverlayPinned ? MF_CHECKED : 0), 3, tr ? (gameOverlayPinned ? L"🎮 Oyun Overlay Modu: AÇIK ✓" : L"🎮 Oyun Overlay Modu: KAPALI") : (gameOverlayPinned ? L"🎮 Game Overlay Mode: ON ✓" : L"🎮 Game Overlay Mode: OFF"));
     
     const int activeExpandOnHover = Wh_GetIntValue(L"ExpandOnHoverOverride", -1) >= 0 
                                   ? Wh_GetIntValue(L"ExpandOnHoverOverride", 0) 
                                   : Wh_GetIntSetting(L"Appearance.ExpandOnHover");
-    AppendMenuW(menu, MF_STRING, 11, activeExpandOnHover ? L"Expand on Hover: ON ✓" : L"Expand on Hover: OFF");
+    AppendMenuW(menu, MF_STRING | (activeExpandOnHover ? MF_CHECKED : 0), 11, tr ? (activeExpandOnHover ? L"👆 Üzerine Gelince Aç: AÇIK ✓" : L"👆 Üzerine Gelince Aç: KAPALI") : (activeExpandOnHover ? L"👆 Expand on Hover: ON ✓" : L"👆 Expand on Hover: OFF"));
 
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
 
-    // Living Assistant & Productivity Tools
-    AppendMenuW(menu, MF_STRING, 70, g_isRecording ? L"🎙️ Voice Recorder: STOP Recording" : L"🎙️ Voice Recorder: START Recording");
-    AppendMenuW(menu, MF_STRING, 71, L"📝 Add Note from Clipboard");
-    AppendMenuW(menu, MF_STRING, 77, L"🗑️ Clear All Notes");
-    AppendMenuW(menu, MF_STRING, 72, L"🍅 Pomodoro: Start / Pause");
-    AppendMenuW(menu, MF_STRING, 73, L"🍅 Pomodoro: Reset");
-    AppendMenuW(menu, MF_STRING, 90, L"⏱️ Pomodoro Work Time: 15 min");
-    AppendMenuW(menu, MF_STRING, 91, L"⏱️ Pomodoro Work Time: 25 min (Standard)");
-    AppendMenuW(menu, MF_STRING, 92, L"⏱️ Pomodoro Work Time: 45 min");
-    AppendMenuW(menu, MF_STRING, 93, L"⏱️ Pomodoro Work Time: 60 min");
-    AppendMenuW(menu, MF_STRING, 74, L"💧 Wellness: Hydration Alert Now");
-    AppendMenuW(menu, MF_STRING, 75, L"👁️ Wellness: 20-20-20 Eye Rest Alert Now");
-    AppendMenuW(menu, MF_STRING, 76, L"🧘 Wellness: Posture & Stretch Alert Now");
+    // Submenu 1: Pomodoro Focus
+    HMENU hPomoMenu = CreatePopupMenu();
+    AppendMenuW(hPomoMenu, MF_STRING, 72, tr ? L"▶️ Başlat / Duraklat" : L"▶️ Start / Pause");
+    AppendMenuW(hPomoMenu, MF_STRING, 73, tr ? L"🔄 Sıfırla" : L"🔄 Reset");
+    AppendMenuW(hPomoMenu, MF_SEPARATOR, 0, nullptr);
+    AppendMenuW(hPomoMenu, MF_STRING, 90, tr ? L"⏱️ 15 Dakika (Hızlı Odak)" : L"⏱️ 15 min (Quick Focus)");
+    AppendMenuW(hPomoMenu, MF_STRING, 91, tr ? L"⏱️ 25 Dakika (Standart)" : L"⏱️ 25 min (Standard)");
+    AppendMenuW(hPomoMenu, MF_STRING, 92, tr ? L"⏱️ 45 Dakika (Derin Çalışma)" : L"⏱️ 45 min (Deep Work)");
+    AppendMenuW(hPomoMenu, MF_STRING, 93, tr ? L"⏱️ 60 Dakika (Geniş Seans)" : L"⏱️ 60 min (Extended)");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hPomoMenu), tr ? L"🍅 Odaklanma & Pomodoro" : L"🍅 Pomodoro & Focus");
 
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+    // Submenu 2: Living Wellness
+    HMENU hWellnessMenu = CreatePopupMenu();
+    AppendMenuW(hWellnessMenu, MF_STRING, 74, tr ? L"💧 Su İçme Uyarısı Gönder" : L"💧 Hydration Alert Now");
+    AppendMenuW(hWellnessMenu, MF_STRING, 75, tr ? L"👁️ 20-20-20 Göz Dinlendirme Uyarısı" : L"👁️ 20-20-20 Eye Rest Alert");
+    AppendMenuW(hWellnessMenu, MF_STRING, 76, tr ? L"🧘 Duruş & Esneme Uyarısı" : L"🧘 Posture & Stretch Alert");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hWellnessMenu), tr ? L"🌿 Sağlık & Yaşam Asistanı" : L"🌿 Living Wellness & Health");
 
-    // Default Idle Display Style
+    // Submenu 3: Quick Notes
+    HMENU hNotesMenu = CreatePopupMenu();
+    AppendMenuW(hNotesMenu, MF_STRING, 71, tr ? L"📋 Panodan Not Ekle" : L"📋 Add Note from Clipboard");
+    AppendMenuW(hNotesMenu, MF_STRING, 77, tr ? L"🗑️ Tüm Notları Temizle" : L"🗑️ Clear All Notes");
+    AppendMenuW(hNotesMenu, MF_STRING, 78, tr ? L"📂 Notlar Dosyasını Aç" : L"📂 Open Notes File");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hNotesMenu), tr ? L"📝 Hızlı Notlar" : L"📝 Quick Notes");
+
+    // Submenu 4: Voice Recorder
+    HMENU hVoiceMenu = CreatePopupMenu();
+    AppendMenuW(hVoiceMenu, MF_STRING, 70, g_isRecording ? (tr ? L"⏹️ Ses Kaydını DURDUR" : L"⏹️ STOP Voice Recording") : (tr ? L"🎙️ Ses Kaydını BAŞLAT" : L"🎙️ START Voice Recording"));
+    AppendMenuW(hVoiceMenu, MF_STRING, 79, tr ? L"📂 Kayıt Klasörünü Aç" : L"📂 Open Recordings Folder");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hVoiceMenu), tr ? L"🎙️ Akıllı Ses Kaydedici" : L"🎙️ Voice Recorder");
+
+    // Submenu 5: Idle Style
+    HMENU hIdleMenu = CreatePopupMenu();
     const int currentIdleStyle = Wh_GetIntValue(L"IdleDisplayModeOverride", -1) >= 0
                                ? Wh_GetIntValue(L"IdleDisplayModeOverride", 0)
-                               : GetSettingsSnapshot().idleDisplayMode;
-    AppendMenuW(menu, MF_STRING | (currentIdleStyle == 0 ? MF_CHECKED : 0), 80, L"Idle Style: Smart Dynamic (Auto)");
-    AppendMenuW(menu, MF_STRING | (currentIdleStyle == 1 ? MF_CHECKED : 0), 81, L"Idle Style: Clock & Weather Duo");
-    AppendMenuW(menu, MF_STRING | (currentIdleStyle == 2 ? MF_CHECKED : 0), 82, L"Idle Style: Minimalist Clock Only");
-    AppendMenuW(menu, MF_STRING | (currentIdleStyle == 3 ? MF_CHECKED : 0), 83, L"Idle Style: System Telemetry HUD (CPU/RAM)");
-    AppendMenuW(menu, MF_STRING | (currentIdleStyle == 4 ? MF_CHECKED : 0), 84, L"Idle Style: Weather & Atmosphere Focus");
-    AppendMenuW(menu, MF_STRING | (currentIdleStyle == 5 ? MF_CHECKED : 0), 85, L"Idle Style: Live Pomodoro Focus");
+                               : currentSettings.idleDisplayMode;
+    AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 0 ? MF_CHECKED : 0), 80, tr ? L"⚡ Akıllı Dinamik (Otomatik)" : L"⚡ Smart Dynamic (Auto)");
+    AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 1 ? MF_CHECKED : 0), 81, tr ? L"⛅ Saat & Hava Durumu İkili" : L"⛅ Clock & Weather Duo");
+    AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 2 ? MF_CHECKED : 0), 82, tr ? L"🕒 Minimalist Sadece Saat" : L"🕒 Minimalist Clock Only");
+    AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 3 ? MF_CHECKED : 0), 83, tr ? L"📊 Sistem Durumu HUD (Saat/CPU/RAM)" : L"📊 System Telemetry HUD");
+    AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 4 ? MF_CHECKED : 0), 84, tr ? L"☀️ Hava Durumu Odaklı" : L"☀️ Weather & Atmosphere Focus");
+    AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 5 ? MF_CHECKED : 0), 85, tr ? L"🍅 Canlı Pomodoro Sayacı" : L"🍅 Live Pomodoro Focus");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hIdleMenu), tr ? L"🖥️ Bekleme Görünümü" : L"🖥️ Idle Display Style");
 
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-
-    // Corner geometry
-    const int currentCorner = Wh_GetIntValue(L"CornerStyleOverride", -1) >= 0
-                            ? Wh_GetIntValue(L"CornerStyleOverride", 0)
-                            : static_cast<int>(GetSettingsSnapshot().cornerStyle);
-    AppendMenuW(menu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Pill) ? MF_CHECKED : 0), 40, L"Shape: Full Pill");
-    AppendMenuW(menu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Squircle) ? MF_CHECKED : 0), 41, L"Shape: Vision Squircle");
-    AppendMenuW(menu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::ModernBox) ? MF_CHECKED : 0), 42, L"Shape: Modern 8px Box");
-    AppendMenuW(menu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Sharp) ? MF_CHECKED : 0), 43, L"Shape: Sharp Minimal Box");
-
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-
-    // Liquid Glass Optics switches
+    // Submenu 6: Themes & Optics
+    HMENU hThemesMenu = CreatePopupMenu();
+    AppendMenuW(hThemesMenu, MF_STRING, 20, L"🖤 OLED Black (Varsayılan / Default)");
+    AppendMenuW(hThemesMenu, MF_STRING, 25, L"💎 Liquid Black Glass");
+    AppendMenuW(hThemesMenu, MF_STRING, 26, L"✨ Liquid Silver Glass");
+    AppendMenuW(hThemesMenu, MF_STRING, 27, L"🌌 Liquid Midnight");
+    AppendMenuW(hThemesMenu, MF_STRING, 28, L"🌠 Liquid Aurora");
+    AppendMenuW(hThemesMenu, MF_STRING, 29, L"🪟 Pure Crystal Glass");
+    AppendMenuW(hThemesMenu, MF_STRING, 22, L"🌊 Midnight Blue");
+    AppendMenuW(hThemesMenu, MF_STRING, 23, L"🔮 Deep Purple");
+    AppendMenuW(hThemesMenu, MF_STRING, 24, L"🪟 Fluent Design");
+    AppendMenuW(hThemesMenu, MF_SEPARATOR, 0, nullptr);
     const int activeLiquidGlass = Wh_GetIntValue(L"LiquidGlassOverride", -1) >= 0
                                 ? Wh_GetIntValue(L"LiquidGlassOverride", 0)
                                 : (Wh_GetIntSetting(L"Optics.LiquidGlass") || Wh_GetIntSetting(L"Themes.LiquidGlass"));
-    AppendMenuW(menu, MF_STRING, 30, activeLiquidGlass ? L"Liquid Glass Optics: ON ✓" : L"Liquid Glass Optics: OFF");
-
+    AppendMenuW(hThemesMenu, MF_STRING | (activeLiquidGlass ? MF_CHECKED : 0), 30, tr ? L"💎 Liquid Glass Efekti" : L"💎 Liquid Glass Optics");
     const int activeAccentGlow = Wh_GetIntValue(L"AccentGlowOverride", -1) >= 0
                                ? Wh_GetIntValue(L"AccentGlowOverride", 0)
                                : (Wh_GetIntSetting(L"Optics.AccentGlow") || Wh_GetIntSetting(L"Themes.AccentGlow"));
-    AppendMenuW(menu, MF_STRING, 31, activeAccentGlow ? L"Ambient Accent Glow: ON ✓" : L"Ambient Accent Glow: OFF");
+    AppendMenuW(hThemesMenu, MF_STRING | (activeAccentGlow ? MF_CHECKED : 0), 31, tr ? L"✨ Çevresel Vurgu Işığı" : L"✨ Ambient Accent Glow");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hThemesMenu), tr ? L"🎨 Temalar & Cam Optikleri" : L"🎨 Themes & Liquid Glass");
 
-    const int activeMetricsInIdle = Wh_GetIntValue(L"ShowMetricsInIdleOverride", -1) >= 0
-                                  ? Wh_GetIntValue(L"ShowMetricsInIdleOverride", 0)
-                                  : Wh_GetIntSetting(L"Modules.ShowMetricsInIdle");
-    AppendMenuW(menu, MF_STRING, 32, activeMetricsInIdle ? L"Show CPU/RAM in Idle: ON ✓" : L"Show CPU/RAM in Idle: OFF");
+    // Submenu 7: Shape
+    HMENU hShapeMenu = CreatePopupMenu();
+    const int currentCorner = Wh_GetIntValue(L"CornerStyleOverride", -1) >= 0
+                            ? Wh_GetIntValue(L"CornerStyleOverride", 0)
+                            : static_cast<int>(currentSettings.cornerStyle);
+    AppendMenuW(hShapeMenu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Pill) ? MF_CHECKED : 0), 40, tr ? L"💊 Tam Yuvarlak Hap (Full Pill)" : L"💊 Full Round Pill");
+    AppendMenuW(hShapeMenu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Squircle) ? MF_CHECKED : 0), 41, L"🔲 Vision Squircle");
+    AppendMenuW(hShapeMenu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::ModernBox) ? MF_CHECKED : 0), 42, tr ? L"📦 Modern 8px Kutu" : L"📦 Modern 8px Box");
+    AppendMenuW(hShapeMenu, MF_STRING | (currentCorner == static_cast<int>(CornerStyle::Sharp) ? MF_CHECKED : 0), 43, tr ? L"📐 Keskin Minimal Kutu" : L"📐 Sharp Minimal Box");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hShapeMenu), tr ? L"📐 Kapsül Şekli" : L"📐 Shape & Geometry");
+
+    // Submenu 8: Language
+    HMENU hLangMenu = CreatePopupMenu();
+    const int curLang = Wh_GetIntValue(L"LanguageOverride", -1) >= 0
+                      ? Wh_GetIntValue(L"LanguageOverride", 0)
+                      : static_cast<int>(currentSettings.language);
+    AppendMenuW(hLangMenu, MF_STRING | (curLang == 0 ? MF_CHECKED : 0), 100, L"🌐 Otomatik (Sistem Dili) / Auto");
+    AppendMenuW(hLangMenu, MF_STRING | (curLang == 1 ? MF_CHECKED : 0), 101, L"🇹🇷 Türkçe");
+    AppendMenuW(hLangMenu, MF_STRING | (curLang == 2 ? MF_CHECKED : 0), 102, L"🇬🇧 English");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hLangMenu), tr ? L"🌐 Dil / Language" : L"🌐 Language / Dil");
+
+    // Submenu 9: Opacity
+    HMENU hOpacityMenu = CreatePopupMenu();
+    AppendMenuW(hOpacityMenu, MF_STRING, 4, L"100% (Opaque)");
+    AppendMenuW(hOpacityMenu, MF_STRING, 5, L"85%");
+    AppendMenuW(hOpacityMenu, MF_STRING, 6, L"70%");
+    AppendMenuW(hOpacityMenu, MF_STRING, 7, L"55%");
+    AppendMenuW(hOpacityMenu, MF_STRING, 8, tr ? L"Sıfırla" : L"Reset to Default");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hOpacityMenu), tr ? L"🔆 Saydamlık" : L"🔆 Transparency");
 
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(menu, MF_STRING, 4, L"Transparency 100%");
-    AppendMenuW(menu, MF_STRING, 5, L"Transparency 85%");
-    AppendMenuW(menu, MF_STRING, 6, L"Transparency 70%");
-    AppendMenuW(menu, MF_STRING, 7, L"Transparency 55%");
-    AppendMenuW(menu, MF_STRING, 8, L"Reset transparency");
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-
-    // Color theme presets
-    AppendMenuW(menu, MF_STRING, 20, L"Theme: OLED Black (default)");
-    AppendMenuW(menu, MF_STRING, 21, L"Theme: Dark Gray");
-    AppendMenuW(menu, MF_STRING, 22, L"Theme: Midnight Blue");
-    AppendMenuW(menu, MF_STRING, 23, L"Theme: Deep Purple");
-    AppendMenuW(menu, MF_STRING, 24, L"Theme: Fluent Design");
-    AppendMenuW(menu, MF_STRING, 25, L"Theme: Liquid Black 💎");
-    AppendMenuW(menu, MF_STRING, 26, L"Theme: Liquid Silver 💎");
-    AppendMenuW(menu, MF_STRING, 27, L"Theme: Liquid Night 💎");
-    AppendMenuW(menu, MF_STRING, 28, L"Theme: Liquid Aurora 💎");
-    AppendMenuW(menu, MF_STRING, 29, L"Theme: Pure Glass (Crystal Clear) 💎");
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(menu, MF_STRING, 50, L"Glass Intensity: 25%");
-    AppendMenuW(menu, MF_STRING, 51, L"Glass Intensity: 50%");
-    AppendMenuW(menu, MF_STRING, 52, L"Glass Intensity: 75%");
-    AppendMenuW(menu, MF_STRING, 53, L"Glass Intensity: 100%");
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(menu, MF_STRING, 60, L"Glow Radius: 16px (Subtle)");
-    AppendMenuW(menu, MF_STRING, 61, L"Glow Radius: 24px (Normal)");
-    AppendMenuW(menu, MF_STRING, 62, L"Glow Radius: 32px (Wide)");
-    AppendMenuW(menu, MF_STRING, 63, L"Glow Radius: 48px (Extra Wide)");
-    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(menu, MF_STRING, 9, L"Open Windhawk settings");
+    AppendMenuW(menu, MF_STRING, 9, tr ? L"⚙️ Windhawk Ayarlarını Aç" : L"⚙️ Open Windhawk settings");
 
     SetForegroundWindow(hwnd);
     const UINT cmd = TrackPopupMenu(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON,
@@ -2437,34 +2486,15 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             Wh_SetIntValue(L"GameOverlayPinned", Wh_GetIntValue(L"GameOverlayPinned", 0) ? 0 : 1);
             g_layoutDirty = true;
             break;
-        case 4:
-            Wh_SetIntValue(L"PillOpacityOverride", 100);
-            LoadSettings();
-            break;
-        case 5:
-            Wh_SetIntValue(L"PillOpacityOverride", 85);
-            LoadSettings();
-            break;
-        case 6:
-            Wh_SetIntValue(L"PillOpacityOverride", 70);
-            LoadSettings();
-            break;
-        case 7:
-            Wh_SetIntValue(L"PillOpacityOverride", 55);
-            LoadSettings();
-            break;
-        case 8:
-            Wh_SetIntValue(L"PillOpacityOverride", -1);
-            LoadSettings();
-            break;
+        case 4: Wh_SetIntValue(L"PillOpacityOverride", 100); LoadSettings(); break;
+        case 5: Wh_SetIntValue(L"PillOpacityOverride", 85); LoadSettings(); break;
+        case 6: Wh_SetIntValue(L"PillOpacityOverride", 70); LoadSettings(); break;
+        case 7: Wh_SetIntValue(L"PillOpacityOverride", 55); LoadSettings(); break;
+        case 8: Wh_SetIntValue(L"PillOpacityOverride", -1); LoadSettings(); break;
         case 9: {
             wchar_t currentProcessPath[MAX_PATH] = {};
             GetModuleFileNameW(nullptr, currentProcessPath, ARRAYSIZE(currentProcessPath));
-
-            HINSTANCE result = ShellExecuteW(nullptr, L"open",
-                                             currentProcessPath,
-                                             nullptr,
-                                             nullptr, SW_SHOWNORMAL);
+            HINSTANCE result = ShellExecuteW(nullptr, L"open", currentProcessPath, nullptr, nullptr, SW_SHOWNORMAL);
             if (reinterpret_cast<INT_PTR>(result) <= 32) {
                 Wh_Log(L"Failed to open Windhawk settings.");
             }
@@ -2482,7 +2512,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
                     if (text) {
                         SaveQuickNote(text);
                         GlobalUnlock(hData);
-                        TriggerCustomAlert(L"Quick Notes", L"Note Saved 📝", text, 3.5);
+                        TriggerCustomAlert(L"Quick Notes", tr ? L"Not Kaydedildi 📝" : L"Note Saved 📝", text, 3.5);
                     }
                 }
                 CloseClipboard();
@@ -2508,20 +2538,30 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             break;
         }
         case 74:
-            TriggerCustomAlert(L"Living Assistant", L"Time to Drink Water 💧", L"Stay hydrated! Take a sip of water and stretch.", 6.0);
+            TriggerCustomAlert(L"Living Assistant", tr ? L"Su İçme Vakti 💧" : L"Time to Drink Water 💧", tr ? L"Vücudunuzu susuz bırakmayın! Bir bardak su için ve biraz esneyin." : L"Stay hydrated! Take a sip of water and stretch.", 6.0);
             break;
         case 75:
-            TriggerCustomAlert(L"Living Assistant", L"20-20-20 Rule 👁️", L"Rest your eyes! Look at something 20 feet away for 20 seconds.", 6.0);
+            TriggerCustomAlert(L"Living Assistant", tr ? L"20-20-20 Kuralı 👁️" : L"20-20-20 Rule 👁️", tr ? L"Gözlerinizi dinlendirin! 20 saniye boyunca 20 fit (6 metre) uzağa bakın." : L"Rest your eyes! Look at something 20 feet away for 20 seconds.", 6.0);
             break;
         case 76:
-            TriggerCustomAlert(L"Living Assistant", L"Posture & Stretch 🧘", L"Stand up, roll your shoulders, and do a quick 30s stretch.", 6.0);
+            TriggerCustomAlert(L"Living Assistant", tr ? L"Duruş & Esneme 🧘" : L"Posture & Stretch 🧘", tr ? L"Ayağa kalkın, omuzlarınızı geriye alın ve derin bir nefes alıp esneyin." : L"Stand up, roll your shoulders, and do a quick 30s stretch.", 6.0);
             break;
         case 77: {
             std::lock_guard lock(g_stateMutex);
             g_state.quickNotes.clear();
             std::wstring path = GetNotesFilePath();
             DeleteFileW(path.c_str());
-            TriggerCustomAlert(L"Quick Notes", L"Notes Cleared 🗑️", L"All notes have been removed.", 3.0);
+            TriggerCustomAlert(L"Quick Notes", tr ? L"Tüm Notlar Temizlendi 🗑️" : L"Notes Cleared 🗑️", tr ? L"Tüm notlarınız başarıyla silindi." : L"All notes have been removed.", 3.0);
+            break;
+        }
+        case 78: {
+            std::wstring path = GetNotesFilePath();
+            ShellExecuteW(nullptr, L"open", path.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+            break;
+        }
+        case 79: {
+            std::wstring folder = GetRecordingsDirectory();
+            ShellExecuteW(nullptr, L"open", folder.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
             break;
         }
         case 80: Wh_SetIntValue(L"IdleDisplayModeOverride", 0); LoadSettings(); g_layoutDirty = true; break;
@@ -2535,7 +2575,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             g_state.pomodoro.state = PomodoroState::Stopped;
             g_state.pomodoro.remainingSeconds = 15 * 60;
             g_state.pomodoro.totalSeconds = 15 * 60;
-            TriggerCustomAlert(L"Pomodoro Timer", L"15 Min Focus Set ⏱️", L"Pomodoro session set to 15 minutes.", 3.0);
+            TriggerCustomAlert(L"Pomodoro Timer", tr ? L"15 Dk Odak Ayarlandı ⏱️" : L"15 Min Focus Set ⏱️", tr ? L"Pomodoro seansı 15 dakikaya ayarlandı." : L"Pomodoro session set to 15 minutes.", 3.0);
             break;
         }
         case 91: {
@@ -2543,7 +2583,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             g_state.pomodoro.state = PomodoroState::Stopped;
             g_state.pomodoro.remainingSeconds = 25 * 60;
             g_state.pomodoro.totalSeconds = 25 * 60;
-            TriggerCustomAlert(L"Pomodoro Timer", L"25 Min Focus Set ⏱️", L"Standard Pomodoro session set to 25 minutes.", 3.0);
+            TriggerCustomAlert(L"Pomodoro Timer", tr ? L"25 Dk Standart Odak ⏱️" : L"25 Min Focus Set ⏱️", tr ? L"Standart 25 dakikalık seans ayarlandı." : L"Standard Pomodoro session set to 25 minutes.", 3.0);
             break;
         }
         case 92: {
@@ -2551,7 +2591,7 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             g_state.pomodoro.state = PomodoroState::Stopped;
             g_state.pomodoro.remainingSeconds = 45 * 60;
             g_state.pomodoro.totalSeconds = 45 * 60;
-            TriggerCustomAlert(L"Pomodoro Timer", L"45 Min Focus Set ⏱️", L"Deep work session set to 45 minutes.", 3.0);
+            TriggerCustomAlert(L"Pomodoro Timer", tr ? L"45 Dk Derin Çalışma ⏱️" : L"45 Min Focus Set ⏱️", tr ? L"45 dakikalık derin odaklanma seansı ayarlandı." : L"Deep work session set to 45 minutes.", 3.0);
             break;
         }
         case 93: {
@@ -2559,9 +2599,12 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
             g_state.pomodoro.state = PomodoroState::Stopped;
             g_state.pomodoro.remainingSeconds = 60 * 60;
             g_state.pomodoro.totalSeconds = 60 * 60;
-            TriggerCustomAlert(L"Pomodoro Timer", L"60 Min Focus Set ⏱️", L"Extended deep work session set to 60 minutes.", 3.0);
+            TriggerCustomAlert(L"Pomodoro Timer", tr ? L"60 Dk Genişletilmiş Odak ⏱️" : L"60 Min Focus Set ⏱️", tr ? L"60 dakikalık uzun çalışma seansı ayarlandı." : L"Extended deep work session set to 60 minutes.", 3.0);
             break;
         }
+        case 100: Wh_SetIntValue(L"LanguageOverride", 0); LoadSettings(); g_layoutDirty = true; break;
+        case 101: Wh_SetIntValue(L"LanguageOverride", 1); LoadSettings(); g_layoutDirty = true; break;
+        case 102: Wh_SetIntValue(L"LanguageOverride", 2); LoadSettings(); g_layoutDirty = true; break;
         case 40: // Pill
             Wh_SetIntValue(L"CornerStyleOverride", static_cast<int>(CornerStyle::Pill));
             LoadSettings();
@@ -3254,16 +3297,99 @@ class Renderer {
         target_->SetTransform(oldTransform);
     }
 
-    static void GetWeatherIconAndText(int code, std::wstring& icon, std::wstring& text) {
+    void DrawFittedTitle(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale) {
+        if (text.empty() || !dwriteFactory_ || !target_ || !brush) return;
+        float availW = rect.right - rect.left;
+        float availH = rect.bottom - rect.top;
+        if (availW <= 10.0f || availH <= 10.0f) return;
+
+        float fontSize = baseFontSize * scale;
+        ComPtr<IDWriteTextFormat> fmt;
+        HRESULT hr = dwriteFactory_->CreateTextFormat(
+            L"Segoe UI Variable Display", nullptr, DWRITE_FONT_WEIGHT_SEMI_BOLD, DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL, fontSize, L"", &fmt);
+        if (FAILED(hr) || !fmt) return;
+
+        fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+        fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+        ComPtr<IDWriteTextLayout> layout;
+        hr = dwriteFactory_->CreateTextLayout(text.c_str(), static_cast<UINT32>(text.length()), fmt.Get(), 2000.0f, availH, &layout);
+        if (SUCCEEDED(hr) && layout) {
+            DWRITE_TEXT_METRICS metrics;
+            if (SUCCEEDED(layout->GetMetrics(&metrics))) {
+                if (metrics.widthIncludingTrailingWhitespace > availW && metrics.widthIncludingTrailingWhitespace > 1.0f) {
+                    float factor = availW / metrics.widthIncludingTrailingWhitespace;
+                    fontSize = std::max(fontSize * factor * 0.96f, 10.0f * scale);
+                    dwriteFactory_->CreateTextFormat(
+                        L"Segoe UI Variable Display", nullptr, DWRITE_FONT_WEIGHT_SEMI_BOLD, DWRITE_FONT_STYLE_NORMAL,
+                        DWRITE_FONT_STRETCH_NORMAL, fontSize, L"", &fmt);
+                    if (fmt) {
+                        fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+                        fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                    }
+                }
+            }
+        }
+        if (fmt) {
+            target_->DrawText(text.c_str(), static_cast<UINT32>(text.length()), fmt.Get(), rect, brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+        }
+    }
+
+    void DrawFittedLine(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale, bool wrap = false) {
+        if (text.empty() || !dwriteFactory_ || !target_ || !brush) return;
+        float availW = rect.right - rect.left;
+        float availH = rect.bottom - rect.top;
+        if (availW <= 10.0f || availH <= 10.0f) return;
+
+        float fontSize = baseFontSize * scale;
+        ComPtr<IDWriteTextFormat> fmt;
+        HRESULT hr = dwriteFactory_->CreateTextFormat(
+            L"Segoe UI Variable Text", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL, fontSize, L"", &fmt);
+        if (FAILED(hr) || !fmt) return;
+
+        if (wrap) {
+            fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
+            fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+        } else {
+            fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+            fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+            ComPtr<IDWriteTextLayout> layout;
+            hr = dwriteFactory_->CreateTextLayout(text.c_str(), static_cast<UINT32>(text.length()), fmt.Get(), 2000.0f, availH, &layout);
+            if (SUCCEEDED(hr) && layout) {
+                DWRITE_TEXT_METRICS metrics;
+                if (SUCCEEDED(layout->GetMetrics(&metrics))) {
+                    if (metrics.widthIncludingTrailingWhitespace > availW && metrics.widthIncludingTrailingWhitespace > 1.0f) {
+                        float factor = availW / metrics.widthIncludingTrailingWhitespace;
+                        fontSize = std::max(fontSize * factor * 0.96f, 9.5f * scale);
+                        dwriteFactory_->CreateTextFormat(
+                            L"Segoe UI Variable Text", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
+                            DWRITE_FONT_STRETCH_NORMAL, fontSize, L"", &fmt);
+                        if (fmt) {
+                            fmt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+                            fmt->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                        }
+                    }
+                }
+            }
+        }
+        if (fmt) {
+            target_->DrawText(text.c_str(), static_cast<UINT32>(text.length()), fmt.Get(), rect, brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+        }
+    }
+
+    static void GetWeatherIconAndText(int code, std::wstring& icon, std::wstring& text, bool isTurkish = false) {
         switch (code) {
-            case 113: icon = L"☀️"; text = L"Sunny"; break;
-            case 116: icon = L"⛅"; text = L"Partly Cloudy"; break;
-            case 119: case 122: icon = L"☁️"; text = L"Cloudy"; break;
-            case 143: case 248: case 260: icon = L"🌫️"; text = L"Foggy"; break;
-            case 200: case 386: case 389: case 392: case 395: icon = L"⛈️"; text = L"Thunderstorm"; break;
-            case 176: case 263: case 266: case 281: case 284: case 293: case 296: case 299: case 302: case 305: case 308: case 311: case 314: case 353: case 356: case 359: icon = L"🌧️"; text = L"Rain"; break;
-            case 179: case 182: case 185: case 227: case 230: case 317: case 320: case 323: case 326: case 329: case 332: case 335: case 338: case 350: case 362: case 365: case 368: case 371: icon = L"❄️"; text = L"Snow"; break;
-            default: icon = L"🌡️"; text = L"Clear"; break;
+            case 113: icon = L"☀️"; text = isTurkish ? L"Güneşli" : L"Sunny"; break;
+            case 116: icon = L"⛅"; text = isTurkish ? L"Parçalı Bulutlu" : L"Partly Cloudy"; break;
+            case 119: case 122: icon = L"☁️"; text = isTurkish ? L"Bulutlu" : L"Cloudy"; break;
+            case 143: case 248: case 260: icon = L"🌫️"; text = isTurkish ? L"Sisli" : L"Foggy"; break;
+            case 200: case 386: case 389: case 392: case 395: icon = L"⛈️"; text = isTurkish ? L"Fırtına" : L"Thunderstorm"; break;
+            case 176: case 263: case 266: case 281: case 284: case 293: case 296: case 299: case 302: case 305: case 308: case 311: case 314: case 353: case 356: case 359: icon = L"🌧️"; text = isTurkish ? L"Yağmurlu" : L"Rain"; break;
+            case 179: case 182: case 185: case 227: case 230: case 317: case 320: case 323: case 326: case 329: case 332: case 335: case 338: case 350: case 362: case 365: case 368: case 371: icon = L"❄️"; text = isTurkish ? L"Karlı" : L"Snow"; break;
+            default: icon = L"🌡️"; text = isTurkish ? L"Açık" : L"Clear"; break;
         }
     }
 
@@ -3374,32 +3500,33 @@ class Renderer {
 
     void DrawWeatherDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now, float scale, bool hasWeather, const std::wstring& wIcon, const std::wstring& wText) {
         (void)now;
+        bool tr = IsTurkish(settings.language);
         wchar_t wTemp[32] = {};
         if (hasWeather) swprintf_s(wTemp, L"%.0f\x00B0", state.weather.temperature);
         else wcscpy_s(wTemp, L"--\x00B0");
 
-        std::wstring city = (hasWeather && !state.weather.city.empty() && state.weather.city != L"[") ? state.weather.city : L"Current Location";
-        std::wstring desc = wText.empty() ? L"Clear" : wText;
+        std::wstring city = (hasWeather && !state.weather.city.empty() && state.weather.city != L"[")
+            ? state.weather.city
+            : (tr ? L"Mevcut Konum" : L"Current Location");
+        std::wstring desc = wText.empty() ? (tr ? L"Açık" : L"Clear") : wText;
 
         const float midX = rect.left + (rect.right - rect.left) * 0.44f;
 
         textBrush_->SetOpacity(0.96f);
-        D2D1_RECT_F cityRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 20.0f * scale, midX - 10.0f * scale, rect.top + 42.0f * scale);
-        target_->DrawText(city.c_str(), static_cast<UINT32>(city.length()), boldTextFormat_.Get(),
-                           cityRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        D2D1_RECT_F cityRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 18.0f * scale, midX - 10.0f * scale, rect.top + 40.0f * scale);
+        DrawFittedTitle(city, cityRect, textBrush_.Get(), 15.0f, scale);
 
-        D2D1_RECT_F iconRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 46.0f * scale, rect.left + 80.0f * scale, rect.top + 106.0f * scale);
+        D2D1_RECT_F iconRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 44.0f * scale, rect.left + 78.0f * scale, rect.top + 104.0f * scale);
         target_->DrawText(wIcon.c_str(), static_cast<UINT32>(wIcon.length()), hugeTextFormat_.Get(),
                            iconRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
                            
-        D2D1_RECT_F tempRect = D2D1::RectF(rect.left + 82.0f * scale, rect.top + 46.0f * scale, midX - 10.0f * scale, rect.top + 106.0f * scale);
+        D2D1_RECT_F tempRect = D2D1::RectF(rect.left + 80.0f * scale, rect.top + 44.0f * scale, midX - 10.0f * scale, rect.top + 104.0f * scale);
         target_->DrawText(wTemp, static_cast<UINT32>(wcslen(wTemp)), hugeTextFormat_.Get(),
                            tempRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         mutedBrush_->SetOpacity(0.85f);
-        D2D1_RECT_F descRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 110.0f * scale, midX - 10.0f * scale, rect.bottom - 16.0f * scale);
-        target_->DrawText(desc.c_str(), static_cast<UINT32>(desc.length()), textFormat_.Get(),
-                           descRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+        D2D1_RECT_F descRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 108.0f * scale, midX - 10.0f * scale, rect.bottom - 16.0f * scale);
+        DrawFittedLine(desc, descRect, mutedBrush_.Get(), 12.5f, scale, false);
 
         ComPtr<ID2D1SolidColorBrush> divider;
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.12f * settingsOpacity_), &divider);
@@ -3408,62 +3535,64 @@ class Renderer {
                                            midX + 1.5f * scale, rect.bottom - 24.0f * scale),
                               0.5f * scale, 0.5f * scale), divider.Get());
 
-        std::wstring line3 = hasWeather ? L"💨 Wind: " + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir : L"💨 Wind: --";
-        std::wstring line4 = hasWeather ? L"🌡️ Feels Like: " + state.weather.feelsLike + L"\x00B0" : L"🌡️ Feels Like: --";
-        std::wstring line5 = hasWeather ? L"💧 Humidity: " + state.weather.humidity + L"%" : L"💧 Humidity: --";
+        std::wstring line3 = hasWeather
+            ? (tr ? L"💨 Rüzgar: " : L"💨 Wind: ") + state.weather.windSpeed + (settings.weatherFahrenheit ? L" mph " : L" km/h ") + state.weather.windDir
+            : (tr ? L"💨 Rüzgar: --" : L"💨 Wind: --");
+        std::wstring line4 = hasWeather
+            ? (tr ? L"🌡️ Hissedilen: " : L"🌡️ Feels Like: ") + state.weather.feelsLike + L"\x00B0"
+            : (tr ? L"🌡️ Hissedilen: --" : L"🌡️ Feels Like: --");
+        std::wstring line5 = hasWeather
+            ? (tr ? L"💧 Nem: " : L"💧 Humidity: ") + state.weather.humidity + L"%"
+            : (tr ? L"💧 Nem: --" : L"💧 Humidity: --");
 
         const float rightX = midX + 18.0f * scale;
         const float rightMaxX = rect.right - 36.0f * scale;
 
-        mutedBrush_->SetOpacity(0.80f);
-        D2D1_RECT_F rightLine3 = D2D1::RectF(rightX, rect.top + 38.0f * scale, rightMaxX, rect.top + 64.0f * scale);
-        target_->DrawText(line3.c_str(), static_cast<UINT32>(line3.length()), textFormat_.Get(),
-                           rightLine3, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        mutedBrush_->SetOpacity(0.85f);
+        D2D1_RECT_F rightLine3 = D2D1::RectF(rightX, rect.top + 36.0f * scale, rightMaxX, rect.top + 62.0f * scale);
+        DrawFittedLine(line3, rightLine3, mutedBrush_.Get(), 12.0f, scale, false);
                            
-        D2D1_RECT_F rightLine4 = D2D1::RectF(rightX, rect.top + 70.0f * scale, rightMaxX, rect.top + 96.0f * scale);
-        target_->DrawText(line4.c_str(), static_cast<UINT32>(line4.length()), textFormat_.Get(),
-                           rightLine4, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        D2D1_RECT_F rightLine4 = D2D1::RectF(rightX, rect.top + 68.0f * scale, rightMaxX, rect.top + 94.0f * scale);
+        DrawFittedLine(line4, rightLine4, mutedBrush_.Get(), 12.0f, scale, false);
                            
-        D2D1_RECT_F rightLine5 = D2D1::RectF(rightX, rect.top + 102.0f * scale, rightMaxX, rect.top + 128.0f * scale);
-        target_->DrawText(line5.c_str(), static_cast<UINT32>(line5.length()), textFormat_.Get(),
-                           rightLine5, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        D2D1_RECT_F rightLine5 = D2D1::RectF(rightX, rect.top + 100.0f * scale, rightMaxX, rect.top + 126.0f * scale);
+        DrawFittedLine(line5, rightLine5, mutedBrush_.Get(), 12.0f, scale, false);
         mutedBrush_->SetOpacity(1.0f);
         textBrush_->SetOpacity(1.0f);
     }
 
-    void DrawNotesDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
+    void DrawNotesDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, float scale) {
+        bool tr = IsTurkish(settings.language);
         textBrush_->SetOpacity(0.96f);
-        D2D1_RECT_F titleRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 16.0f * scale, rect.right - 36.0f * scale, rect.top + 40.0f * scale);
-        if (boldTextFormat_) {
-            boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            target_->DrawText(L"📝 Quick Notes & Scratchpad", 26, boldTextFormat_.Get(),
-                               titleRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-            boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        }
+        D2D1_RECT_F titleRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 14.0f * scale, rect.right - 36.0f * scale, rect.top + 38.0f * scale);
+        std::wstring title = tr ? L"📝 Hızlı Notlar & Karalama" : L"📝 Quick Notes & Scratchpad";
+        DrawFittedTitle(title, titleRect, textBrush_.Get(), 15.0f, scale);
 
         if (state.quickNotes.empty()) {
-            mutedBrush_->SetOpacity(0.65f);
-            target_->DrawText(L"No notes yet. Right click capsule > 'Add Note from Clipboard' to capture your thoughts!", 81, textFormat_.Get(),
-                               D2D1::RectF(rect.left + 24.0f * scale, rect.top + 52.0f * scale, rect.right - 36.0f * scale, rect.bottom - 20.0f * scale),
-                               mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+            mutedBrush_->SetOpacity(0.70f);
+            std::wstring emptyMsg = tr
+                ? L"Henüz not eklenmedi.\nPanodaki metni kaydetmek için kapsüle sağ tıklayın!"
+                : L"No notes yet.\nRight-click capsule > 'Add Note from Clipboard' to capture your thoughts!";
+            D2D1_RECT_F emptyRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 46.0f * scale, rect.right - 36.0f * scale, rect.bottom - 16.0f * scale);
+            DrawFittedLine(emptyMsg, emptyRect, mutedBrush_.Get(), 12.0f, scale, true);
             mutedBrush_->SetOpacity(1.0f);
         } else {
-            float y = rect.top + 48.0f * scale;
+            float y = rect.top + 44.0f * scale;
             size_t count = std::min(state.quickNotes.size(), size_t(3));
             for (size_t i = 0; i < count; ++i) {
                 std::wstring item = L"• " + state.quickNotes[state.quickNotes.size() - 1 - i];
-                textBrush_->SetOpacity(0.88f);
-                target_->DrawText(item.c_str(), static_cast<UINT32>(item.length()), textFormat_.Get(),
-                                   D2D1::RectF(rect.left + 24.0f * scale, y, rect.right - 36.0f * scale, y + 26.0f * scale),
-                                   textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+                textBrush_->SetOpacity(0.90f);
+                D2D1_RECT_F lineRect = D2D1::RectF(rect.left + 24.0f * scale, y, rect.right - 36.0f * scale, y + 26.0f * scale);
+                DrawFittedLine(item, lineRect, textBrush_.Get(), 12.0f, scale, false);
                 y += 28.0f * scale;
             }
         }
         textBrush_->SetOpacity(1.0f);
     }
 
-    void DrawPomodoroDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
-        const float cx = rect.left + 90.0f * scale;
+    void DrawPomodoroDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, float scale) {
+        bool tr = IsTurkish(settings.language);
+        const float cx = rect.left + 85.0f * scale;
         const float cy = (rect.top + rect.bottom) * 0.5f;
         const float r = 44.0f * scale;
 
@@ -3490,62 +3619,63 @@ class Renderer {
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         // Right side info & buttons
-        const float rightLeft = rect.left + 155.0f * scale;
-        const wchar_t* modeName = (state.pomodoro.state == PomodoroState::Working) ? L"🍅 Focus Session" :
-                                  (state.pomodoro.state == PomodoroState::Break) ? L"☕ Short Break" :
-                                  (state.pomodoro.state == PomodoroState::LongBreak) ? L"🌿 Long Break" : L"🍅 Pomodoro Ready";
+        const float rightLeft = rect.left + 148.0f * scale;
+        std::wstring modeName;
+        if (state.pomodoro.state == PomodoroState::Working) modeName = tr ? L"🍅 Odaklanma Seansı" : L"🍅 Focus Session";
+        else if (state.pomodoro.state == PomodoroState::Break) modeName = tr ? L"☕ Kısa Mola" : L"☕ Short Break";
+        else if (state.pomodoro.state == PomodoroState::LongBreak) modeName = tr ? L"🌿 Uzun Mola" : L"🌿 Long Break";
+        else modeName = tr ? L"🍅 Pomodoro Hazır" : L"🍅 Pomodoro Ready";
         
-        if (boldTextFormat_) {
-            boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            target_->DrawText(modeName, static_cast<UINT32>(wcslen(modeName)), boldTextFormat_.Get(),
-                               D2D1::RectF(rightLeft, rect.top + 28.0f * scale, rect.right - 36.0f * scale, rect.top + 54.0f * scale),
-                               textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-            boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+        textBrush_->SetOpacity(0.96f);
+        D2D1_RECT_F modeRect = D2D1::RectF(rightLeft, rect.top + 24.0f * scale, rect.right - 36.0f * scale, rect.top + 48.0f * scale);
+        DrawFittedTitle(modeName, modeRect, textBrush_.Get(), 15.0f, scale);
+
+        wchar_t sessStr[128] = {};
+        if (tr) {
+            swprintf_s(sessStr, L"Tamamlanan: %d seans | Hedef: %d dk", state.pomodoro.completedSessions, settings.pomodoroWorkMinutes);
+        } else {
+            swprintf_s(sessStr, L"Completed: %d sessions | Target: %dm", state.pomodoro.completedSessions, settings.pomodoroWorkMinutes);
         }
+        mutedBrush_->SetOpacity(0.80f);
+        D2D1_RECT_F sessRect = D2D1::RectF(rightLeft, rect.top + 54.0f * scale, rect.right - 36.0f * scale, rect.top + 76.0f * scale);
+        DrawFittedLine(sessStr, sessRect, mutedBrush_.Get(), 11.5f, scale, false);
 
-        wchar_t sessStr[64] = {};
-        swprintf_s(sessStr, L"Completed: %d sessions | Target: 25m", state.pomodoro.completedSessions);
-        mutedBrush_->SetOpacity(0.75f);
-        target_->DrawText(sessStr, static_cast<UINT32>(wcslen(sessStr)), smallTextFormat_.Get(),
-                           D2D1::RectF(rightLeft, rect.top + 58.0f * scale, rect.right - 36.0f * scale, rect.top + 80.0f * scale),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-
-        mutedBrush_->SetOpacity(0.55f);
-        target_->DrawText(L"Click or Right-Click to Start / Pause / Reset", 45, smallTextFormat_.Get(),
-                           D2D1::RectF(rightLeft, rect.top + 90.0f * scale, rect.right - 36.0f * scale, rect.bottom - 16.0f * scale),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+        std::wstring hint = tr ? L"Başlatmak / Duraklatmak için tıklayın" : L"Click or Right-Click to Start / Pause / Reset";
+        mutedBrush_->SetOpacity(0.60f);
+        D2D1_RECT_F hintRect = D2D1::RectF(rightLeft, rect.top + 84.0f * scale, rect.right - 36.0f * scale, rect.bottom - 16.0f * scale);
+        DrawFittedLine(hint, hintRect, mutedBrush_.Get(), 11.0f, scale, true);
         mutedBrush_->SetOpacity(1.0f);
     }
 
-    void DrawAssistantDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
+    void DrawAssistantDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, float scale) {
+        bool tr = IsTurkish(settings.language);
         textBrush_->SetOpacity(0.96f);
-        D2D1_RECT_F titleRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 16.0f * scale, rect.right - 36.0f * scale, rect.top + 40.0f * scale);
-        if (boldTextFormat_) {
-            boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-            target_->DrawText(L"🌿 Living Assistant & Wellness", 29, boldTextFormat_.Get(),
-                               titleRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
-            boldTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-        }
+        D2D1_RECT_F titleRect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 14.0f * scale, rect.right - 36.0f * scale, rect.top + 38.0f * scale);
+        std::wstring title = tr ? L"🌿 Yaşam Asistanı & Sağlık" : L"🌿 Living Assistant & Wellness";
+        DrawFittedTitle(title, titleRect, textBrush_.Get(), 15.0f, scale);
 
         uint64_t uptimeMin = (GetTickCount64() / 1000) / 60;
         uint64_t upHours = uptimeMin / 60;
         uint64_t upM = uptimeMin % 60;
 
         wchar_t line1[128] = {};
-        swprintf_s(line1, L"⏱️ PC Active Session: %llu hr %llu min", upHours, upM);
-        textBrush_->SetOpacity(0.88f);
-        target_->DrawText(line1, static_cast<UINT32>(wcslen(line1)), textFormat_.Get(),
-                           D2D1::RectF(rect.left + 24.0f * scale, rect.top + 46.0f * scale, rect.right - 36.0f * scale, rect.top + 70.0f * scale),
-                           textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        if (tr) {
+            swprintf_s(line1, L"⏱️ PC Açık Kalma: %llu sa %llu dk", upHours, upM);
+        } else {
+            swprintf_s(line1, L"⏱️ PC Active Session: %llu hr %llu min", upHours, upM);
+        }
+        textBrush_->SetOpacity(0.90f);
+        D2D1_RECT_F l1Rect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 44.0f * scale, rect.right - 36.0f * scale, rect.top + 68.0f * scale);
+        DrawFittedLine(line1, l1Rect, textBrush_.Get(), 12.0f, scale, false);
 
-        mutedBrush_->SetOpacity(0.75f);
-        target_->DrawText(L"💧 Hydration: Reminder active (drink water regularly)", 53, textFormat_.Get(),
-                           D2D1::RectF(rect.left + 24.0f * scale, rect.top + 74.0f * scale, rect.right - 36.0f * scale, rect.top + 98.0f * scale),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        std::wstring line2 = tr ? L"💧 Su Takibi: Hatırlatıcı aktif (Düzenli su için)" : L"💧 Hydration: Reminder active (Drink water regularly)";
+        mutedBrush_->SetOpacity(0.80f);
+        D2D1_RECT_F l2Rect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 72.0f * scale, rect.right - 36.0f * scale, rect.top + 96.0f * scale);
+        DrawFittedLine(line2, l2Rect, mutedBrush_.Get(), 12.0f, scale, false);
 
-        target_->DrawText(L"👁️ 20-20-20 Rule: Rest your eyes every 20 min", 46, textFormat_.Get(),
-                           D2D1::RectF(rect.left + 24.0f * scale, rect.top + 102.0f * scale, rect.right - 36.0f * scale, rect.bottom - 16.0f * scale),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        std::wstring line3 = tr ? L"👁️ 20-20-20 Kuralı: Her 20 dk'da bir gözleri dinlendirin" : L"👁️ 20-20-20 Rule: Rest your eyes every 20 min";
+        D2D1_RECT_F l3Rect = D2D1::RectF(rect.left + 24.0f * scale, rect.top + 100.0f * scale, rect.right - 36.0f * scale, rect.bottom - 12.0f * scale);
+        DrawFittedLine(line3, l3Rect, mutedBrush_.Get(), 12.0f, scale, false);
         mutedBrush_->SetOpacity(1.0f);
         textBrush_->SetOpacity(1.0f);
     }
@@ -3557,16 +3687,19 @@ class Renderer {
             case 0: DrawCalendarDashboard(state, rect, settings, now, scale, local); break;
             case 1: DrawWeatherDashboard(state, rect, settings, now, scale, hasWeather, wIcon, wText); break;
             case 2: DrawGameOverlay(state, rect, scale); break;
-            case 3: DrawNotesDashboard(state, rect, scale); break;
-            case 4: DrawPomodoroDashboard(state, rect, scale); break;
+            case 3: DrawNotesDashboard(state, rect, settings, scale); break;
+            case 4: DrawPomodoroDashboard(state, rect, settings, scale); break;
             case 5:
-            default: DrawAssistantDashboard(state, rect, scale); break;
+            default: DrawAssistantDashboard(state, rect, settings, scale); break;
         }
     }
 
     void DrawIdleDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings,
                            double now) {
-        if (settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0) {
+        const float scale = 1.0f;
+        const float width = rect.right - rect.left;
+
+        if (width / scale >= 240.0f && (settings.gameOverlay || Wh_GetIntValue(L"GameOverlayPinned", 0) != 0)) {
             DrawGameOverlay(state, rect, 1.0f);
             return;
         }
@@ -3581,22 +3714,20 @@ class Renderer {
         GetLocalTime(&local);
         wchar_t timeBuf[32] = {};
         GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, &local, nullptr, timeBuf, ARRAYSIZE(timeBuf));
-
-        const float scale = 1.0f;
-        const float width = rect.right - rect.left;
         
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
         std::wstring wText = L"Clear";
         if (hasWeather) {
             wText = state.weather.weatherDesc;
-            GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText);
+            GetWeatherIconAndText(state.weather.weatherCode, wIcon, wText, IsTurkish(settings.language));
         }
 
         if (width / scale < 240.0f) {
             // Collapsed Mode - Rebalanced, perfectly spaced layout
             const float cx = (rect.left + rect.right) * 0.5f;
             const float cy = (rect.top + rect.bottom) * 0.5f;
+            bool tr = IsTurkish(settings.language);
 
             bool pomoActive = (state.pomodoro.state == PomodoroState::Working || state.pomodoro.state == PomodoroState::Break);
             int displayMode = settings.idleDisplayMode;
@@ -3630,7 +3761,6 @@ class Renderer {
                     smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                     smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                     target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(), rightRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
-                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                     smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
                 }
             } else if (displayMode == 2) {
@@ -3643,13 +3773,13 @@ class Renderer {
                     boldTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
                 }
             } else if (displayMode == 3 || (settings.showMetricsInIdle && state.system.cpuPercent >= 0)) {
-                // System Telemetry HUD (3 Balanced Columns: Time | CPU | RAM)
+                // System Telemetry HUD with high contrast and clear icons
                 const float colW = (rect.right - rect.left - 24.0f * scale) / 3.0f;
                 const float d1 = rect.left + 12.0f * scale + colW;
                 const float d2 = rect.left + 12.0f * scale + colW * 2.0f;
 
                 ComPtr<ID2D1SolidColorBrush> divider;
-                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.12f * settingsOpacity_), &divider);
+                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
                 target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d1 - 0.75f * scale, cy - 6.0f * scale, d1 + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
                 target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(d2 - 0.75f * scale, cy - 6.0f * scale, d2 + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
 
@@ -3657,24 +3787,52 @@ class Renderer {
                     smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
                     smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
+                    // Col 1: Time
                     target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
-                                      D2D1::RectF(rect.left + 6.0f * scale, cy - 10.0f * scale, d1 - 3.0f * scale, cy + 10.0f * scale), textBrush_.Get());
+                                      D2D1::RectF(rect.left + 4.0f * scale, cy - 10.0f * scale, d1 - 2.0f * scale, cy + 10.0f * scale), textBrush_.Get());
 
-                    wchar_t cpuLabel[16] = {};
-                    swprintf_s(cpuLabel, L"C:%d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
+                    // Col 2: CPU %
+                    wchar_t cpuLabel[32] = {};
+                    swprintf_s(cpuLabel, L"CPU %d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
                     target_->DrawText(cpuLabel, static_cast<UINT32>(wcslen(cpuLabel)), smallTextFormat_.Get(),
-                                      D2D1::RectF(d1 + 3.0f * scale, cy - 10.0f * scale, d2 - 3.0f * scale, cy + 10.0f * scale), accentBrush_.Get());
+                                      D2D1::RectF(d1 + 2.0f * scale, cy - 10.0f * scale, d2 - 2.0f * scale, cy + 10.0f * scale), cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get());
 
-                    wchar_t memLabel[16] = {};
-                    swprintf_s(memLabel, L"R:%d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
+                    // Col 3: RAM %
+                    wchar_t memLabel[32] = {};
+                    swprintf_s(memLabel, L"RAM %d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
                     target_->DrawText(memLabel, static_cast<UINT32>(wcslen(memLabel)), smallTextFormat_.Get(),
-                                      D2D1::RectF(d2 + 3.0f * scale, cy - 10.0f * scale, rect.right - 6.0f * scale, cy + 10.0f * scale), mutedBrush_.Get());
+                                      D2D1::RectF(d2 + 2.0f * scale, cy - 10.0f * scale, rect.right - 4.0f * scale, cy + 10.0f * scale), orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get());
 
                     smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                     smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
                 }
+            } else if (displayMode == 4) {
+                // Weather Focus: [ ☀️ Istanbul 28° | 17:09 ]
+                wchar_t weatherLabel[64] = {};
+                std::wstring locName = (!state.weather.city.empty() && state.weather.city != L"[") ? state.weather.city : (tr ? L"Hava" : L"Weather");
+                if (hasWeather) swprintf_s(weatherLabel, L"%s %s %.0f\x00B0", wIcon.c_str(), locName.c_str(), state.weather.temperature);
+                else swprintf_s(weatherLabel, L"☀️ %s 24\x00B0", locName.c_str());
+
+                D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 10.0f * scale, cy - 10.0f * scale, cx - 6.0f * scale, cy + 10.0f * scale);
+                if (smallTextFormat_) {
+                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                    target_->DrawText(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), smallTextFormat_.Get(), leftRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+                }
+
+                ComPtr<ID2D1SolidColorBrush> divider;
+                target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
+                target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.75f * scale, cy - 6.0f * scale, cx + 0.75f * scale, cy + 6.0f * scale), 0.5f * scale, 0.5f * scale), divider.Get());
+
+                D2D1_RECT_F rightRect = D2D1::RectF(cx + 6.0f * scale, cy - 10.0f * scale, rect.right - 10.0f * scale, cy + 10.0f * scale);
+                if (smallTextFormat_) {
+                    smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+                    target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(), rightRect, textBrush_.Get());
+                    smallTextFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+                }
             } else {
-                // Classic 50/50 Duo: [ Time | Weather ] (Mode 0 / 1)
+                // Classic 50/50 Duo: [ Time | Weather ] (Style 0 & 1)
                 D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 10.0f * scale, cy - 10.0f * scale, cx - 8.0f * scale, cy + 10.0f * scale);
                 if (smallTextFormat_) {
                     smallTextFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
@@ -4460,6 +4618,8 @@ class Renderer {
             }
 
             if (emojiFormat_) {
+                emojiFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+                emojiFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
                 target_->DrawText(glyph.c_str(), static_cast<UINT32>(glyph.length()), emojiFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
             } else if (iconFormat_) {
                 iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
@@ -5091,7 +5251,8 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
         }
 
         bool pinned = Wh_GetIntValue(L"PinnedExpanded", 0) != 0;
-        bool expand = (isHover && settings.expandOnHover) || pinned;
+        bool isGameOverlayPinned = Wh_GetIntValue(L"GameOverlayPinned", 0) != 0;
+        bool expand = (isHover && settings.expandOnHover) || pinned || isGameOverlayPinned;
 
         Activity primary;
         primary.kind = primaryKind;
@@ -5134,17 +5295,18 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
                     g_state.pomodoro.lastTick = now;
                     g_state.pomodoro.remainingSeconds -= elapsed;
                     if (g_state.pomodoro.remainingSeconds <= 0) {
+                        bool tr = IsTurkish(settings.language);
                         if (g_state.pomodoro.state == PomodoroState::Working) {
                             g_state.pomodoro.completedSessions++;
                             g_state.pomodoro.state = PomodoroState::Break;
                             g_state.pomodoro.remainingSeconds = settings.pomodoroBreakMinutes * 60;
                             g_state.pomodoro.totalSeconds = settings.pomodoroBreakMinutes * 60;
-                            TriggerCustomAlert(L"Pomodoro Focus", L"Session Complete! 🎉", L"Time for a break. Great work!", 6.0);
+                            TriggerCustomAlert(L"Pomodoro Focus", tr ? L"Odaklanma Seansı Bitti! 🎉" : L"Session Complete! 🎉", tr ? L"Mola zamanı. Harika iş çıkardınız!" : L"Time for a break. Great work!", 6.0);
                         } else {
                             g_state.pomodoro.state = PomodoroState::Working;
                             g_state.pomodoro.remainingSeconds = settings.pomodoroWorkMinutes * 60;
                             g_state.pomodoro.totalSeconds = settings.pomodoroWorkMinutes * 60;
-                            TriggerCustomAlert(L"Pomodoro Focus", L"Break Finished 🍅", L"Ready to focus again? Let's go!", 6.0);
+                            TriggerCustomAlert(L"Pomodoro Focus", tr ? L"Mola Bitti 🍅" : L"Break Finished 🍅", tr ? L"Tekrar odaklanmaya hazır mısınız? Başlayalım!" : L"Ready to focus again? Let's go!", 6.0);
                         }
                     }
                 }
@@ -5417,23 +5579,27 @@ DWORD WINAPI AssistantThreadProc(LPVOID) {
         if (!s.enableWellnessReminders) continue;
 
         double now = NowSeconds();
+        bool tr = IsTurkish(s.language);
 
         // 1. Hydration Reminder
         if (s.hydrationIntervalMinutes > 0 && (now - lastHydrationTime >= s.hydrationIntervalMinutes * 60.0)) {
             lastHydrationTime = now;
-            TriggerCustomAlert(L"Living Assistant", L"Hydration Check 💧", L"Time to drink a glass of water and hydrate!", 6.0);
+            TriggerCustomAlert(L"Living Assistant", tr ? L"Su İçme Kontrolü 💧" : L"Hydration Check 💧",
+                               tr ? L"Bir bardak su içme ve vücudunuzu nemlendirme vakti!" : L"Time to drink a glass of water and hydrate!", 6.0);
         }
 
         // 2. 20-20-20 Eye Rest Reminder (every 20 minutes)
         if (s.eyeRestReminder && (now - lastEyeRestTime >= 20.0 * 60.0)) {
             lastEyeRestTime = now;
-            TriggerCustomAlert(L"Living Assistant", L"Eye Rest (20-20-20) 👁️", L"Look at something 20 feet away for 20 seconds to relax your eyes.", 6.0);
+            TriggerCustomAlert(L"Living Assistant", tr ? L"Göz Dinlendirme (20-20-20) 👁️" : L"Eye Rest (20-20-20) 👁️",
+                               tr ? L"Gözlerinizi dinlendirmek için 20 saniye boyunca 6 metre uzağa bakın." : L"Look at something 20 feet away for 20 seconds to relax your eyes.", 6.0);
         }
 
         // 3. Posture Reminder (every 60 minutes)
         if (s.postureReminder && (now - lastPostureTime >= 60.0 * 60.0)) {
             lastPostureTime = now;
-            TriggerCustomAlert(L"Living Assistant", L"Posture & Stretch 🧘", L"Straighten your back, roll your shoulders, and take a deep breath.", 6.0);
+            TriggerCustomAlert(L"Living Assistant", tr ? L"Duruş & Esneme 🧘" : L"Posture & Stretch 🧘",
+                               tr ? L"Sırtınızı dikleştirin, omuzlarınızı geriye alın ve derin bir nefes alın." : L"Straighten your back, roll your shoulders, and take a deep breath.", 6.0);
         }
 
         // 4. Long Continuous PC Session Uptime Alert
@@ -5442,8 +5608,12 @@ DWORD WINAPI AssistantThreadProc(LPVOID) {
             if (uptimeHours >= static_cast<uint64_t>(s.uptimeAlertHours)) {
                 lastUptimeAlertTime = now;
                 wchar_t upMsg[128] = {};
-                swprintf_s(upMsg, L"You've been active for %llu hours! Take a short walk and rest a bit.", uptimeHours);
-                TriggerCustomAlert(L"Living Assistant", L"Active Session Alert ⏱️", upMsg, 7.0);
+                if (tr) {
+                    swprintf_s(upMsg, L"%llu saattir kesintisiz bilgisayar başındasınız! Kısa bir yürüyüş yapın ve dinlenin.", uptimeHours);
+                } else {
+                    swprintf_s(upMsg, L"You've been active for %llu hours! Take a short walk and rest a bit.", uptimeHours);
+                }
+                TriggerCustomAlert(L"Living Assistant", tr ? L"Uzun Oturum Uyarısı ⏱️" : L"Active Session Alert ⏱️", upMsg, 7.0);
             }
         }
     }
