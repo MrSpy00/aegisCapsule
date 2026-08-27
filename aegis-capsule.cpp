@@ -904,6 +904,7 @@ std::atomic<double> g_lastNudgeTime = 0.0;
 std::atomic<uint64_t> g_artGenerationCounter = 1;
 std::atomic<bool> g_isFullScreenActive = false;
 std::atomic<bool> g_isRecording = false;
+std::mutex g_recordingMutex;
 
 HWND g_hwnd = nullptr;
 HANDLE g_stopEvent = nullptr;
@@ -1645,10 +1646,20 @@ void LoadQuickNotes() {
             DWORD read = 0;
             ReadFile(hFile, buf.data(), size, &read, nullptr);
             std::string content(buf.data(), read);
+
+            // Skip UTF-8 BOM if present
+            if (content.size() >= 3 &&
+                static_cast<unsigned char>(content[0]) == 0xEF &&
+                static_cast<unsigned char>(content[1]) == 0xBB &&
+                static_cast<unsigned char>(content[2]) == 0xBF) {
+                content.erase(0, 3);
+            }
+
             std::vector<std::wstring> notes;
             std::istringstream stream(content);
             std::string line;
             while (std::getline(stream, line)) {
+                if (!line.empty() && line.back() == '\r') line.pop_back();
                 if (!line.empty() && line.find_first_not_of(" \t\r\n") != std::string::npos) {
                     int wlen = MultiByteToWideChar(CP_UTF8, 0, line.data(), static_cast<int>(line.size()), nullptr, 0);
                     if (wlen > 0) {
@@ -1873,6 +1884,7 @@ DWORD WINAPI RecordingThreadProc(LPVOID) {
 }
 
 void StartVoiceRecording() {
+    std::lock_guard lock(g_recordingMutex);
     if (!g_isRecording) {
         if (g_recordingThread) {
             WaitForSingleObject(g_recordingThread, 1000);
@@ -1885,6 +1897,7 @@ void StartVoiceRecording() {
 }
 
 void StopVoiceRecording() {
+    std::lock_guard lock(g_recordingMutex);
     if (g_isRecording) {
         g_isRecording = false;
         if (g_recordingThread) {
@@ -2158,11 +2171,11 @@ HICON getProcessIcon(DWORD pid) {
             return sfi.hIcon;
         }
 
-        HICON large = nullptr;
-        HICON small = nullptr;
-        if (ExtractIconExW(path.c_str(), 0, &large, &small, 1) > 0) {
-            if (small) DestroyIcon(small);
-            if (large) return large;
+        HICON hLarge = nullptr;
+        HICON hSmall = nullptr;
+        if (ExtractIconExW(path.c_str(), 0, &hLarge, &hSmall, 1) > 0) {
+            if (hSmall) DestroyIcon(hSmall);
+            if (hLarge) return hLarge;
         }
     }
 
@@ -2482,7 +2495,7 @@ bool IsDeviceActiveViaRegistry(const wchar_t* capability) {
 void UpdatePrivacyIndicators() {
     static double s_lastPrivacyCheck = 0.0;
     double now = NowSeconds();
-    if (now - s_lastPrivacyCheck < 3.0) return;
+    if (now - s_lastPrivacyCheck < 5.0) return;
     s_lastPrivacyCheck = now;
 
     bool mic = IsDeviceActiveViaRegistry(L"microphone");
@@ -3890,14 +3903,14 @@ class Renderer {
         const float rowH = (gridBottom > gridTop + 50.0f) ? (gridBottom - gridTop) / static_cast<float>(totalRows) : 16.0f * scale;
 
         bool tr = IsTurkish(settings.language);
-        const wchar_t* daysEn[] = {L"S", L"M", L"T", L"W", L"T", L"F", L"S"};
-        const wchar_t* daysTr[] = {L"P", L"P", L"S", L"Ç", L"P", L"C", L"C"};
+        const wchar_t* daysEn[] = {L"Su", L"Mo", L"Tu", L"We", L"Th", L"Fr", L"Sa"};
+        const wchar_t* daysTr[] = {L"Pz", L"Pt", L"Sa", L"Ça", L"Pe", L"Cu", L"Ct"};
         const wchar_t** days = tr ? daysTr : daysEn;
         
         for (int i = 0; i < 7; ++i) {
             D2D1_RECT_F cell = D2D1::RectF(gridStart + i * colW, gridTop, gridStart + (i+1)*colW, gridTop + rowH);
             ID2D1SolidColorBrush* brush = (i == 0 || i == 6) ? calHeader : mutedBrush_.Get();
-            target_->DrawText(days[i], 1, boldTextFormat_.Get(), cell, brush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+            target_->DrawText(days[i], static_cast<UINT32>(wcslen(days[i])), boldTextFormat_.Get(), cell, brush, D2D1_DRAW_TEXT_OPTIONS_NONE);
         }
         
         int row = 1;
@@ -4152,10 +4165,14 @@ class Renderer {
         DrawFittedLine(line2, l2Rect, mutedBrush_.Get(), 12.0f, scale, false);
 
         wchar_t line3[128] = {};
-        if (settings.eyeRestReminder) {
+        if (settings.eyeRestReminder && settings.eyeRestMinutes > 0) {
             int remEye = static_cast<int>(std::max(0.0, state.assistant.nextEyeRestTime - now) / 60.0);
             if (tr) swprintf_s(line3, L"👁️ 20-20-20 Göz Molası: %d dk sonra (20 sn uzağa bakın)", remEye);
             else swprintf_s(line3, L"👁️ 20-20-20 Eye Rest: in %dm (Look 20ft away for 20s)", remEye);
+        } else if (settings.postureReminder && settings.postureIntervalMinutes > 0) {
+            int remPosture = static_cast<int>(std::max(0.0, state.assistant.nextPostureTime - now) / 60.0);
+            if (tr) swprintf_s(line3, L"🧘 Duruş & Esneme: %d dk sonra (Dik oturun)", remPosture);
+            else swprintf_s(line3, L"🧘 Posture & Stretch: in %dm (Straighten back)", remPosture);
         } else {
             std::wstring l3 = tr ? L"🧘 Duruş & Esneme: Dik oturun ve derin nefes alın" : L"🧘 Posture: Straighten back & breathe deep";
             wcscpy_s(line3, l3.c_str());
@@ -4229,6 +4246,7 @@ class Renderer {
         // Auto-adapt for Smart Dynamic (0)
         if (displayMode == 0) {
             if (pomoActive) displayMode = 5;
+            else if (settings.showMetricsInIdle && state.system.cpuPercent >= 0) displayMode = 3;
             else if (hasWeather) displayMode = 1;
             else displayMode = 2;
         }
@@ -4263,7 +4281,7 @@ class Renderer {
             // Minimalist Clock Only (Centered)
             D2D1_RECT_F fullRect = D2D1::RectF(rect.left + 6.0f, cy - halfH, rect.right - 6.0f, cy + halfH);
             DrawFittedLine(timeBuf, fullRect, textBrush_.Get(), 14.5f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, clockWeight);
-        } else if (displayMode == 3 || (settings.idleDisplayMode == 0 && settings.showMetricsInIdle && state.system.cpuPercent >= 0)) {
+        } else if (displayMode == 3) {
             // System Telemetry HUD with high contrast, 3 equal columns and zero overlap
             const float pad = 6.0f;
             const float totalW = (rect.right - rect.left) - pad * 2.0f;
@@ -4708,11 +4726,12 @@ class Renderer {
             DrawAlbumArt(state.media, artRect, now, artSize * 0.5f, false);
 
             float shiftX = 0.0f;
-            if (state.system.micActive && state.system.cameraActive) shiftX = 30.0f;
-            else if (state.system.micActive || state.system.cameraActive) shiftX = 16.0f;
+            if (state.system.micActive && state.system.cameraActive) shiftX = 30.0f * settings.sizeScale;
+            else if (state.system.micActive || state.system.cameraActive) shiftX = 16.0f * settings.sizeScale;
 
-            D2D1_RECT_F waveRect = D2D1::RectF(rect.right - 42.0f - shiftX, cy - 10.0f,
-                                               rect.right - 14.0f - shiftX, cy + 10.0f);
+            const float waveW = std::clamp(42.0f * settings.sizeScale, 28.0f, 60.0f);
+            D2D1_RECT_F waveRect = D2D1::RectF(rect.right - waveW - shiftX, cy - 10.0f,
+                                               rect.right - 14.0f * settings.sizeScale - shiftX, cy + 10.0f);
 
             const float titleLeft = artRect.right + 8.0f;
             const float titleRight = waveRect.left - 8.0f;
@@ -5777,7 +5796,7 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
 
         static double s_lastFsCheck = 0.0;
         bool isFullScreen = g_isFullScreenActive.load();
-        if (settings.fullScreenDetection && (now - s_lastFsCheck >= 0.35)) {
+        if (settings.fullScreenDetection && (now - s_lastFsCheck >= 0.50)) {
             s_lastFsCheck = now;
             isFullScreen = CheckIsFullScreenActive(GetAnchorMonitor());
             g_isFullScreenActive.store(isFullScreen);
@@ -5826,7 +5845,7 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
             primary.width = std::max(220.0f, settings.collapsedWidth + 40.0f) * settings.sizeScale;
             primary.height = settings.collapsedHeight * settings.sizeScale;
         } else if (primaryKind == IslandKind::Media) {
-            primary.width = (settings.collapsedWidth + 40.0f) * settings.sizeScale;
+            primary.width = (settings.collapsedWidth + 50.0f) * settings.sizeScale;
             primary.height = settings.collapsedHeight * settings.sizeScale;
         } else if (primaryKind == IslandKind::Notification) {
             float baseW = (settings.collapsedWidth + 80.0f) * settings.sizeScale;
