@@ -50,24 +50,26 @@ Sıradan bir bildirim çubuğu veya araç takımı olmanın ötesinde; **tam te�
 - 25 dakika çalışma, 5 dakika mola döngüleriyle üretkenliğinizi zirveye taşır.
 - Kapsüle tıklayarak veya sağ tık menüsünden başlatılır/duraklatılır. Süre bittiğinde özel bildirimle uyarır.
 
-#### 7. 📑 6 Sekmeli Gelişmiş Genişletilebilir Dashboard
-Genişletilmiş modda fare tekerleğiyle veya tıklayarak 6 farklı sekmeye geçiş yapabilirsiniz:
-1. **📅 Takvim & Saat:** Ay görünümü, bugün vurgusu ve detaylı tarih.
-2. **⛅ Hava Durumu & Atmosfer:** wttr.in tabanlı sıcaklık, rüzgar hızı, yönü, nem ve hissedilen sıcaklık.
-3. **🎮 Donanım & Game Overlay:** CPU, RAM, GPU, FPS ve Disk kullanım grafikleri.
-4. **📝 Hızlı Notlar:** Son alınan notların listesi.
-5. **🍅 Pomodoro:** Odak döngüsü sayacı ve ilerleme halkası.
-6. **🌿 Yaşam Asistanı:** Sistem çalışma süresi ve sağlık metrikleri.
+#### 7. 📑 7 Sekmeli Gelişmiş Genişletilebilir Dashboard
+Genişletilmiş modda fare tekerleğiyle veya tıklayarak 7 farklı sekmeye geçiş yapabilirsiniz (Kapsül açıldığında her zaman ilk olarak Yaşayan Asistan & Günlük Özet kartı gelir):
+1. **🌟 Yaşayan Asistan & Günlük Özet (Default / İlk Açılış):** Kullanıcı adına özel dinamik selamlama, canlı saat, tam tarih, hava durumu ve bilgisayar oturumu süresi ile birlikte akıllı durumsal mesajlar (su içme, göz dinlendirme, duruş, günün saatine ve hava durumuna göre motive edici ipuçları).
+2. **📅 Takvim & Saat:** Ay görünümü, bugün vurgusu ve detaylı tarih.
+3. **⛅ Hava Durumu & Atmosfer:** wttr.in tabanlı sıcaklık, rüzgar hızı, yönü, nem ve hissedilen sıcaklık.
+4. **🎮 Donanım & Game Overlay:** CPU, RAM, GPU, FPS ve Disk kullanım grafikleri.
+5. **📝 Hızlı Notlar:** Son alınan notların listesi.
+6. **🍅 Pomodoro:** Odak döngüsü sayacı ve ilerleme halkası.
+7. **🌿 Yaşam Asistanı:** Sistem çalışma süresi ve sağlık metrikleri.
 
 #### 8. 💎 Kusursuz Liquid Glass Optik Motoru & Görsel Temizlik
 - Kapsül dışındaki tüm karanlık leke ve gölge taşmaları giderilmiştir.
 - Çok katmanlı frosted glass, yumuşak kenar ışıması (ambient glow), specular yansımalar ve 10 farklı renk teması.
+- Kart geçişlerinde kesin sınır kırpma (axis-aligned clip) ile hiçbir kart birbiri altında şeffaf görünmez veya çakışmaz.
 
 ---
 
 ### 🖱️ Kontroller & Kısayollar
 
-- **Fare Üzerine Gelme (Hover):** Kapsülü genişletir (veya ayardan tıklama moduna alınabilir).
+- **Fare Üzerine Gelme (Hover):** Kapsülü genişletir (ve her zaman canlı Günlük Özet kartıyla başlar).
 - **Fare Tekerleği (Scroll):** Standart yönünde sekmeler arasında ileri/geri geçiş yapar (Yukarı = Önceki, Aşağı = Sonraki).
 - **Sol Tık:** Pomodoro başlat/durdur veya sekmeler arası geçiş yap. Kayıt sırasında kaydı durdurur.
 - **Çift Tık:** Kapsülü sürekli açık (Pinned Expanded) moduna sabitler.
@@ -89,11 +91,11 @@ Beyond a simple status pill, it is a **complete personal desktop companion**, fe
 
 1. **Full-Screen Auto-Hide:** Automatically hides when you play full-screen games, watch full-screen videos (YouTube, Netflix, VLC), or give presentations. Smoothly reappears when exiting fullscreen.
 2. **Dynamic Island Expansion:** Automatically scales its width dynamically according to the notification title and message length.
-3. **Living Personal Assistant:** Built-in wellness reminders for hydration, 20-20-20 eye strain relief, posture correction, and continuous PC uptime tracking.
+3. **Living Personal Assistant & Daily Briefing:** Smart personalized greeting with OS username, live weather, formatted date/time, and intelligent context-aware wellness prompts, focus motivation, and dynamic conversational tips on every hover.
 4. **Smart Voice Recorder:** One-click studio quality 16-bit PCM WAV audio capture via WASAPI directly to `%USERPROFILE%\Desktop\aegisCapsule_Recordings\`.
 5. **Quick Notes Scratchpad:** Store instant notes and thoughts directly from the clipboard or menu with persistent storage.
 6. **Pomodoro Focus Timer:** 25/5 interval productivity clock with visual progress arc and session tracking.
-7. **6 Interactive Dashboard Tabs:** Seamlessly cycle through Calendar, Weather, Hardware HUD, Quick Notes, Pomodoro, and Living Assistant.
+7. **7 Interactive Dashboard Tabs:** Seamlessly cycle through Living Briefing, Calendar, Weather, Hardware HUD, Quick Notes, Pomodoro, and Living Assistant with zero bleed or ghosting.
 8. **Liquid Glass Multi-Layer Optics:** Cleaned ambient backglow, specular highlight, refraction rim, and zero border bleeding.
 
 ---
