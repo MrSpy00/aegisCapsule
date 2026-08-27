@@ -6,5 +6,8 @@
 
 # Whitelist allowed repository files
 !/.gitignore
+!/LICENSE
 !/README.md
 !/aegisCapsule.cpp
+!/aegis-capsule.cpp
+!/aegis-capsule.wh.cpp
