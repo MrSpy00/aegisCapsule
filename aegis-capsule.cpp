@@ -1550,9 +1550,7 @@ void ResetPositionOverlayCache() {
     s_lastOverlayTopMost = false;
 }
 
-void PositionOverlayWindow(HWND hwnd, int width, int height, bool force = false) {
-    if (!hwnd || !IsWindow(hwnd)) return;
-    Settings settings = GetSettingsSnapshot();
+POINT ComputeOverlayPosition(int width, int height, const Settings& settings) {
     RECT work = GetAnchorWorkRect();
     const int margin = settings.edgeMargin;
     int x = work.left + (work.right - work.left - width) / 2;
@@ -1592,6 +1590,15 @@ void PositionOverlayWindow(HWND hwnd, int width, int height, bool force = false)
 
     x += settings.offsetX;
     y += settings.offsetY;
+    return POINT{x, y};
+}
+
+void PositionOverlayWindow(HWND hwnd, int width, int height, bool force = false) {
+    if (!hwnd || !IsWindow(hwnd)) return;
+    Settings settings = GetSettingsSnapshot();
+    POINT pt = ComputeOverlayPosition(width, height, settings);
+    int x = pt.x;
+    int y = pt.y;
 
     bool topMost = settings.alwaysOnTop;
     if (!force && x == s_lastOverlayX && y == s_lastOverlayY && width == s_lastOverlayW && height == s_lastOverlayH && topMost == s_lastOverlayTopMost) {
@@ -3049,6 +3056,8 @@ class Renderer {
     HGDIOBJ oldBitmap_ = nullptr;
     int bitmapWidth_ = 0;
     int bitmapHeight_ = 0;
+    int bitmapCapacityW_ = 0;
+    int bitmapCapacityH_ = 0;
     float settingsOpacity_ = 0.96f;
 
     ComPtr<ID2D1Factory> d2dFactory_;
@@ -3137,22 +3146,31 @@ class Renderer {
         if (FAILED(hr)) return false;
 
         EnsureTextFormats(1.0f);
-        return CreateBackingBitmap(520, 140);
+        return EnsureBackingBitmap(640, 200);
     }
 
-    bool CreateBackingBitmap(int width, int height) {
+    bool EnsureBackingBitmap(int width, int height) {
         if (width <= 0 || height <= 0) return false;
-        if (bitmapWidth_ == width && bitmapHeight_ == height && memDc_ && memBitmap_) {
+        
+        int targetCapW = ((width + 127) / 128) * 128;
+        int targetCapH = ((height + 63) / 64) * 64;
+
+        if (bitmapCapacityW_ >= targetCapW && bitmapCapacityH_ >= targetCapH && memDc_ && memBitmap_) {
+            bitmapWidth_ = width;
+            bitmapHeight_ = height;
             return true;
         }
+
+        int newCapW = std::max(bitmapCapacityW_, targetCapW);
+        int newCapH = std::max(bitmapCapacityH_, targetCapH);
 
         HDC screen = GetDC(nullptr);
         if (!memDc_) memDc_ = CreateCompatibleDC(screen);
 
         BITMAPINFO bi = {};
         bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        bi.bmiHeader.biWidth = width;
-        bi.bmiHeader.biHeight = -height;
+        bi.bmiHeader.biWidth = newCapW;
+        bi.bmiHeader.biHeight = -newCapH;
         bi.bmiHeader.biPlanes = 1;
         bi.bmiHeader.biBitCount = 32;
         bi.bmiHeader.biCompression = BI_RGB;
@@ -3168,6 +3186,8 @@ class Renderer {
 
         memBitmap_ = nextBitmap;
         oldBitmap_ = SelectObject(memDc_, memBitmap_);
+        bitmapCapacityW_ = newCapW;
+        bitmapCapacityH_ = newCapH;
         bitmapWidth_ = width;
         bitmapHeight_ = height;
         return true;
@@ -3659,73 +3679,56 @@ class Renderer {
             }
         }
 
-        D2D1_MATRIX_3X2_F oldTransform;
-        target_->GetTransform(&oldTransform);
-        D2D1_POINT_2F pillCenter = D2D1::Point2F((rect.left + rect.right) * 0.5f, (rect.top + rect.bottom) * 0.5f);
-        target_->SetTransform(D2D1::Matrix3x2F::Scale(settings.sizeScale, settings.sizeScale, pillCenter) * oldTransform);
-
-        float invScale = 1.0f / (settings.sizeScale > 0.01f ? settings.sizeScale : 1.0f);
-        float unW = (rect.right - rect.left) * invScale;
-        float unH = (rect.bottom - rect.top) * invScale;
-        D2D1_RECT_F unscaledRect = D2D1::RectF(pillCenter.x - unW * 0.5f, pillCenter.y - unH * 0.5f, pillCenter.x + unW * 0.5f, pillCenter.y + unH * 0.5f);
-
-        if (contentAlpha < 0.99f && textBrush_ && mutedBrush_) {
-            textBrush_->SetOpacity(contentAlpha);
-            mutedBrush_->SetOpacity(contentAlpha * 0.58f);
-        }
-
-        bool isExpanded = (unH > (settings.collapsedHeight + std::max(12.0f, (settings.expandedHeight - settings.collapsedHeight) * 0.30f)));
+        bool isExpanded = (rect.bottom - rect.top > (settings.collapsedHeight * settings.sizeScale + std::max(12.0f, (settings.expandedHeight - settings.collapsedHeight) * settings.sizeScale * 0.30f)));
         if (isExpanded) {
             if (activity.kind == IslandKind::Media && state.media.available) {
-                DrawMedia(state, unscaledRect, now);
+                DrawMedia(state, rect, now);
             } else {
-                DrawExpandedDashboard(state, unscaledRect, settings, now, 1.0f);
+                DrawExpandedDashboard(state, rect, settings, now, scale);
             }
         } else {
             switch (activity.kind) {
                 case IslandKind::Media:
-                    DrawMedia(state, unscaledRect, now);
+                    DrawMedia(state, rect, now);
                     break;
                 case IslandKind::Clipboard:
-                    DrawClipboard(state, unscaledRect, settings);
+                    DrawClipboard(state, rect, settings);
                     break;
                 case IslandKind::Notification:
-                    DrawNotification(state, unscaledRect, settings);
+                    DrawNotification(state, rect, settings);
                     break;
                 case IslandKind::Volume:
-                    DrawVolume(state, unscaledRect, settings);
+                    DrawVolume(state, rect, settings);
                     break;
                 case IslandKind::CapsLock:
-                    DrawCapsLock(state, unscaledRect, settings);
+                    DrawCapsLock(state, rect, settings);
                     break;
                 case IslandKind::Device:
-                    DrawDevice(state, unscaledRect, settings);
+                    DrawDevice(state, rect, settings);
                     break;
                 case IslandKind::BatteryLow:
-                    DrawBattery(state, unscaledRect, settings);
+                    DrawBattery(state, rect, settings);
                     break;
                 case IslandKind::Progress:
-                    DrawProgress(state, unscaledRect, settings);
+                    DrawProgress(state, rect, settings);
                     break;
                 case IslandKind::Recording:
-                    DrawVoiceRecording(state, unscaledRect, now, settings);
+                    DrawVoiceRecording(state, rect, now, settings);
                     break;
                 case IslandKind::Idle:
                 default:
-                    DrawCollapsedIdle(state, unscaledRect, settings, now);
+                    DrawCollapsedIdle(state, rect, settings, now);
                     break;
             }
         }
 
         // Apple-style privacy indicator dots
-        DrawPrivacyDots(state, unscaledRect, now, settings);
+        DrawPrivacyDots(state, rect, now, settings);
 
         if (contentAlpha < 0.99f && textBrush_ && mutedBrush_) {
             textBrush_->SetOpacity(0.90f);
             mutedBrush_->SetOpacity(0.58f);
         }
-
-        target_->SetTransform(oldTransform);
     }
 
     void DrawFittedTitle(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale) {
@@ -5511,14 +5514,9 @@ class Renderer {
         const int pixelWidth = std::max(1, static_cast<int>(std::ceil(width + kRenderPadX * 2.0f)));
         const int pixelHeight = std::max(1, static_cast<int>(std::ceil(height + kRenderPadY * 2.0f)));
 
-        if (pixelWidth != bitmapWidth_ || pixelHeight != bitmapHeight_) {
-            if (!CreateBackingBitmap(pixelWidth, pixelHeight)) return false;
-            PositionOverlayWindow(hwnd_, pixelWidth, pixelHeight);
-        } else if (g_layoutDirty.exchange(false)) {
-            PositionOverlayWindow(hwnd_, pixelWidth, pixelHeight);
-        }
+        if (!EnsureBackingBitmap(pixelWidth, pixelHeight)) return false;
 
-        RECT rc = {0, 0, bitmapWidth_, bitmapHeight_};
+        RECT rc = {0, 0, pixelWidth, pixelHeight};
         HRESULT hr = target_->BindDC(memDc_, &rc);
         if (FAILED(hr)) return false;
 
@@ -5559,9 +5557,10 @@ class Renderer {
         if (FAILED(hr)) return false;
 
         POINT src = {0, 0};
-        SIZE size = {bitmapWidth_, bitmapHeight_};
+        POINT dst = ComputeOverlayPosition(pixelWidth, pixelHeight, settings);
+        SIZE size = {pixelWidth, pixelHeight};
         BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-        return UpdateLayeredWindow(hwnd_, nullptr, nullptr, &size, memDc_, &src, 0, &blend, ULW_ALPHA) != FALSE;
+        return UpdateLayeredWindow(hwnd_, nullptr, &dst, &size, memDc_, &src, 0, &blend, ULW_ALPHA) != FALSE;
     }
 };
 
@@ -5976,7 +5975,29 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
             primary.width = (settings.collapsedWidth + 80.0f) * settings.sizeScale;
             primary.height = (settings.collapsedHeight + 14.0f) * settings.sizeScale;
         } else {
-            primary.width = settings.collapsedWidth * settings.sizeScale;
+            int idleMode = settings.idleDisplayMode;
+            bool pomoActive = (state.pomodoro.state == PomodoroState::Working || state.pomodoro.state == PomodoroState::Break);
+            if (idleMode == 0) {
+                if (pomoActive) idleMode = 5;
+                else if (settings.showMetricsInIdle && state.system.cpuPercent >= 0) idleMode = 3;
+                else if (state.weather.hasData && (now - state.weather.lastUpdated < 3600.0)) idleMode = 1;
+                else idleMode = 2;
+            }
+
+            float idleWidth = settings.collapsedWidth;
+            if (pomoActive || idleMode == 5) {
+                idleWidth = std::max(settings.collapsedWidth + 24.0f, 194.0f);
+            } else if (idleMode == 2) {
+                idleWidth = std::max(settings.collapsedWidth - 28.0f, 130.0f);
+            } else if (idleMode == 3) {
+                idleWidth = std::max(settings.collapsedWidth + 48.0f, 218.0f);
+            } else if (idleMode == 4) {
+                idleWidth = std::max(settings.collapsedWidth + 44.0f, 214.0f);
+            } else {
+                idleWidth = settings.collapsedWidth;
+            }
+
+            primary.width = idleWidth * settings.sizeScale;
             primary.height = settings.collapsedHeight * settings.sizeScale;
         }
 
