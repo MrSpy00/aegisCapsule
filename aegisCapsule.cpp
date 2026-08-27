@@ -3572,7 +3572,7 @@ class Renderer {
     }
 
     void DrawFittedLine(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale,
-                        DWRITE_TEXT_ALIGNMENT align = DWRITE_TEXT_ALIGNMENT_LEADING,
+                        DWRITE_TEXT_ALIGNMENT align,
                         DWRITE_FONT_WEIGHT weight = DWRITE_FONT_WEIGHT_NORMAL, bool wrap = false) {
         if (text.empty() || !dwriteFactory_ || !target_ || !brush) return;
         float availW = rect.right - rect.left;
@@ -3618,6 +3618,10 @@ class Renderer {
         if (fmt) {
             target_->DrawText(text.c_str(), static_cast<UINT32>(text.length()), fmt.Get(), rect, brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
         }
+    }
+
+    void DrawFittedLine(const std::wstring& text, D2D1_RECT_F rect, ID2D1Brush* brush, float baseFontSize, float scale, bool wrap = false) {
+        DrawFittedLine(text, rect, brush, baseFontSize, scale, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_FONT_WEIGHT_NORMAL, wrap);
     }
 
     static void GetWeatherIconAndText(int code, std::wstring& icon, std::wstring& text, bool isTurkish = false) {
