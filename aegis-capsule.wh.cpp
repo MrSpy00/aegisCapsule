@@ -3882,6 +3882,14 @@ class Renderer {
         return 31;
     }
 
+    static int GetDayOfWeek(int year, int month, int day) {
+        if (month < 3) { month += 12; year -= 1; }
+        int k = year % 100;
+        int j = year / 100;
+        int h = (day + 13 * (month + 1) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
+        return (h + 6) % 7;
+    }
+
     static std::wstring GetSystemUserName() {
         wchar_t nameBuf[256] = {};
         DWORD size = ARRAYSIZE(nameBuf);
