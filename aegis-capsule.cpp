@@ -65,410 +65,410 @@
 /*
 - General:
   - Language: auto
-    $name: Language / Dil Seçimi
-    $description: Display language for all dashboard cards, health assistant, alerts, and menus. / Tüm panel kartları, sağlık asistanı, uyarılar ve menüler için dil seçimi.
+    $name: "Language / Dil Seçimi"
+    $description: "Display language for all dashboard cards, health assistant, alerts, and menus. / Tüm panel kartları, sağlık asistanı, uyarılar ve menüler için dil seçimi."
     $options:
-      - auto: 🌐 Auto (Match Windows System) / Otomatik (Windows Sistem Dili)
-      - tr: 🇹🇷 Türkçe (Turkish)
-      - en: 🇬🇧 English (İngilizce)
+      - auto: "🌐 Auto (Match Windows System) / Otomatik (Windows Sistem Dili)"
+      - tr: "🇹🇷 Türkçe (Turkish)"
+      - en: "🇬🇧 English (İngilizce)"
   - SuppressSystemToasts: false
-    $name: Suppress Windows Native Toast Popups / Windows Sistem Bildirim Barlarını Gizle
-    $description: Hide default Windows toast banners so all notifications display exclusively in the aegisCapsule island. / Windows'un açılır bildirim pencerelerini gizler; tüm bildirimler yalnızca kapsülde gösterilir.
-  $name: General & Language / Genel & Dil
+    $name: "Suppress Windows Native Toast Popups / Windows Sistem Bildirim Barlarını Gizle"
+    $description: "Hide default Windows toast banners so all notifications display exclusively in the aegisCapsule island. / Windows'un açılır bildirim pencerelerini gizler; tüm bildirimler yalnızca kapsülde gösterilir."
+  $name: "General & Language / Genel & Dil"
 - Appearance:
   - Position: top-center
-    $name: Position / Konum
-    $description: Where aegisCapsule should appear on your screen. / Kapsülün ekranda nerede görüneceğini seçin.
+    $name: "Position / Konum"
+    $description: "Where aegisCapsule should appear on your screen. / Kapsülün ekranda nerede görüneceğini seçin."
     $options:
-      - top-center: Top Center / Üst Orta
-      - top-left: Top Left / Üst Sol
-      - top-right: Top Right / Üst Sağ
-      - bottom-center: Bottom Center / Alt Orta
-      - bottom-left: Bottom Left / Alt Sol
-      - bottom-right: Bottom Right / Alt Sağ
-      - center: Screen Center / Ekran Ortası
+      - top-center: "Top Center / Üst Orta"
+      - top-left: "Top Left / Üst Sol"
+      - top-right: "Top Right / Üst Sağ"
+      - bottom-center: "Bottom Center / Alt Orta"
+      - bottom-left: "Bottom Left / Alt Sol"
+      - bottom-right: "Bottom Right / Alt Sağ"
+      - center: "Screen Center / Ekran Ortası"
   - TargetMonitor: primary
-    $name: Target Monitor / Hedef Monitör
-    $description: Select the screen to display the capsule. / Kapsülün gösterileceği monitörü seçin.
+    $name: "Target Monitor / Hedef Monitör"
+    $description: "Select the screen to display the capsule. / Kapsülün gösterileceği monitörü seçin."
     $options:
-      - 'primary': Primary Monitor / Ana Monitör
-      - '1': Display 1 / Monitör 1
-      - '2': Display 2 / Monitör 2
-      - '3': Display 3 / Monitör 3
-      - '4': Display 4 / Monitör 4
-      - '5': Display 5 / Monitör 5
-      - 'follow': Follow Mouse (Active Monitor) / Fareyi Takip Et
+      - 'primary': "Primary Monitor / Ana Monitör"
+      - '1': "Display 1 / Monitör 1"
+      - '2': "Display 2 / Monitör 2"
+      - '3': "Display 3 / Monitör 3"
+      - '4': "Display 4 / Monitör 4"
+      - '5': "Display 5 / Monitör 5"
+      - 'follow': "Follow Mouse (Active Monitor) / Fareyi Takip Et"
   - FullScreenDetection: true
-    $name: Full-screen Auto-Hide / Tam Ekran Otomatik Gizleme
-    $description: Automatically hide capsule completely during full-screen games, movies, and apps. / Oyun veya film gibi tam ekran uygulamalarda kapsülü tamamen gizler.
+    $name: "Full-screen Auto-Hide / Tam Ekran Otomatik Gizleme"
+    $description: "Automatically hide capsule completely during full-screen games, movies, and apps. / Oyun veya film gibi tam ekran uygulamalarda kapsülü tamamen gizler."
   - OffsetX: 0
-    $name: Offset X (px) / X Ekseni Kaydırma
-    $description: Horizontal fine-tuning in pixels. / Yatay konum ince ayarı (piksel).
+    $name: "Offset X (px) / X Ekseni Kaydırma"
+    $description: "Horizontal fine-tuning in pixels. / Yatay konum ince ayarı (piksel)."
   - OffsetY: 0
-    $name: Offset Y (px) / Y Ekseni Kaydırma
-    $description: Vertical fine-tuning in pixels. / Dikey konum ince ayarı (piksel).
+    $name: "Offset Y (px) / Y Ekseni Kaydırma"
+    $description: "Vertical fine-tuning in pixels. / Dikey konum ince ayarı (piksel)."
   - EdgeMargin: 8
-    $name: Screen Edge Margin (px) / Ekran Kenar Boşluğu
-    $description: Distance from the edge of the monitor. / Ekran kenarından uzaklık.
+    $name: "Screen Edge Margin (px) / Ekran Kenar Boşluğu"
+    $description: "Distance from the edge of the monitor. / Ekran kenarından uzaklık."
   - SizeScale: '1.0'
-    $name: Overall Size Scale / Genel Boyut Ölçeği
-    $description: Adjust global UI size scale multiplier. / Genel arayüz boyut ölçeği çarpanı.
+    $name: "Overall Size Scale / Genel Boyut Ölçeği"
+    $description: "Adjust global UI size scale multiplier. / Genel arayüz boyut ölçeği çarpanı."
     $options:
-      - '0.5': 0.5x (Mini)
-      - '0.6': 0.6x
-      - '0.7': 0.7x
-      - '0.8': 0.8x (Compact)
-      - '0.9': 0.9x
-      - '1.0': 1.0x (Standard)
-      - '1.1': 1.1x
-      - '1.2': 1.2x (Medium)
-      - '1.3': 1.3x
-      - '1.5': 1.5x (Large)
-      - '1.8': 1.8x
-      - '2.0': 2.0x (Extra Large)
+      - '0.5': "0.5x (Mini)"
+      - '0.6': "0.6x"
+      - '0.7': "0.7x"
+      - '0.8': "0.8x (Compact)"
+      - '0.9': "0.9x"
+      - '1.0': "1.0x (Standard)"
+      - '1.1': "1.1x"
+      - '1.2': "1.2x (Medium)"
+      - '1.3': "1.3x"
+      - '1.5': "1.5x (Large)"
+      - '1.8': "1.8x"
+      - '2.0': "2.0x (Extra Large)"
   - CornerStyle: pill
-    $name: Corner Roundness & Shape / Kenar Yuvarlaklığı & Şekil
-    $description: Choose how round or sharp the capsule edges appear. / Kapsül kenarlarının biçimini seçin.
+    $name: "Corner Roundness & Shape / Kenar Yuvarlaklığı & Şekil"
+    $description: "Choose how round or sharp the capsule edges appear. / Kapsül kenarlarının biçimini seçin."
     $options:
-      - pill: Full Pill (Continuous Round Capsule) / Tam Hap (Yuvarlak Kapsül)
-      - squircle: Vision Squircle (Smooth Rounded Rectangle) / Vision Squircle (Yumuşak Dikdörtgen)
-      - modern-box: Modern Box (8px Corner Radius) / Modern Kutu (8px)
-      - sharp: Sharp Box (0px Corner Radius) / Keskin Kutu (0px)
-      - custom: Custom Radius / Özel Yarıçap
+      - pill: "Full Pill (Continuous Round Capsule) / Tam Hap (Yuvarlak Kapsül)"
+      - squircle: "Vision Squircle (Smooth Rounded Rectangle) / Vision Squircle (Yumuşak Dikdörtgen)"
+      - modern-box: "Modern Box (8px Corner Radius) / Modern Kutu (8px)"
+      - sharp: "Sharp Box (0px Corner Radius) / Keskin Kutu (0px)"
+      - custom: "Custom Radius / Özel Yarıçap"
   - CustomCornerRadius: 18
-    $name: Custom Corner Radius (px) / Özel Köşe Yarıçapı
-    $description: Applied when Corner Roundness is set to Custom. / Şekil 'Özel' seçildiğinde geçerlidir.
+    $name: "Custom Corner Radius (px) / Özel Köşe Yarıçapı"
+    $description: "Applied when Corner Roundness is set to Custom. / Şekil 'Özel' seçildiğinde geçerlidir."
   - IdleDisplayMode: '0'
-    $name: Default Idle Display Style / Varsayılan Bekleme Modu Görünümü
-    $description: Choose what the capsule shows by default when collapsed. / Kapsül beklemedeyken varsayılan olarak ne göstereceğini seçin.
+    $name: "Default Idle Display Style / Varsayılan Bekleme Modu Görünümü"
+    $description: "Choose what the capsule shows by default when collapsed. / Kapsül beklemedeyken varsayılan olarak ne göstereceğini seçin."
     $options:
-      - '0': Smart Dynamic (Auto-adapts to Pomodoro / Weather) / Akıllı Dinamik
-      - '1': Clock & Weather Duo (Centered 50/50 Classic) / Saat ve Hava Durumu
-      - '2': Clock Only (Minimalist Large Time) / Sadece Saat
-      - '3': System Telemetry HUD (Clock + CPU + RAM) / Sistem Durum Bilgisi
-      - '4': Weather & Atmosphere Focus / Hava Durumu Odaklı
-      - '5': Live Pomodoro Focus / Canlı Pomodoro Sayacı
+      - '0': "Smart Dynamic (Auto-adapts to Pomodoro / Weather) / Akıllı Dinamik"
+      - '1': "Clock & Weather Duo (Centered 50/50 Classic) / Saat ve Hava Durumu"
+      - '2': "Clock Only (Minimalist Large Time) / Sadece Saat"
+      - '3': "System Telemetry HUD (Clock + CPU + RAM) / Sistem Durum Bilgisi"
+      - '4': "Weather & Atmosphere Focus / Hava Durumu Odaklı"
+      - '5': "Live Pomodoro Focus / Canlı Pomodoro Sayacı"
   - IdleTextScale: 100
-    $name: Collapsed Idle Font Scale (%) / Kapalı Kapsül Yazı Boyutu (%)
-    $description: Adjust the text and clock size in the collapsed capsule (50% to 200%). / Kapalı kapsül içindeki yazı ve saat boyutunu ölçekleyin (%50 - %200).
+    $name: "Collapsed Idle Font Scale (%) / Kapalı Kapsül Yazı Boyutu (%)"
+    $description: "Adjust the text and clock size in the collapsed capsule (50% to 200%). / Kapalı kapsül içindeki yazı ve saat boyutunu ölçekleyin (%50 - %200)."
   - IdleClockShowSeconds: false
-    $name: Show Seconds in Clock / Saatte Saniyeleri Göster
-    $description: Display seconds in the minimal clock format (e.g. 14:32:08). / Minimal saatte saniyeleri göster (Örn: 14:32:08).
+    $name: "Show Seconds in Clock / Saatte Saniyeleri Göster"
+    $description: "Display seconds in the minimal clock format (e.g. 14:32:08). / Minimal saatte saniyeleri göster (Örn. 14:32:08)."
   - IdleClockTimeFormat: auto
-    $name: Clock Time Format / Saat Zaman Formatı
-    $description: Choose between 24-Hour, 12-Hour (AM/PM), or System Locale default. / 24 Saat, 12 Saat (ÖÖ/ÖS) veya Sistem varsayılanı.
+    $name: "Clock Time Format / Saat Zaman Formatı"
+    $description: "Choose between 24-Hour, 12-Hour (AM/PM), or System Locale default. / 24 Saat, 12 Saat (ÖÖ/ÖS) veya Sistem varsayılanı."
     $options:
-      - auto: Auto (System Locale Default) / Otomatik (Sistem Dili)
-      - 24h: 24-Hour (14:30) / 24 Saatlik
-      - 12h: 12-Hour (2:30 PM) / 12 Saatlik
+      - auto: "Auto (System Locale Default) / Otomatik (Sistem Dili)"
+      - 24h: "24-Hour (14:30) / 24 Saatlik"
+      - 12h: "12-Hour (2:30 PM) / 12 Saatlik"
   - IdleClockBold: true
-    $name: Bold Idle Typography / Kalın Yazı Tipi
-    $description: Use SemiBold font weight for crisp visibility in the minimal capsule. / Kapalı kapsülde daha net okunabilirlik için yarı kalın yazı tipi kullan.
+    $name: "Bold Idle Typography / Kalın Yazı Tipi"
+    $description: "Use SemiBold font weight for crisp visibility in the minimal capsule. / Kapalı kapsülde daha net okunabilirlik için yarı kalın yazı tipi kullan."
   - CollapsedWidth: 200
-    $name: Collapsed Idle Width (px) / Kapalı Kapsül Genişliği
-    $description: Width of the minimal idle capsule before size scaling. Default is 200. / Standart kapalı kapsül genişliği.
+    $name: "Collapsed Idle Width (px) / Kapalı Kapsül Genişliği"
+    $description: "Width of the minimal idle capsule before size scaling. Default is 200. / Standart kapalı kapsül genişliği."
   - CollapsedHeight: 38
-    $name: Collapsed Idle Height (px) / Kapalı Kapsül Yüksekliği
-    $description: Height of the minimal idle capsule before size scaling. Default is 38. / Standart kapalı kapsül yüksekliği.
+    $name: "Collapsed Idle Height (px) / Kapalı Kapsül Yüksekliği"
+    $description: "Height of the minimal idle capsule before size scaling. Default is 38. / Standart kapalı kapsül yüksekliği."
   - ExpandedWidth: 480
-    $name: Expanded Dashboard Width (px) / Açık Dashboard Genişliği
-    $description: Width of the expanded dashboard before size scaling. Default is 480. / Genişletilmiş panel genişliği.
+    $name: "Expanded Dashboard Width (px) / Açık Dashboard Genişliği"
+    $description: "Width of the expanded dashboard before size scaling. Default is 480. / Genişletilmiş panel genişliği."
   - ExpandedHeight: 190
-    $name: Expanded Dashboard Height (px) / Açık Dashboard Yüksekliği
-    $description: Height of the expanded dashboard before size scaling. Default is 190. / Genişletilmiş panel yüksekliği.
+    $name: "Expanded Dashboard Height (px) / Açık Dashboard Yüksekliği"
+    $description: "Height of the expanded dashboard before size scaling. Default is 190. / Genişletilmiş panel yüksekliği."
   - AutoHideIdleSeconds: '0'
-    $name: Auto-hide idle capsule / Boşta Otomatik Gizleme
-    $description: Hide the idle capsule after inactivity. 0 keeps it always visible. / Hareketsizlik sonrası kapsülü gizleme süresi.
+    $name: "Auto-hide idle capsule / Boşta Otomatik Gizleme"
+    $description: "Hide the idle capsule after inactivity. 0 keeps it always visible. / Hareketsizlik sonrası kapsülü gizleme süresi."
     $options:
-      - '-1': Hide instantly / Anında Gizle
-      - '0': Never hide (Always visible) / Asla Gizleme (Sürekli Görünür)
-      - '3': Hide after 3 seconds / 3 saniye sonra gizle
-      - '5': Hide after 5 seconds / 5 saniye sonra gizle
-      - '10': Hide after 10 seconds / 10 saniye sonra gizle
-      - '15': Hide after 15 seconds / 15 saniye sonra gizle
-      - '30': Hide after 30 seconds / 30 saniye sonra gizle
+      - '-1': "Hide instantly / Anında Gizle"
+      - '0': "Never hide (Always visible) / Asla Gizleme (Sürekli Görünür)"
+      - '3': "Hide after 3 seconds / 3 saniye sonra gizle"
+      - '5': "Hide after 5 seconds / 5 saniye sonra gizle"
+      - '10': "Hide after 10 seconds / 10 saniye sonra gizle"
+      - '15': "Hide after 15 seconds / 15 saniye sonra gizle"
+      - '30': "Hide after 30 seconds / 30 saniye sonra gizle"
   - UnhideOnHover: true
-    $name: Unhide on hover / Üzerine Gelince Göster
-    $description: Allow a hidden capsule to reappear when hovering near its anchor. / Fare yaklaştığında gizli kapsülü açar.
+    $name: "Unhide on hover / Üzerine Gelince Göster"
+    $description: "Allow a hidden capsule to reappear when hovering near its anchor. / Fare yaklaştığında gizli kapsülü açar."
   - ExpandOnHover: true
-    $name: Expand on hover / Üzerine Gelince Genişlet
-    $description: Expand the capsule automatically when hovered. / Fare üzerine gelince paneli otomatik açar.
+    $name: "Expand on hover / Üzerine Gelince Genişlet"
+    $description: "Expand the capsule automatically when hovered. / Fare üzerine gelince paneli otomatik açar."
   - AlwaysOnTop: true
-    $name: Always on top / Her Zaman Üstte
-    $description: Keeps aegisCapsule above all other windows. / Kapsülü tüm pencerelerin üstünde tutar.
+    $name: "Always on top / Her Zaman Üstte"
+    $description: "Keeps aegisCapsule above all other windows. / Kapsülü tüm pencerelerin üstünde tutar."
   - AutoDpiScale: true
-    $name: Auto DPI scaling / Otomatik DPI Ölçekleme
-    $description: Automatically scales font sizes and metrics to match monitor DPI. / Monitör DPI değerine göre otomatik ölçekler.
+    $name: "Auto DPI scaling / Otomatik DPI Ölçekleme"
+    $description: "Automatically scales font sizes and metrics to match monitor DPI. / Monitör DPI değerine göre otomatik ölçekler."
   - ClickThroughIdle: false
-    $name: Click-through when idle / Boştayken Tıklamayı İlet
-    $description: Let mouse clicks pass through the minimal idle capsule. / Kapalıyken tıklamaların arkadaki pencereye geçmesini sağlar.
-  $name: Appearance & Placement / Görünüm & Konum
+    $name: "Click-through when idle / Boştayken Tıklamayı İlet"
+    $description: "Let mouse clicks pass through the minimal idle capsule. / Kapalıyken tıklamaların arkadaki pencereye geçmesini sağlar."
+  $name: "Appearance & Placement / Görünüm & Konum"
 - Optics:
   - LiquidGlass: true
-    $name: Liquid Glass Optical Engine / Liquid Glass Optik Motoru
-    $description: Master switch for multi-layer frosted glass, caustics, and refraction. / Çok katmanlı buzlu cam ve kırılma efektleri.
+    $name: "Liquid Glass Optical Engine / Liquid Glass Optik Motoru"
+    $description: "Master switch for multi-layer frosted glass, caustics, and refraction. / Çok katmanlı buzlu cam ve kırılma efektleri."
   - LiquidGlassIntensity: 80
-    $name: Liquid Glass Intensity / Cam Efekti Yoğunluğu
-    $description: 0 to 100. Controls the prominence of the glass sheen. / 0-100 arası cam parlaklık yoğunluğu.
+    $name: "Liquid Glass Intensity / Cam Efekti Yoğunluğu"
+    $description: "0 to 100. Controls the prominence of the glass sheen. / 0-100 arası cam parlaklık yoğunluğu."
   - GlassSheen: true
-    $name: Frosted Glass Gradient Sheen / Gradyan Cam Parlaması
-    $description: Renders a smooth vertical ambient light sheen across the capsule face. / Kapsül yüzeyinde dikey ışık parlaması.
+    $name: "Frosted Glass Gradient Sheen / Gradyan Cam Parlaması"
+    $description: "Renders a smooth vertical ambient light sheen across the capsule face. / Kapsül yüzeyinde dikey ışık parlaması."
   - GlassCaustics: true
-    $name: Animated Caustic Light Wave / Hareketli Kaustik Işık Dalgası
-    $description: Renders an ultra-subtle animated sinusoidal light shimmer. / Yüzeyde akıcı sinüzoidal ışık dalgası oluşturur.
+    $name: "Animated Caustic Light Wave / Hareketli Kaustik Işık Dalgası"
+    $description: "Renders an ultra-subtle animated sinusoidal light shimmer. / Yüzeyde akıcı sinüzoidal ışık dalgası oluşturur."
   - GlassSpecular: true
-    $name: 1px Top Specular Highlight / Üst Kenar Yansıma Çizgisi
-    $description: Adds a crisp, elegant top rim reflection line. / Üst kenara zarif 1px yansıma çizgisi ekler.
+    $name: "1px Top Specular Highlight / Üst Kenar Yansıma Çizgisi"
+    $description: "Adds a crisp, elegant top rim reflection line. / Üst kenara zarif 1px yansıma çizgisi ekler."
   - GlassRefractionRim: true
-    $name: Edge Refraction Border / Kenar Kırılma Sınırı
-    $description: Simulates optical refraction along the outer capsule perimeter. / Kapsül kenarlarında optik kırılma sınırı çizer.
+    $name: "Edge Refraction Border / Kenar Kırılma Sınırı"
+    $description: "Simulates optical refraction along the outer capsule perimeter. / Kapsül kenarlarında optik kırılma sınırı çizer."
   - AccentGlow: true
-    $name: Ambient Accent Glow / Çevresel Vurgu Işığı
-    $description: Dynamic breathing ambient colored halo behind the capsule. / Kapsül arkasında nefes alan renkli ambiyans halesi.
+    $name: "Ambient Accent Glow / Çevresel Vurgu Işığı"
+    $description: "Dynamic breathing ambient colored halo behind the capsule. / Kapsül arkasında nefes alan renkli ambiyans halesi."
   - AccentGlowIntensity: 80
-    $name: Accent Glow Intensity / Vurgu Işığı Yoğunluğu
-    $description: 0 to 100. Controls the brightness of the ambient glow. / Çevresel ışığın parlaklığı (0-100).
+    $name: "Accent Glow Intensity / Vurgu Işığı Yoğunluğu"
+    $description: "0 to 100. Controls the brightness of the ambient glow. / Çevresel ışığın parlaklığı (0-100)."
   - AccentGlowRadius: 28
-    $name: Accent Glow Radius (px) / Vurgu Işığı Yarıçapı
-    $description: Spread distance of the ambient colored halo. / Renk halesinin yayılma mesafesi (px).
+    $name: "Accent Glow Radius (px) / Vurgu Işığı Yarıçapı"
+    $description: "Spread distance of the ambient colored halo. / Renk halesinin yayılma mesafesi (px)."
   - SoftShadow: true
-    $name: Multi-Pass Soft Drop Shadow / Yumuşak Gölge
-    $description: Progressive soft atmospheric drop shadow beneath the capsule. / Kapsül altında yumuşak atmosferik gölge oluşturur.
+    $name: "Multi-Pass Soft Drop Shadow / Yumuşak Gölge"
+    $description: "Progressive soft atmospheric drop shadow beneath the capsule. / Kapsül altında yumuşak atmosferik gölge oluşturur."
   - ShadowSoftness: 70
-    $name: Shadow Softness / Gölge Yumuşaklığı
-    $description: 0 to 100. Controls shadow blur and depth. / Gölge derinliği ve yumuşaklığı (0-100).
-  $name: Optics & Liquid Glass / Optik & Liquid Glass
+    $name: "Shadow Softness / Gölge Yumuşaklığı"
+    $description: "0 to 100. Controls shadow blur and depth. / Gölge derinliği ve yumuşaklığı (0-100)."
+  $name: "Optics & Liquid Glass / Optik & Liquid Glass"
 - Assistant:
   - EnableWellnessReminders: true
-    $name: Living Capsule & Wellness Alerts / Yaşayan Kapsül & Sağlık Uyarıları
-    $description: Periodic smart health reminders for hydration, eye rest, and posture. / Su içme, 20-20-20 göz dinlendirme ve mola hatırlatıcıları.
+    $name: "Living Capsule & Wellness Alerts / Yaşayan Kapsül & Sağlık Uyarıları"
+    $description: "Periodic smart health reminders for hydration, eye rest, and posture. / Su içme, 20-20-20 göz dinlendirme ve mola hatırlatıcıları."
   - HydrationPreset: '45'
-    $name: Hydration Reminder Timing / Su İçme Hatırlatıcı Aralığı
-    $description: Choose a preset interval or custom timing. / Hazır süre seçin veya özel dakika girin.
+    $name: "Hydration Reminder Timing / Su İçme Hatırlatıcı Aralığı"
+    $description: "Choose a preset interval or custom timing. / Hazır süre seçin veya özel dakika girin."
     $options:
-      - '15': 15 min / 15 dakika
-      - '30': 30 min / 30 dakika
-      - '45': 45 min (Standard) / 45 dakika (Standart)
-      - '60': 60 min (1 Hour) / 1 Saat
-      - '90': 90 min (1.5 Hours) / 1.5 Saat
-      - '120': 120 min (2 Hours) / 2 Saat
-      - 'custom': Custom Minutes (below) / Özel Dakika
+      - '15': "15 min / 15 dakika"
+      - '30': "30 min / 30 dakika"
+      - '45': "45 min (Standard) / 45 dakika (Standart)"
+      - '60': "60 min (1 Hour) / 1 Saat"
+      - '90': "90 min (1.5 Hours) / 1.5 Saat"
+      - '120': "120 min (2 Hours) / 2 Saat"
+      - 'custom': "Custom Minutes (below) / Özel Dakika"
   - HydrationIntervalMinutes: 45
-    $name: Hydration Custom Minutes / Su İçme Özel Dakika (Özel Seçildiğinde)
-    $description: Custom interval in minutes (5-360 min). / Özel su içme periyodu (5-360 dk).
+    $name: "Hydration Custom Minutes / Su İçme Özel Dakika (Özel Seçildiğinde)"
+    $description: "Custom interval in minutes (5-360 min). / Özel su içme periyodu (5-360 dk)."
   - EyeRestReminder: true
-    $name: 20-20-20 Eye Strain Break / 20-20-20 Göz Dinlendirme Kuralı
-    $description: Reminds you to look 20 feet away for 20 seconds. / Düzenli aralıklarla 20 saniye uzağa bakma molası verir.
+    $name: "20-20-20 Eye Strain Break / 20-20-20 Göz Dinlendirme Kuralı"
+    $description: "Reminds you to look 20 feet away for 20 seconds. / Düzenli aralıklarla 20 saniye uzağa bakma molası verir."
   - EyeRestMinutes: 20
-    $name: Eye Rest Interval (min) / Göz Dinlendirme Süresi (dk)
-    $description: Interval in minutes (10-60 min). / Göz dinlendirme periyodu (dakika).
+    $name: "Eye Rest Interval (min) / Göz Dinlendirme Süresi (dk)"
+    $description: "Interval in minutes (10-60 min). / Göz dinlendirme periyodu (dakika)."
   - PostureReminder: true
-    $name: Posture & Walk Reminder / Duruş & Yürüyüş Hatırlatıcısı
-    $description: Reminds you to stretch and check posture. / Duruş düzeltme ve esneme uyarısı gösterir.
+    $name: "Posture & Walk Reminder / Duruş & Yürüyüş Hatırlatıcısı"
+    $description: "Reminds you to stretch and check posture. / Duruş düzeltme ve esneme uyarısı gösterir."
   - PosturePreset: '60'
-    $name: Posture Reminder Timing / Duruş & Esneme Süresi
-    $description: Choose a preset interval or custom timing. / Hazır süre seçin veya özel dakika girin.
+    $name: "Posture Reminder Timing / Duruş & Esneme Süresi"
+    $description: "Choose a preset interval or custom timing. / Hazır süre seçin veya özel dakika girin."
     $options:
-      - '30': 30 min / 30 dakika
-      - '45': 45 min / 45 dakika
-      - '60': 60 min (1 Hour) / 1 Saat
-      - '90': 90 min (1.5 Hours) / 1.5 Saat
-      - '120': 120 min (2 Hours) / 2 Saat
-      - 'custom': Custom Minutes (below) / Özel Dakika
+      - '30': "30 min / 30 dakika"
+      - '45': "45 min / 45 dakika"
+      - '60': "60 min (1 Hour) / 1 Saat"
+      - '90': "90 min (1.5 Hours) / 1.5 Saat"
+      - '120': "120 min (2 Hours) / 2 Saat"
+      - 'custom': "Custom Minutes (below) / Özel Dakika"
   - PostureIntervalMinutes: 60
-    $name: Posture Custom Minutes / Duruş Özel Dakika (Özel Seçildiğinde)
-    $description: Custom interval in minutes (15-360 min). / Özel duruş esneme periyodu (15-360 dk).
+    $name: "Posture Custom Minutes / Duruş Özel Dakika (Özel Seçildiğinde)"
+    $description: "Custom interval in minutes (15-360 min). / Özel duruş esneme periyodu (15-360 dk)."
   - UptimeAlertHours: 2
-    $name: Continuous PC Uptime Alert (hours) / Sürekli Kullanım Uyarısı (saat)
-    $description: Alert when at PC for extended hours (1-12 hours, 0 to disable). / Bilgisayar başında uzun süre kalındığında uyarı verir (0 = kapalı).
-  $name: Living Assistant & Health / Akıllı Asistan & Sağlık
+    $name: "Continuous PC Uptime Alert (hours) / Sürekli Kullanım Uyarısı (saat)"
+    $description: "Alert when at PC for extended hours (1-12 hours, 0 to disable). / Bilgisayar başında uzun süre kalındığında uyarı verir (0 = kapalı)."
+  $name: "Living Assistant & Health / Akıllı Asistan & Sağlık"
 - Tools:
   - PomodoroWorkMinutes: 25
-    $name: Pomodoro Focus Duration (min) / Pomodoro Çalışma Süresi (dk)
-    $description: Work session duration in minutes (10-60). / Odaklanma çalışma periyodu süresi.
+    $name: "Pomodoro Focus Duration (min) / Pomodoro Çalışma Süresi (dk)"
+    $description: "Work session duration in minutes (10-60). / Odaklanma çalışma periyodu süresi."
   - PomodoroBreakMinutes: 5
-    $name: Pomodoro Break Duration (min) / Pomodoro Mola Süresi (dk)
-    $description: Short break duration in minutes (2-15). / Kısa mola süresi.
+    $name: "Pomodoro Break Duration (min) / Pomodoro Mola Süresi (dk)"
+    $description: "Short break duration in minutes (2-15). / Kısa mola süresi."
   - VoiceRecordingFolder: ""
-    $name: Voice Recording Folder / Ses Kayıt Klasörü
-    $description: Custom folder for voice notes (blank defaults to Desktop/aegisCapsule_Recordings). / Ses kayıtlarının kaydedileceği özel klasör.
-  $name: Productivity & Tools / Üretkenlik & Araçlar
+    $name: "Voice Recording Folder / Ses Kayıt Klasörü"
+    $description: "Custom folder for voice notes (blank defaults to Desktop/aegisCapsule_Recordings). / Ses kayıtlarının kaydedileceği özel klasör."
+  $name: "Productivity & Tools / Üretkenlik & Araçlar"
 - Themes:
   - AccentColorMode: auto
-    $name: Accent Color Mode / Vurgu Rengi Modu
-    $description: How the glowing accent color is chosen. / Vurgu renginin nasıl belirleneceğini seçin.
+    $name: "Accent Color Mode / Vurgu Rengi Modu"
+    $description: "How the glowing accent color is chosen. / Vurgu renginin nasıl belirleneceğini seçin."
     $options:
-      - auto: Auto (from album art / dynamic) / Otomatik (Albüm kapağından)
-      - system: Windows System Accent / Windows Sistem Vurgusu
-      - custom: Custom Hex Color / Özel Hex Rengi
+      - auto: "Auto (from album art / dynamic) / Otomatik (Albüm kapağından)"
+      - system: "Windows System Accent / Windows Sistem Vurgusu"
+      - custom: "Custom Hex Color / Özel Hex Rengi"
   - CustomAccentHex: "#4cc9f0"
-    $name: Custom Accent Hex / Özel Vurgu Hex Kodu
-    $description: Hex color for accent mode (#RRGGBB or #RRGGBBAA). / Özel renk hex kodu.
+    $name: "Custom Accent Hex / Özel Vurgu Hex Kodu"
+    $description: "Hex color for accent mode (#RRGGBB or #RRGGBBAA). / Özel renk hex kodu."
   - PillBgColor: "#0D0D0F"
-    $name: Capsule Background Color / Kapsül Arka Plan Rengi
-    $description: Hex color for background (#RRGGBB or #RRGGBBAA). / Arka plan hex rengi.
+    $name: "Capsule Background Color / Kapsül Arka Plan Rengi"
+    $description: "Hex color for background (#RRGGBB or #RRGGBBAA). / Arka plan hex rengi."
   - TextPrimaryColor: "#F7F7F7"
-    $name: Primary Text Color / Ana Metin Rengi
-    $description: Hex color for track titles and primary metrics. / Başlık ve ana metin rengi.
+    $name: "Primary Text Color / Ana Metin Rengi"
+    $description: "Hex color for track titles and primary metrics. / Başlık ve ana metin rengi."
   - TextSecondaryColor: "#888888"
-    $name: Secondary Text Color / İkincil Metin Rengi
-    $description: Hex color for artist names and muted labels. / Sanatçı ve ikincil etiket rengi.
+    $name: "Secondary Text Color / İkincil Metin Rengi"
+    $description: "Hex color for artist names and muted labels. / Sanatçı ve ikincil etiket rengi."
   - TintIntensity: 72
-    $name: Background Tint Depth / Arka Plan Ton Derinliği
-    $description: 0 to 100. Controls the depth of the dark base tint. / Koyu baz ton derinliği.
+    $name: "Background Tint Depth / Arka Plan Ton Derinliği"
+    $description: "0 to 100. Controls the depth of the dark base tint. / Koyu baz ton derinliği."
   - PillOpacity: 96
-    $name: Capsule Transparency / Kapsül Saydamlığı
-    $description: 10 to 100. Lower values make the capsule glass more translucent. / Kapsül cam saydamlığı (10-100).
-  $name: Colors & Theming / Renkler & Temalar
+    $name: "Capsule Transparency / Kapsül Saydamlığı"
+    $description: "10 to 100. Lower values make the capsule glass more translucent. / Kapsül cam saydamlığı (10-100)."
+  $name: "Colors & Theming / Renkler & Temalar"
 - Performance:
   - AnimationSpeed: normal
-    $name: Animation Speed / Animasyon Hızı
-    $description: Transition speed multiplier. / Geçiş hızı çarpanı.
+    $name: "Animation Speed / Animasyon Hızı"
+    $description: "Transition speed multiplier. / Geçiş hızı çarpanı."
     $options:
-      - slow: Slow (0.65x) / Yavaş
-      - normal: Normal (1.0x) / Normal
-      - fast: Fast (1.35x) / Hızlı
-      - instant: Instant (5.0x Snappy) / Anlık
+      - slow: "Slow (0.65x) / Yavaş"
+      - normal: "Normal (1.0x) / Normal"
+      - fast: "Fast (1.35x) / Hızlı"
+      - instant: "Instant (5.0x Snappy) / Anlık"
   - SpringStyle: bouncy
-    $name: Spring Physics Dynamic / Yay Fiziği Karakteri
-    $description: Motion curve for capsule expansions and morphs. / Kapsül açılma ve şekil değiştirme yay eğrisi.
+    $name: "Spring Physics Dynamic / Yay Fiziği Karakteri"
+    $description: "Motion curve for capsule expansions and morphs. / Kapsül açılma ve şekil değiştirme yay eğrisi."
     $options:
-      - bouncy: Bouncy (Apple Vision fluid bounce) / Akıcı Yaylı
-      - smooth: Smooth (Critically damped gentle glide) / Yumuşak Kayma
-      - snappy: Snappy (High tension responsive snap) / Seri & Atik
-      - stiff: Stiff (Minimal overshoot) / Sert
+      - bouncy: "Bouncy (Apple Vision fluid bounce) / Akıcı Yaylı"
+      - smooth: "Smooth (Critically damped gentle glide) / Yumuşak Kayma"
+      - snappy: "Snappy (High tension responsive snap) / Seri & Atik"
+      - stiff: "Stiff (Minimal overshoot) / Sert"
   - FrameRateTarget: '60'
-    $name: Target Refresh Rate / Hedef Yenileme Hızı
-    $description: Maximum render loop refresh rate. / Maksimum kare hızı (FPS).
+    $name: "Target Refresh Rate / Hedef Yenileme Hızı"
+    $description: "Maximum render loop refresh rate. / Maksimum kare hızı (FPS)."
     $options:
-      - '30': 30 FPS (Power Saver) / 30 FPS (Güç Tasarrufu)
-      - '60': 60 FPS (Standard Smooth) / 60 FPS (Standart Akıcı)
-      - '120': 120 FPS (High Refresh) / 120 FPS (Yüksek Akıcılık)
-      - '144': 144 FPS (Ultra Refresh) / 144 FPS (Ultra)
-      - '240': 240 FPS (Extreme Esports) / 240 FPS (Ekstrem)
+      - '30': "30 FPS (Power Saver) / 30 FPS (Güç Tasarrufu)"
+      - '60': "60 FPS (Standard Smooth) / 60 FPS (Standart Akıcı)"
+      - '120': "120 FPS (High Refresh) / 120 FPS (Yüksek Akıcılık)"
+      - '144': "144 FPS (Ultra Refresh) / 144 FPS (Ultra)"
+      - '240': "240 FPS (Extreme Esports) / 240 FPS (Ekstrem)"
   - LowPowerMode: false
-    $name: Adaptive Power Saver / Uyarlanabilir Güç Tasarrufu
-    $description: Automatically throttles idle rendering when on battery. / Pildeyken render hızını otomatik düşürür.
-  $name: Physics & Performance / Fizik & Performans
+    $name: "Adaptive Power Saver / Uyarlanabilir Güç Tasarrufu"
+    $description: "Automatically throttles idle rendering when on battery. / Pildeyken render hızını otomatik düşürür."
+  $name: "Physics & Performance / Fizik & Performans"
 - Modules:
   - NotificationAutoExpand: true
-    $name: Auto-Expand Notification Pill / Bildirimde Barı Otomatik Genişlet
-    $description: Dynamically widen capsule bar horizontally to display full text without truncation. / Bildirimlerde kayan yazı yerine barı sağa sola uzatıp tam metni gösterir.
+    $name: "Auto-Expand Notification Pill / Bildirimde Barı Otomatik Genişlet"
+    $description: "Dynamically widen capsule bar horizontally to display full text without truncation. / Bildirimlerde kayan yazı yerine barı sağa sola uzatıp tam metni gösterir."
   - Media: true
-    $name: Media module / Medya Modülü
-    $description: Shows album art, song info, scrubber, and playback controls. / Şarkı bilgisi, albüm kapağı ve medya kontrolleri.
+    $name: "Media module / Medya Modülü"
+    $description: "Shows album art, song info, scrubber, and playback controls. / Şarkı bilgisi, albüm kapağı ve medya kontrolleri."
   - Notification: true
-    $name: Notification module / Bildirim Modülü
-    $description: Shows rich Windows toast notifications and banner popups. / Windows bildirimleri ve uyarılar.
+    $name: "Notification module / Bildirim Modülü"
+    $description: "Shows rich Windows toast notifications and banner popups. / Windows bildirimleri ve uyarılar."
   - Clipboard: true
-    $name: Clipboard module / Pano Modülü
-    $description: Shows a quick preview of copied text or screenshot images. / Kopyalanan metin ve ekran görüntüsü önizlemesi.
+    $name: "Clipboard module / Pano Modülü"
+    $description: "Shows a quick preview of copied text or screenshot images. / Kopyalanan metin ve ekran görüntüsü önizlemesi."
   - Battery: true
-    $name: Battery module / Pil Modülü
-    $description: Shows alerts when battery is low or charger is connected. / Düşük pil ve şarj durumu uyarıları.
+    $name: "Battery module / Pil Modülü"
+    $description: "Shows alerts when battery is low or charger is connected. / Düşük pil ve şarj durumu uyarıları."
   - Progress: true
-    $name: Progress module / İlerleme Modülü
-    $description: Shows a progress ring for active downloads or tasks. / İndirme ve aktarımlar için ilerleme halkası.
+    $name: "Progress module / İlerleme Modülü"
+    $description: "Shows a progress ring for active downloads or tasks. / İndirme ve aktarımlar için ilerleme halkası."
   - Volume: true
-    $name: Volume OSD module / Ses OSD Modülü
-    $description: Shows instant volume bar and mute status on system volume change. / Ses seviyesi değiştiğinde anlık OSD çubuğu.
+    $name: "Volume OSD module / Ses OSD Modülü"
+    $description: "Shows instant volume bar and mute status on system volume change. / Ses seviyesi değiştiğinde anlık OSD çubuğu."
   - CapsLock: true
-    $name: Caps/Num Lock OSD module / Tuş Kilidi OSD Modülü
-    $description: Shows status indicator when Caps Lock or Num Lock is toggled. / Caps Lock / Num Lock basıldığında durum göstergesi.
+    $name: "Caps/Num Lock OSD module / Tuş Kilidi OSD Modülü"
+    $description: "Shows status indicator when Caps Lock or Num Lock is toggled. / Caps Lock / Num Lock basıldığında durum göstergesi."
   - Device: true
-    $name: Device connection OSD / Aygıt Bağlantı OSD
-    $description: Shows alert when USB or Bluetooth devices are plugged in. / USB ve Bluetooth cihaz bağlantı bildirimleri.
+    $name: "Device connection OSD / Aygıt Bağlantı OSD"
+    $description: "Shows alert when USB or Bluetooth devices are plugged in. / USB ve Bluetooth cihaz bağlantı bildirimleri."
   - GameOverlay: false
-    $name: Enable Game Overlay Mode / Oyun Overlay Modu
-    $description: Replaces the clock with live stats like FPS, CPU, GPU, and RAM. / FPS, CPU, GPU ve RAM kullanımını gösterir.
+    $name: "Enable Game Overlay Mode / Oyun Overlay Modu"
+    $description: "Replaces the clock with live stats like FPS, CPU, GPU, and RAM. / FPS, CPU, GPU ve RAM kullanımını gösterir."
   - ShowMetricText: true
-    $name: Show labels in metric chips / Metrik Etiketlerini Göster
-    $description: Adds text labels (like 'CPU') inside metric bars. / Metrik çubuklarında yazı etiketlerini gösterir.
+    $name: "Show labels in metric chips / Metrik Etiketlerini Göster"
+    $description: "Adds text labels (like 'CPU') inside metric bars. / Metrik çubuklarında yazı etiketlerini gösterir."
   - ShowMetricsInIdle: false
-    $name: Show micro-metrics in idle / Kapalı Kapsülde CPU/RAM Göster
-    $description: Displays small CPU and RAM chips in the collapsed idle capsule. / Kapalı hap görünümünde küçük CPU/RAM çipi gösterir.
+    $name: "Show micro-metrics in idle / Kapalı Kapsülde CPU/RAM Göster"
+    $description: "Displays small CPU and RAM chips in the collapsed idle capsule. / Kapalı hap görünümünde küçük CPU/RAM çipi gösterir."
   - WeatherCity: ""
-    $name: Weather City (Optional) / Hava Durumu Şehri (İsteğe Bağlı)
-    $description: Enter your city (e.g. London, Istanbul). Leave blank for auto IP. / Şehir adı yazın. Boş bırakırsanız otomatik konum kullanılır.
+    $name: "Weather City (Optional) / Hava Durumu Şehri (İsteğe Bağlı)"
+    $description: "Enter your city (e.g. London, Istanbul). Leave blank for auto IP. / Şehir adı yazın. Boş bırakırsanız otomatik konum kullanılır."
   - WeatherFahrenheit: false
-    $name: Use Fahrenheit / Fahrenheit Kullan
-    $description: Display weather temperature in Fahrenheit. / Sıcaklığı Fahrenheit cinsinden gösterir.
+    $name: "Use Fahrenheit / Fahrenheit Kullan"
+    $description: "Display weather temperature in Fahrenheit. / Sıcaklığı Fahrenheit cinsinden gösterir."
   - NotificationDuration: "4.0"
-    $name: Notification Duration (sec) / Bildirim Gösterim Süresi (sn)
-    $description: How long to display new notifications. / Bildirimlerin ekranda kalma süresi.
+    $name: "Notification Duration (sec) / Bildirim Gösterim Süresi (sn)"
+    $description: "How long to display new notifications. / Bildirimlerin ekranda kalma süresi."
     $options:
-      - '2.0': 2.0s
-      - '3.0': 3.0s
-      - '4.0': 4.0s
-      - '6.0': 6.0s
-      - '8.0': 8.0s
+      - '2.0': "2.0s"
+      - '3.0': "3.0s"
+      - '4.0': "4.0s"
+      - '6.0': "6.0s"
+      - '8.0': "8.0s"
   - ClipboardDuration: "2.5"
-    $name: Clipboard Duration (sec) / Pano Gösterim Süresi (sn)
-    $description: How long to display clipboard popups. / Pano kopyalama bildiriminin süresi.
+    $name: "Clipboard Duration (sec) / Pano Gösterim Süresi (sn)"
+    $description: "How long to display clipboard popups. / Pano kopyalama bildiriminin süresi."
     $options:
-      - '1.5': 1.5s
-      - '2.5': 2.5s
-      - '4.0': 4.0s
+      - '1.5': "1.5s"
+      - '2.5': "2.5s"
+      - '4.0': "4.0s"
   - VolumeDuration: "1.8"
-    $name: Volume Duration (sec) / Ses Gösterim Süresi (sn)
-    $description: How long to display volume popups. / Ses OSD süresi.
+    $name: "Volume Duration (sec) / Ses Gösterim Süresi (sn)"
+    $description: "How long to display volume popups. / Ses OSD süresi."
   - CapsLockDuration: "1.5"
-    $name: Caps Lock Duration (sec) / Tuş Kilidi Süresi (sn)
-    $description: How long to display Caps/Num Lock popups. / Tuş kilidi OSD süresi.
+    $name: "Caps Lock Duration (sec) / Tuş Kilidi Süresi (sn)"
+    $description: "How long to display Caps/Num Lock popups. / Tuş kilidi OSD süresi."
   - DeviceDuration: "3.0"
-    $name: Device Duration (sec) / Cihaz Bildirim Süresi (sn)
-    $description: How long to display device alerts. / Aygıt bağlantı bildirimi süresi.
-  $name: Modules & Features / Modüller & Özellikler
+    $name: "Device Duration (sec) / Cihaz Bildirim Süresi (sn)"
+    $description: "How long to display device alerts. / Aygıt bağlantı bildirimi süresi."
+  $name: "Modules & Features / Modüller & Özellikler"
 - FineTuning:
   - SplitGap: 12
-    $name: Split pill gap (px) / Ayrık Kapsül Boşluğu
-    $description: Gap between two pills in Split mode. / Ayrık modda iki hap arası boşluk (px).
+    $name: "Split pill gap (px) / Ayrık Kapsül Boşluğu"
+    $description: "Gap between two pills in Split mode. / Ayrık modda iki hap arası boşluk (px)."
   - HoverScalePercent: 102
-    $name: Hover scale (%) / Fare Üzerindeyken Büyüme Oranı (%)
-    $description: Pill scale on hover/pinned (100 = 1.0x, 105 = 1.05x). / Fare üzerindeyken büyüme yüzdesi.
+    $name: "Hover scale (%) / Fare Üzerindeyken Büyüme Oranı (%)"
+    $description: "Pill scale on hover/pinned (100 = 1.0x, 105 = 1.05x). / Fare üzerindeyken büyüme yüzdesi."
   - NudgeOffsetPx: 8
-    $name: Nudge distance (px) / Bildirim Zıplama Mesafesi (px)
-    $description: Vertical bounce distance on new event (0 disables). / Yeni bildirim geldiğinde dikey sekme mesafesi.
+    $name: "Nudge distance (px) / Bildirim Zıplama Mesafesi (px)"
+    $description: "Vertical bounce distance on new event (0 disables). / Yeni bildirim geldiğinde dikey sekme mesafesi."
   - WaveformBarCount: 22
-    $name: Waveform bar count / Dalga Çubuğu Sayısı
-    $description: Number of bars in audio waveform (8-32). / Ses dalgasındaki çubuk sayısı.
+    $name: "Waveform bar count / Dalga Çubuğu Sayısı"
+    $description: "Number of bars in audio waveform (8-32). / Ses dalgasındaki çubuk sayısı."
   - WaveformGapPx: '2.5'
-    $name: Waveform bar gap (px) / Dalga Çubukları Arası Boşluk
-    $description: Gap between waveform bars. / Dalga çubukları arasındaki mesafe.
+    $name: "Waveform bar gap (px) / Dalga Çubukları Arası Boşluk"
+    $description: "Gap between waveform bars. / Dalga çubukları arasındaki mesafe."
   - ProgressRingThickness: '2.8'
-    $name: Progress ring thickness (px) / İlerleme Halkası Kalınlığı
-    $description: Thickness of progress ring stroke. / İlerleme halkasının çizgi kalınlığı.
+    $name: "Progress ring thickness (px) / İlerleme Halkası Kalınlığı"
+    $description: "Thickness of progress ring stroke. / İlerleme halkasının çizgi kalınlığı."
   - PaginationDotSize: '2.5'
-    $name: Pagination dot radius (px) / Sayfa Noktası Yarıçapı
-    $description: Radius of pagination dots. / Panel geçiş noktalarının boyutu.
+    $name: "Pagination dot radius (px) / Sayfa Noktası Yarıçapı"
+    $description: "Radius of pagination dots. / Panel geçiş noktalarının boyutu."
   - PrivacyDotSize: '3.8'
-    $name: Privacy dot radius (px) / Gizlilik Noktası Yarıçapı
-    $description: Radius of mic/camera privacy dots. / Mikrofon ve kamera gizlilik noktalarının boyutu.
+    $name: "Privacy dot radius (px) / Gizlilik Noktası Yarıçapı"
+    $description: "Radius of mic/camera privacy dots. / Mikrofon ve kamera gizlilik noktalarının boyutu."
   - TopHighlightOpacity: 35
-    $name: Top highlight opacity (%) / Üst Yansıma Saydamlığı (%)
-    $description: Opacity of 1px top rim highlight (0-100). / Üst kenar yansımasının opaklığı.
+    $name: "Top highlight opacity (%) / Üst Yansıma Saydamlığı (%)"
+    $description: "Opacity of 1px top rim highlight (0-100). / Üst kenar yansımasının opaklığı."
   - RimThickness: '0.9'
-    $name: Refraction rim thickness (px) / Kırılma Kenarlığı Kalınlığı
-    $description: Stroke thickness of outer refraction border. / Dış kırılma kenarlığının kalınlığı.
+    $name: "Refraction rim thickness (px) / Kırılma Kenarlığı Kalınlığı"
+    $description: "Stroke thickness of outer refraction border. / Dış kırılma kenarlığının kalınlığı."
   - ShadowSpreadPx: 10
-    $name: Shadow spread (px) / Gölge Yayılımı (px)
-    $description: Maximum spread of soft drop shadow (0-24). / Gölgenin yayılma genişliği.
+    $name: "Shadow spread (px) / Gölge Yayılımı (px)"
+    $description: "Maximum spread of soft drop shadow (0-24). / Gölgenin yayılma genişliği."
   - ShadowYOffsetPx: 4
-    $name: Shadow Y offset (px) / Gölge Dikey Kaydırma
-    $description: Vertical offset of drop shadow (0-12). / Gölgenin dikey uzaklığı.
+    $name: "Shadow Y offset (px) / Gölge Dikey Kaydırma"
+    $description: "Vertical offset of drop shadow (0-12). / Gölgenin dikey uzaklığı."
   - CausticsSpeed: '1.3'
-    $name: Caustics animation speed / Kaustik Animasyon Hızı
-    $description: Speed multiplier for glass caustics wave. / Cam yüzeyindeki ışık dalgası hareket hızı.
+    $name: "Caustics animation speed / Kaustik Animasyon Hızı"
+    $description: "Speed multiplier for glass caustics wave. / Cam yüzeyindeki ışık dalgası hareket hızı."
   - ContentFadeOnResize: true
-    $name: Content fade on resize / Boyut Değişirken İçeriği Yumuşat
-    $description: Fade pill content alpha during morph. / Şekil değişirken içerik saydamlığını yumuşatır.
+    $name: "Content fade on resize / Boyut Değişirken İçeriği Yumuşat"
+    $description: "Fade pill content alpha during morph. / Şekil değişirken içerik saydamlığını yumuşatır."
   - UseDwmBlurBehind: false
-    $name: DWM blur behind / DWM Gerçek Arka Plan Bulanıklığı
-    $description: Enable real backdrop blur via DwmEnableBlurBehindWindow. / DWM üzerinden gerçek arka plan bulanıklığı uygular.
+    $name: "DWM blur behind / DWM Gerçek Arka Plan Bulanıklığı"
+    $description: "Enable real backdrop blur via DwmEnableBlurBehindWindow. / DWM üzerinden gerçek arka plan bulanıklığı uygular."
   - WeatherUpdateMinutes: 10
-    $name: Weather update interval (min) / Hava Durumu Güncelleme Aralığı (dk)
-    $description: Weather fetch interval in minutes (5-60). / Hava durumu verisi çekme sıklığı.
-  $name: Fine Tuning & Advanced / İnce Ayarlar & Gelişmiş
+    $name: "Weather update interval (min) / Hava Durumu Güncelleme Aralığı (dk)"
+    $description: "Weather fetch interval in minutes (5-60). / Hava durumu verisi çekme sıklığı."
+  $name: "Fine Tuning & Advanced / İnce Ayarlar & Gelişmiş"
 */
 // ==/WindhawkModSettings==
 
@@ -3317,27 +3317,50 @@ class Renderer {
     IDWriteTextFormat* GetTextFormat() const { return textFormat_.Get(); }
 
     float MeasureNotificationWidth(const std::wstring& title, const std::wstring& body) {
+        auto SanitizeString = [](const std::wstring& in) -> std::wstring {
+            std::wstring out;
+            out.reserve(in.size());
+            bool lastSpace = true;
+            for (wchar_t c : in) {
+                if (c == L'\r' || c == L'\n' || c == L'\t' || c == L' ') {
+                    if (!lastSpace) {
+                        out.push_back(L' ');
+                        lastSpace = true;
+                    }
+                } else {
+                    out.push_back(c);
+                    lastSpace = false;
+                }
+            }
+            while (!out.empty() && out.back() == L' ') out.pop_back();
+            return out;
+        };
+
+        std::wstring cleanTitle = SanitizeString(title);
+        std::wstring cleanBody = SanitizeString(body);
+
         if (!dwriteFactory_ || !textFormat_) {
-            return 72.0f + static_cast<float>(title.size() + body.size()) * 7.5f;
+            return 80.0f + static_cast<float>(std::max(cleanTitle.size(), cleanBody.size())) * 8.0f;
         }
+
         float maxW = 0.0f;
-        if (!title.empty()) {
+        if (!cleanTitle.empty()) {
             ComPtr<IDWriteTextLayout> layout;
-            if (SUCCEEDED(dwriteFactory_->CreateTextLayout(title.c_str(), static_cast<UINT32>(title.size()), textFormat_.Get(), 2000.0f, 50.0f, &layout)) && layout) {
+            if (SUCCEEDED(dwriteFactory_->CreateTextLayout(cleanTitle.c_str(), static_cast<UINT32>(cleanTitle.size()), textFormat_.Get(), 4000.0f, 50.0f, &layout)) && layout) {
                 DWRITE_TEXT_METRICS m = {};
                 layout->GetMetrics(&m);
                 if (m.widthIncludingTrailingWhitespace > maxW) maxW = m.widthIncludingTrailingWhitespace;
             }
         }
-        if (!body.empty()) {
+        if (!cleanBody.empty() && cleanBody != cleanTitle) {
             ComPtr<IDWriteTextLayout> layout;
-            if (SUCCEEDED(dwriteFactory_->CreateTextLayout(body.c_str(), static_cast<UINT32>(body.size()), smallTextFormat_.Get() ? smallTextFormat_.Get() : textFormat_.Get(), 2000.0f, 50.0f, &layout)) && layout) {
+            if (SUCCEEDED(dwriteFactory_->CreateTextLayout(cleanBody.c_str(), static_cast<UINT32>(cleanBody.size()), smallTextFormat_.Get() ? smallTextFormat_.Get() : textFormat_.Get(), 4000.0f, 50.0f, &layout)) && layout) {
                 DWRITE_TEXT_METRICS m = {};
                 layout->GetMetrics(&m);
                 if (m.widthIncludingTrailingWhitespace > maxW) maxW = m.widthIncludingTrailingWhitespace;
             }
         }
-        return maxW + 68.0f;
+        return maxW + 72.0f;
     }
 
     void DrawSoftShadow(D2D1_RECT_F rect, float radius, float softness, const Settings& settings) {
@@ -4941,29 +4964,30 @@ class Renderer {
 
     void DrawMarqueeText(const std::wstring& text, D2D1_RECT_F rect, IDWriteTextFormat* format,
                          ID2D1Brush* brush, double now, float speed) {
-        if (!format || !brush || text.empty()) return;
+        if (!format || !brush || text.empty() || !dwriteFactory_ || !target_) return;
 
         const float layoutHeight = rect.bottom - rect.top;
-        const bool layoutDirty = (text != cachedMarqueeText_ || std::abs(layoutHeight - cachedMarqueeHeight_) > 0.5f);
-        if (layoutDirty || !cachedMarqueeLayout_) {
-            cachedMarqueeText_ = text;
-            cachedMarqueeHeight_ = layoutHeight;
-            cachedMarqueeLayout_ = nullptr;
-            dwriteFactory_->CreateTextLayout(text.c_str(), static_cast<UINT32>(text.size()),
-                                             format, 2000.0f, layoutHeight, &cachedMarqueeLayout_);
-        }
-        ComPtr<IDWriteTextLayout> layout = cachedMarqueeLayout_;
-        DWRITE_TEXT_METRICS metrics = {};
-        if (layout) layout->GetMetrics(&metrics);
-
         const float available = rect.right - rect.left;
+        if (layoutHeight <= 2.0f || available <= 2.0f) return;
+
+        ComPtr<IDWriteTextLayout> layout;
+        HRESULT hr = dwriteFactory_->CreateTextLayout(text.c_str(), static_cast<UINT32>(text.size()),
+                                                      format, 3000.0f, layoutHeight, &layout);
+        if (FAILED(hr) || !layout) return;
+
+        layout->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+        layout->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+        DWRITE_TEXT_METRICS metrics = {};
+        layout->GetMetrics(&metrics);
+
         D2D1_RECT_F clipRect = rect;
-        clipRect.top -= 10.0f;
-        clipRect.bottom += 10.0f;
+        clipRect.top -= 1.0f;
+        clipRect.bottom += 1.0f;
         target_->PushAxisAlignedClip(clipRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 
         if (metrics.widthIncludingTrailingWhitespace <= available) {
-            target_->DrawTextLayout(D2D1::Point2F(rect.left, rect.top), layout.Get(), brush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+            target_->DrawTextLayout(D2D1::Point2F(rect.left, rect.top), layout.Get(), brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
         } else {
             const float scrollW = metrics.widthIncludingTrailingWhitespace + 38.0f;
             const float pauseSecs = 1.5f;
@@ -4972,9 +4996,9 @@ class Renderer {
             const float tInCycle = std::fmod(static_cast<float>(now), cycleSecs);
             const float offset = (tInCycle < pauseSecs) ? 0.0f : (tInCycle - pauseSecs) * speed;
 
-            target_->DrawTextLayout(D2D1::Point2F(rect.left - offset, rect.top), layout.Get(), brush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+            target_->DrawTextLayout(D2D1::Point2F(rect.left - offset, rect.top), layout.Get(), brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
             if (offset > 0.0f) {
-                target_->DrawTextLayout(D2D1::Point2F(rect.left - offset + scrollW, rect.top), layout.Get(), brush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+                target_->DrawTextLayout(D2D1::Point2F(rect.left - offset + scrollW, rect.top), layout.Get(), brush, D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
             }
         }
         target_->PopAxisAlignedClip();
@@ -5089,16 +5113,41 @@ class Renderer {
     }
 
     void DrawNotification(const SharedState& state, D2D1_RECT_F rect, const Settings& settings) {
-        if (rect.bottom - rect.top < 32.0f || rect.right - rect.left < 80.0f) return;
+        if (rect.bottom - rect.top < 20.0f || rect.right - rect.left < 60.0f) return;
         const double now = NowSeconds();
         const float ttl = settings.notificationDuration > 0.1f ? settings.notificationDuration : 4.0f;
         const float remaining = Clamp(static_cast<float>(state.notification.expiresAt - now), 0.0f, ttl);
         const float progress = remaining / ttl;
         bool tr = IsTurkish(settings.language);
 
+        auto SanitizeString = [](const std::wstring& in) -> std::wstring {
+            std::wstring out;
+            out.reserve(in.size());
+            bool lastSpace = true;
+            for (wchar_t c : in) {
+                if (c == L'\r' || c == L'\n' || c == L'\t' || c == L' ') {
+                    if (!lastSpace) {
+                        out.push_back(L' ');
+                        lastSpace = true;
+                    }
+                } else {
+                    out.push_back(c);
+                    lastSpace = false;
+                }
+            }
+            while (!out.empty() && out.back() == L' ') out.pop_back();
+            return out;
+        };
+
+        std::wstring cleanApp = SanitizeString(state.notification.app);
+        std::wstring cleanTitle = SanitizeString(state.notification.title);
+        std::wstring cleanBody = SanitizeString(state.notification.body);
+
+        if (cleanTitle.empty()) cleanTitle = tr ? L"Bildirim" : L"Notification";
+
         const float cy = (rect.top + rect.bottom) * 0.5f;
-        const float iconSz = std::min((rect.bottom - rect.top) - 12.0f, 28.0f);
-        D2D1_RECT_F badge = D2D1::RectF(rect.left + 12, cy - iconSz * 0.5f, rect.left + 12 + iconSz, cy + iconSz * 0.5f);
+        const float iconSz = std::clamp((rect.bottom - rect.top) - 16.0f, 20.0f, 28.0f);
+        D2D1_RECT_F badge = D2D1::RectF(rect.left + 12.0f, cy - iconSz * 0.5f, rect.left + 12.0f + iconSz, cy + iconSz * 0.5f);
         const float br = iconSz * 0.35f;
 
         ComPtr<ID2D1SolidColorBrush> plateBrush;
@@ -5121,14 +5170,16 @@ class Renderer {
         } else {
             textBrush_->SetOpacity(0.95f);
             std::wstring glyph = L"🔔";
-            if (state.notification.title.find(L"Screen") != std::wstring::npos || state.notification.title.find(L"Ekran") != std::wstring::npos || state.notification.title.find(L"Snip") != std::wstring::npos || state.notification.title.find(L"Alıntı") != std::wstring::npos) {
+            if (cleanTitle.find(L"Screen") != std::wstring::npos || cleanTitle.find(L"Ekran") != std::wstring::npos || cleanTitle.find(L"Snip") != std::wstring::npos || cleanTitle.find(L"Alıntı") != std::wstring::npos) {
                 glyph = L"📸";
-            } else if (state.notification.title.find(L"Pomodoro") != std::wstring::npos) {
+            } else if (cleanTitle.find(L"Pomodoro") != std::wstring::npos) {
                 glyph = L"🍅";
-            } else if (state.notification.title.find(L"Hydrat") != std::wstring::npos || state.notification.title.find(L"Water") != std::wstring::npos || state.notification.title.find(L"Su") != std::wstring::npos) {
+            } else if (cleanTitle.find(L"Hydrat") != std::wstring::npos || cleanTitle.find(L"Water") != std::wstring::npos || cleanTitle.find(L"Su") != std::wstring::npos) {
                 glyph = L"💧";
-            } else if (state.notification.title.find(L"Note") != std::wstring::npos || state.notification.title.find(L"Not") != std::wstring::npos) {
+            } else if (cleanTitle.find(L"Note") != std::wstring::npos || cleanTitle.find(L"Not") != std::wstring::npos) {
                 glyph = L"📝";
+            } else if (cleanApp.find(L"Mail") != std::wstring::npos || cleanApp.find(L"Outlook") != std::wstring::npos || cleanTitle.find(L"Mail") != std::wstring::npos || cleanTitle.find(L"E-posta") != std::wstring::npos) {
+                glyph = L"✉️";
             }
 
             if (emojiFormat_) {
@@ -5138,17 +5189,33 @@ class Renderer {
             }
         }
 
-        const float tx = badge.right + 10.0f;
-        std::wstring notifTitle = state.notification.title.empty() ? (tr ? L"Bildirim" : L"Notification") : state.notification.title;
-        if (!state.notification.body.empty() && notifTitle != state.notification.body) {
-            notifTitle += L" • " + state.notification.body;
+        const float tx = badge.right + 11.0f;
+        const float rightPad = 14.0f;
+        const float totalH = rect.bottom - rect.top;
+
+        if (!cleanBody.empty() && cleanBody != cleanTitle && totalH >= 40.0f) {
+            // Two-row display
+            std::wstring headerText = cleanApp.empty() ? cleanTitle : (cleanApp + L" \u2022 " + cleanTitle);
+            D2D1_RECT_F titleRect = D2D1::RectF(tx, cy - 17.0f, rect.right - rightPad, cy - 1.0f);
+            textBrush_->SetOpacity(0.96f);
+            DrawMarqueeText(headerText, titleRect, textFormat_.Get(), textBrush_.Get(), now, 32.0f);
+
+            D2D1_RECT_F bodyRect = D2D1::RectF(tx, cy + 1.0f, rect.right - rightPad, cy + 17.0f);
+            mutedBrush_->SetOpacity(0.85f);
+            DrawMarqueeText(cleanBody, bodyRect, smallTextFormat_.Get() ? smallTextFormat_.Get() : textFormat_.Get(), mutedBrush_.Get(), now, 32.0f);
+            mutedBrush_->SetOpacity(0.58f);
+        } else {
+            // Single-row combined marquee display
+            std::wstring singleText = cleanTitle;
+            if (!cleanBody.empty() && cleanBody != cleanTitle) {
+                singleText += L" \u2022 " + cleanBody;
+            }
+            D2D1_RECT_F textRect = D2D1::RectF(tx, cy - 11.0f, rect.right - rightPad, cy + 11.0f);
+            textBrush_->SetOpacity(0.96f);
+            DrawMarqueeText(singleText, textRect, textFormat_.Get(), textBrush_.Get(), now, 32.0f);
         }
 
-        D2D1_RECT_F textRect = D2D1::RectF(tx, cy - 10.0f, rect.right - 14.0f, cy + 10.0f);
-        textBrush_->SetOpacity(0.96f);
-        DrawMarqueeText(notifTitle, textRect, textFormat_.Get(), textBrush_.Get(), now, 32.0f);
-
-        D2D1_RECT_F track = D2D1::RectF(tx, rect.bottom - 5.0f, rect.right - 14.0f, rect.bottom - 2.5f);
+        D2D1_RECT_F track = D2D1::RectF(tx, rect.bottom - 4.5f, rect.right - rightPad, rect.bottom - 2.5f);
         ComPtr<ID2D1SolidColorBrush> trackBrush;
         target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.08f), &trackBrush);
         target_->FillRoundedRectangle(D2D1::RoundedRect(track, 1.5f, 1.5f), trackBrush.Get());
