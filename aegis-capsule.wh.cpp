@@ -906,7 +906,7 @@ std::atomic<bool> g_isFullScreenActive = false;
 std::atomic<bool> g_isRecording = false;
 std::mutex g_recordingMutex;
 
-HWND g_hwnd = nullptr;
+std::atomic<HWND> g_hwnd = nullptr; // atomic: written by render thread, read by TriggerNudge/others
 HANDLE g_stopEvent = nullptr;
 HANDLE g_settingsChangedEvent = nullptr;
 HANDLE g_renderThread = nullptr;
@@ -1624,7 +1624,7 @@ bool CheckIsFullScreenActive(HMONITOR targetMonitor) {
     }
 
     HWND fg = GetForegroundWindow();
-    if (fg && fg != g_hwnd && IsWindow(fg) && IsWindowVisible(fg) && !IsIconic(fg)) {
+    if (fg && fg != g_hwnd.load(std::memory_order_relaxed) && IsWindow(fg) && IsWindowVisible(fg) && !IsIconic(fg)) {
         wchar_t cls[128] = {};
         GetClassNameW(fg, cls, ARRAYSIZE(cls));
         if (_wcsicmp(cls, L"Progman") != 0 && _wcsicmp(cls, L"WorkerW") != 0 &&
@@ -1705,7 +1705,7 @@ void SaveQuickNote(const std::wstring& note) {
     std::wstring formattedNote = note;
     SYSTEMTIME st;
     GetLocalTime(&st);
-    wchar_t timeBuf[32];
+    wchar_t timeBuf[32] = {};
     swprintf_s(timeBuf, L"[%02d:%02d] ", st.wHour, st.wMinute);
     if (formattedNote.find(L"[") != 0) {
         formattedNote = timeBuf + formattedNote;
@@ -1921,14 +1921,20 @@ void StartVoiceRecording() {
 }
 
 void StopVoiceRecording() {
-    std::lock_guard lock(g_recordingMutex);
-    if (g_isRecording) {
+    // Extract thread handle under lock, then join outside lock to avoid deadlock.
+    // RecordingThreadProc must not hold g_recordingMutex — joining with mutex held
+    // would deadlock if the thread tried to re-acquire it on cleanup.
+    HANDLE threadToJoin = nullptr;
+    {
+        std::lock_guard lock(g_recordingMutex);
+        if (!g_isRecording) return;
         g_isRecording = false;
-        if (g_recordingThread) {
-            WaitForSingleObject(g_recordingThread, 2000);
-            CloseHandle(g_recordingThread);
-            g_recordingThread = nullptr;
-        }
+        threadToJoin = g_recordingThread;
+        g_recordingThread = nullptr;
+    }
+    if (threadToJoin) {
+        WaitForSingleObject(threadToJoin, 2000);
+        CloseHandle(threadToJoin);
     }
 }
 
@@ -2370,7 +2376,7 @@ void TriggerNudge() {
     const double previous = g_lastNudgeTime.load();
     if (now - previous < 0.45) return;
     g_lastNudgeTime = now;
-    HWND hwnd = g_hwnd;
+    HWND hwnd = g_hwnd.load(std::memory_order_relaxed);
     if (hwnd) PostMessageW(hwnd, WM_APP_NEW_EVENT, 0, 0);
 }
 
@@ -3123,6 +3129,8 @@ class Renderer {
     float cachedMarqueeHeight_ = 0.0f;
     ComPtr<IDWriteTextLayout> cachedMarqueeLayout_;
 
+    float lastFontScale_ = 0.0f; // tracks current font scale to avoid redundant format recreation
+
    public:
     bool Initialize(HWND hwnd) {
         hwnd_ = hwnd;
@@ -3193,7 +3201,6 @@ class Renderer {
         return true;
     }
 
-    float lastFontScale_ = 0.0f;
     void EnsureTextFormats(float scale) {
         if (std::abs(scale - lastFontScale_) < 0.001f && textFormat_) {
             return;
@@ -3284,11 +3291,13 @@ class Renderer {
             DWORD color = 0;
             BOOL opaque = TRUE;
             if (SUCCEEDED(DwmGetColorizationColor(&color, &opaque))) {
+                // DwmGetColorizationColor returns 0xAARRGGBB. We ignore the alpha byte
+                // and force full opacity since accent is used for glow/highlight effects.
                 accent = D2D1::ColorF(
                     ((color >> 16) & 0xff) / 255.0f,
                     ((color >> 8) & 0xff) / 255.0f,
                     (color & 0xff) / 255.0f,
-                    1.0f);
+                    1.0f); // Always opaque — do not use the alpha byte from DWM
             }
         }
         if (!accentBrush_) target_->CreateSolidColorBrush(accent, &accentBrush_);
@@ -4057,7 +4066,7 @@ class Renderer {
     }
 
     void DrawLivingBriefingDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings,
-                                     double now, float scale, SYSTEMTIME& local, bool hasWeather,
+                                     double now, float scale, const SYSTEMTIME& local, bool hasWeather,
                                      const std::wstring& wIcon, const std::wstring& wText) {
         bool tr = IsTurkish(settings.language);
         std::wstring userName = GetSystemUserName();
@@ -4078,7 +4087,9 @@ class Renderer {
         }
 
         wchar_t dateBuf[64] = {};
-        GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"ddd, d MMMM", dateBuf, ARRAYSIZE(dateBuf), nullptr);
+        if (!GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"ddd, d MMMM", dateBuf, ARRAYSIZE(dateBuf), nullptr)) {
+            swprintf_s(dateBuf, L"%02d/%02d", local.wDay, local.wMonth);
+        }
         wchar_t timeBuf[16] = {};
         swprintf_s(timeBuf, L"%02d:%02d", local.wHour, local.wMinute);
         std::wstring dateTimeTag = std::wstring(timeBuf) + L" \u2022 " + dateBuf;
@@ -4201,8 +4212,8 @@ class Renderer {
         mutedBrush_->SetOpacity(1.0f);
     }
 
-    void DrawCalendarDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now, float scale, SYSTEMTIME& local) {
-        (void)state; (void)settings; (void)now;
+    void DrawCalendarDashboard(const SharedState& state, D2D1_RECT_F rect, const Settings& settings, double now, float scale, const SYSTEMTIME& local) {
+        (void)state; (void)now; // state and now unused in calendar; settings IS used below
         const float totalW = (rect.right - rect.left);
         const float totalH = (rect.bottom - rect.top);
         const float leftW = std::clamp(totalW * 0.24f, 75.0f, 130.0f);
@@ -4215,8 +4226,18 @@ class Renderer {
         ID2D1SolidColorBrush* calHeader = calHeaderBrush_ ? calHeaderBrush_.Get() : textBrush_.Get();
         
         wchar_t monthName[32] = {};
-        GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"MMMM", monthName, ARRAYSIZE(monthName), nullptr);
-        for (int i = 0; monthName[i]; ++i) monthName[i] = towupper(monthName[i]);
+        if (!GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"MMMM", monthName, ARRAYSIZE(monthName), nullptr)) {
+            // Fallback: manual month names if locale API fails
+            bool isTr = IsTurkish(settings.language);
+            static const wchar_t* kMonthsTr[] = {L"OCAK",L"ŞUBAT",L"MART",L"NİSAN",L"MAYIS",L"HAZİRAN",
+                                                   L"TEMMUZ",L"AĞUSTOS",L"EYLÜL",L"EKİM",L"KASIM",L"ARALIK"};
+            static const wchar_t* kMonthsEn[] = {L"JANUARY",L"FEBRUARY",L"MARCH",L"APRIL",L"MAY",L"JUNE",
+                                                   L"JULY",L"AUGUST",L"SEPTEMBER",L"OCTOBER",L"NOVEMBER",L"DECEMBER"};
+            int mIdx = std::max(1, std::min(12, static_cast<int>(local.wMonth))) - 1;
+            wcscpy_s(monthName, isTr ? kMonthsTr[mIdx] : kMonthsEn[mIdx]);
+        } else {
+            for (int i = 0; monthName[i]; ++i) monthName[i] = towupper(monthName[i]);
+        }
         
         target_->DrawText(monthName, static_cast<UINT32>(wcslen(monthName)), boldTextFormat_.Get(),
                            D2D1::RectF(leftBlock.left, leftBlock.top + 6.0f * scale, leftBlock.right, leftBlock.top + 24.0f * scale),
@@ -4239,18 +4260,25 @@ class Renderer {
         textBrush_->SetOpacity(1.0f);
 
         wchar_t weekdayName[32] = {};
-        GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"dddd", weekdayName, ARRAYSIZE(weekdayName), nullptr);
+        if (!GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"dddd", weekdayName, ARRAYSIZE(weekdayName), nullptr)) {
+            // Fallback: manual weekday names if locale API fails
+            bool isTr = IsTurkish(settings.language);
+            static const wchar_t* kDaysTr[] = {L"Pazar",L"Pazartesi",L"Salı",L"Çarşamba",L"Perşembe",L"Cuma",L"Cumartesi"};
+            static const wchar_t* kDaysEn[] = {L"Sunday",L"Monday",L"Tuesday",L"Wednesday",L"Thursday",L"Friday",L"Saturday"};
+            wcscpy_s(weekdayName, isTr ? kDaysTr[local.wDayOfWeek % 7] : kDaysEn[local.wDayOfWeek % 7]);
+        }
         mutedBrush_->SetOpacity(0.75f);
-        target_->DrawText(weekdayName, static_cast<UINT32>(wcslen(weekdayName)), boldTextFormat_.Get(),
-                           D2D1::RectF(leftBlock.left, leftBlock.bottom - 22.0f * scale, leftBlock.right, leftBlock.bottom),
-                           mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+        if (wcslen(weekdayName) > 0 && boldTextFormat_) {
+            target_->DrawText(weekdayName, static_cast<UINT32>(wcslen(weekdayName)), boldTextFormat_.Get(),
+                               D2D1::RectF(leftBlock.left, leftBlock.bottom - 22.0f * scale, leftBlock.right, leftBlock.bottom),
+                               mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+        }
         mutedBrush_->SetOpacity(1.0f);
 
         // Right Grid (Fully Dynamic Sizing & Overflow Protection)
         int startDay = GetDayOfWeek(local.wYear, local.wMonth, 1);
         int totalDays = GetDaysInMonth(local.wYear, local.wMonth);
-        int totalRows = 1 + (startDay + totalDays + 6) / 7;
-
+        int totalRows = std::max(1, 1 + (startDay + totalDays + 6) / 7); // guard against zero for rowH division
         const float gridStart = leftBlock.right + 18.0f * scale;
         const float gridEnd = rect.right - 36.0f * scale;
         const float colW = (gridEnd > gridStart + 70.0f) ? (gridEnd - gridStart) / 7.0f : 28.0f * scale;
@@ -4260,7 +4288,8 @@ class Renderer {
 
         bool tr = IsTurkish(settings.language);
         const wchar_t* daysEn[] = {L"Su", L"Mo", L"Tu", L"We", L"Th", L"Fr", L"Sa"};
-        const wchar_t* daysTr[] = {L"Pz", L"Pt", L"Sa", L"Ça", L"Pe", L"Cu", L"Ct"};
+        // Standard Turkish day abbreviations: Paz/Pzt/Sal/Çar/Per/Cum/Cmt
+        const wchar_t* daysTr[] = {L"Paz", L"Pzt", L"Sal", L"Çar", L"Per", L"Cum", L"Cmt"};
         const wchar_t** days = tr ? daysTr : daysEn;
         
         for (int i = 0; i < 7; ++i) {
@@ -4541,7 +4570,7 @@ class Renderer {
     }
 
     void DrawSingleTab(int tabIndex, const SharedState& state, D2D1_RECT_F rect, const Settings& settings,
-                       double now, float scale, SYSTEMTIME local, bool hasWeather,
+                       double now, float scale, const SYSTEMTIME& local, bool hasWeather,
                        const std::wstring& wIcon, const std::wstring& wText) {
         switch (tabIndex) {
             case 0: DrawLivingBriefingDashboard(state, rect, settings, now, scale, local, hasWeather, wIcon, wText); break;
@@ -4783,15 +4812,15 @@ class Renderer {
         const float spacing = 7.0f * scale;
         const float r = settings.paginationDotSize * scale;
 
-        ComPtr<ID2D1SolidColorBrush> activeDot, inactiveDot;
-        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.90f * settingsOpacity_), &activeDot);
-        target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.22f * settingsOpacity_), &inactiveDot);
-
+        // Reuse whiteBrush_ with opacity instead of allocating new brushes every frame (perf fix BUG-10)
         const float startY = dotY - (kTotalTabs - 1) * 0.5f * spacing;
         for (int i = 0; i < kTotalTabs; ++i) {
-            target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, startY + i * spacing), r, r),
-                                 tab == i ? activeDot.Get() : inactiveDot.Get());
+            if (whiteBrush_) {
+                whiteBrush_->SetOpacity((tab == i) ? 0.90f * settingsOpacity_ : 0.22f * settingsOpacity_);
+                target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(dotX, startY + i * spacing), r, r), whiteBrush_.Get());
+            }
         }
+        if (whiteBrush_) whiteBrush_->SetOpacity(1.0f);
 
         target_->PopAxisAlignedClip();
     }
@@ -6896,8 +6925,15 @@ void UpdateSystemMetrics() {
         g_state.system.memoryPercent = static_cast<int>(mem.dwMemoryLoad);
     }
 
+    // Detect the actual Windows system drive instead of assuming C:\
     ULARGE_INTEGER freeBytes, totalBytes;
-    if (GetDiskFreeSpaceExW(L"C:\\", &freeBytes, &totalBytes, nullptr) && totalBytes.QuadPart > 0) {
+    wchar_t sysDir[MAX_PATH] = {};
+    const wchar_t* diskRoot = L"C:\\"; // fallback
+    if (GetWindowsDirectoryW(sysDir, ARRAYSIZE(sysDir)) > 0 && sysDir[0] && sysDir[1] == L':') {
+        sysDir[2] = L'\\'; sysDir[3] = L'\0'; // ensure trailing backslash
+        diskRoot = sysDir;
+    }
+    if (GetDiskFreeSpaceExW(diskRoot, &freeBytes, &totalBytes, nullptr) && totalBytes.QuadPart > 0) {
         int freePct = static_cast<int>(freeBytes.QuadPart * 100 / totalBytes.QuadPart);
         std::lock_guard lock(g_stateMutex);
         g_state.system.diskFreePercent = freePct;
@@ -6918,9 +6954,10 @@ void UpdateBatteryMetrics() {
         bool charging = (sps.ACLineStatus == 1);
         bool low = (sps.BatteryFlag & 1) || (sps.BatteryLifePercent <= 20 && !charging);
         
+        // Lock once for all g_state writes to avoid data race on battery fields
         std::lock_guard lock(g_stateMutex);
         g_state.system.charging = charging;
-        
+
         if (sps.BatteryLifePercent <= 100) {
             g_state.battery.percent = sps.BatteryLifePercent;
             g_state.battery.charging = charging;
@@ -7055,6 +7092,8 @@ BOOL Wh_ModInit() {
 
 void Wh_ModAfterInit() {
     Wh_Log(L"aegisCapsule: ModAfterInit called.");
+    // Windhawk calls AfterInit after all hooks are applied. StartMod() is safe to call
+    // again here — g_modInitialized (atomic) prevents double initialization.
     StartMod();
 }
 
