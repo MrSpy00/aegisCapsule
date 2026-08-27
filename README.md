@@ -107,10 +107,4 @@ Sağ tık menüsü: Pinned Expanded, Game Overlay, ExpandOnHover, Liquid Glass/G
 
 ---
 
-## 📌 Roadmap
-
-- [ ] Tray / hotkey özelleştirme
-- [ ] Daha fazla tema (Neon, Frost)
-- [ ] Eklenti API (harici modüller)
-
 > PR ve issue'lar açık — `aegis` ile geliştirilmeye devam ediyor.
