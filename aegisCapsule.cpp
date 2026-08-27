@@ -811,8 +811,16 @@ FILETIME g_prevUserTime{};
 constexpr GUID kSubTypeIeeeFloat = {
     0x00000003, 0x0000, 0x0010, {0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}};
 
+void TriggerNudge();
+void PushAudioChunks(BYTE* data, UINT32 frames, WAVEFORMATEX* format);
 void UpdateSystemMetrics();
 void UpdateBatteryMetrics();
+void UpdatePrivacyIndicators();
+void DismissTransientState();
+void ShowContextMenu(HWND hwnd, POINT screenPoint);
+void StartVoiceRecording();
+void StopVoiceRecording();
+void TriggerCustomAlert(const std::wstring& app, const std::wstring& title, const std::wstring& body, double duration);
 
 // Mathematical & helper routines
 inline float Clamp(float v, float lo, float hi) {
@@ -2546,6 +2554,68 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
 }
 
 class Renderer {
+   private:
+    HWND hwnd_ = nullptr;
+    HDC memDc_ = nullptr;
+    HBITMAP memBitmap_ = nullptr;
+    HGDIOBJ oldBitmap_ = nullptr;
+    int bitmapWidth_ = 0;
+    int bitmapHeight_ = 0;
+    float settingsOpacity_ = 0.96f;
+
+    ComPtr<ID2D1Factory> d2dFactory_;
+    ComPtr<IDWriteFactory> dwriteFactory_;
+    ComPtr<ID2D1DCRenderTarget> target_;
+
+    ComPtr<ID2D1SolidColorBrush> pillBgBrush_;
+    ComPtr<ID2D1SolidColorBrush> tintBrush_;
+    ComPtr<ID2D1SolidColorBrush> accentBrush_;
+    ComPtr<ID2D1SolidColorBrush> textBrush_;
+    ComPtr<ID2D1SolidColorBrush> mutedBrush_;
+    ComPtr<ID2D1SolidColorBrush> whiteBrush_;
+    ComPtr<ID2D1SolidColorBrush> redBrush_;
+    ComPtr<ID2D1SolidColorBrush> greenBrush_;
+    ComPtr<ID2D1SolidColorBrush> yellowBrush_;
+    ComPtr<ID2D1SolidColorBrush> cyanBrush_;
+    ComPtr<ID2D1SolidColorBrush> orangeBrush_;
+    ComPtr<ID2D1SolidColorBrush> glassBorderBrush_;
+    ComPtr<ID2D1SolidColorBrush> glassGlossBrush_;
+    ComPtr<ID2D1SolidColorBrush> shadowBrushes_[6];
+
+    ComPtr<IDWriteTextFormat> textFormat_;
+    ComPtr<IDWriteTextFormat> smallTextFormat_;
+    ComPtr<IDWriteTextFormat> clockFormat_;
+    ComPtr<IDWriteTextFormat> boldTextFormat_;
+    ComPtr<IDWriteTextFormat> hugeTextFormat_;
+    ComPtr<IDWriteTextFormat> iconFormat_;
+
+    ComPtr<ID2D1Bitmap> artBitmap_;
+    uint64_t artGeneration_ = 0;
+    ComPtr<ID2D1Bitmap> mediaSourceIconBitmap_;
+    uint64_t mediaSourceIconGeneration_ = 0;
+    ComPtr<ID2D1Bitmap> notificationIconBitmap_;
+    uint64_t notificationIconGeneration_ = 0;
+    ComPtr<ID2D1Bitmap> clipboardIconBitmap_;
+    uint64_t clipboardIconGeneration_ = 0;
+
+    // Gradient brush cache — avoids per-frame StopCollection + Brush allocation
+    ComPtr<ID2D1GradientStopCollection> sheenStops_;
+    ComPtr<ID2D1LinearGradientBrush> sheenBrush_;
+    float cachedSheenIntensity_ = -1.0f;
+    float cachedSheenOpacity_ = -1.0f;
+
+    ComPtr<ID2D1GradientStopCollection> shimmerStops_;
+    ComPtr<ID2D1LinearGradientBrush> shimmerBrush_;
+    float cachedShimmerIntensity_ = -1.0f;
+    float cachedShimmerOpacity_ = -1.0f;
+
+    ComPtr<ID2D1SolidColorBrush> glowBorderBrush_;
+
+    // Text layout cache — avoids per-frame IDWriteTextLayout allocation for marquee
+    std::wstring cachedMarqueeText_;
+    float cachedMarqueeHeight_ = 0.0f;
+    ComPtr<IDWriteTextLayout> cachedMarqueeLayout_;
+
    public:
     bool Initialize(HWND hwnd) {
         hwnd_ = hwnd;
@@ -3125,14 +3195,14 @@ class Renderer {
         GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"MMMM", monthName, ARRAYSIZE(monthName), nullptr);
         for (int i = 0; monthName[i]; ++i) monthName[i] = towupper(monthName[i]);
         
-        target_->DrawTextW(monthName, static_cast<UINT32>(wcslen(monthName)), boldTextFormat_.Get(),
+        target_->DrawText(monthName, static_cast<UINT32>(wcslen(monthName)), boldTextFormat_.Get(),
                            D2D1::RectF(leftBlock.left, leftBlock.top + 6.0f * scale, leftBlock.right, leftBlock.top + 24.0f * scale),
                            calHeader.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         wchar_t yearStr[16] = {};
         swprintf_s(yearStr, L"%d", local.wYear);
         mutedBrush_->SetOpacity(0.45f);
-        target_->DrawTextW(yearStr, static_cast<UINT32>(wcslen(yearStr)), boldTextFormat_.Get(),
+        target_->DrawText(yearStr, static_cast<UINT32>(wcslen(yearStr)), boldTextFormat_.Get(),
                            D2D1::RectF(leftBlock.left, leftBlock.top + 20.0f * scale, leftBlock.right, leftBlock.top + 38.0f * scale),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         mutedBrush_->SetOpacity(1.0f);
@@ -3140,7 +3210,7 @@ class Renderer {
         wchar_t dayStr[16] = {};
         swprintf_s(dayStr, L"%d", local.wDay);
         textBrush_->SetOpacity(0.96f);
-        target_->DrawTextW(dayStr, static_cast<UINT32>(wcslen(dayStr)), hugeTextFormat_.Get(),
+        target_->DrawText(dayStr, static_cast<UINT32>(wcslen(dayStr)), hugeTextFormat_.Get(),
                            D2D1::RectF(leftBlock.left, leftBlock.top + 30.0f * scale, leftBlock.right, leftBlock.top + 80.0f * scale),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         textBrush_->SetOpacity(1.0f);
@@ -3148,7 +3218,7 @@ class Renderer {
         wchar_t weekdayName[32] = {};
         GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &local, L"dddd", weekdayName, ARRAYSIZE(weekdayName), nullptr);
         mutedBrush_->SetOpacity(0.75f);
-        target_->DrawTextW(weekdayName, static_cast<UINT32>(wcslen(weekdayName)), boldTextFormat_.Get(),
+        target_->DrawText(weekdayName, static_cast<UINT32>(wcslen(weekdayName)), boldTextFormat_.Get(),
                            D2D1::RectF(leftBlock.left, leftBlock.bottom - 22.0f * scale, leftBlock.right, leftBlock.bottom),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         mutedBrush_->SetOpacity(1.0f);
@@ -3163,7 +3233,7 @@ class Renderer {
         for (int i = 0; i < 7; ++i) {
             D2D1_RECT_F cell = D2D1::RectF(gridStart + i * colW, gridTop, gridStart + (i+1)*colW, gridTop + rowH);
             ComPtr<ID2D1SolidColorBrush> brush = (i == 0 || i == 6) ? calHeader : mutedBrush_;
-            target_->DrawTextW(days[i], 1, boldTextFormat_.Get(), cell, brush.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+            target_->DrawText(days[i], 1, boldTextFormat_.Get(), cell, brush.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         }
 
         int startDay = GetDayOfWeek(local.wYear, local.wMonth, 1);
@@ -3182,13 +3252,13 @@ class Renderer {
             if (d == local.wDay) {
                 target_->FillEllipse(D2D1::Ellipse(D2D1::Point2F(cell.left + colW*0.5f, cell.top + rowH*0.5f), 10.0f*scale, 10.0f*scale), calHeader.Get());
                 textBrush_->SetOpacity(1.0f);
-                target_->DrawTextW(std::to_wstring(d).c_str(), static_cast<UINT32>(std::to_wstring(d).length()), boldTextFormat_.Get(), cell, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                target_->DrawText(std::to_wstring(d).c_str(), static_cast<UINT32>(std::to_wstring(d).length()), boldTextFormat_.Get(), cell, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
             } else {
                 if (col == 0 || col == 6) {
-                    target_->DrawTextW(std::to_wstring(d).c_str(), static_cast<UINT32>(std::to_wstring(d).length()), boldTextFormat_.Get(), cell, weekendBrush.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                    target_->DrawText(std::to_wstring(d).c_str(), static_cast<UINT32>(std::to_wstring(d).length()), boldTextFormat_.Get(), cell, weekendBrush.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                 } else {
                     textBrush_->SetOpacity(0.85f);
-                    target_->DrawTextW(std::to_wstring(d).c_str(), static_cast<UINT32>(std::to_wstring(d).length()), boldTextFormat_.Get(), cell, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
+                    target_->DrawText(std::to_wstring(d).c_str(), static_cast<UINT32>(std::to_wstring(d).length()), boldTextFormat_.Get(), cell, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                 }
             }
             
@@ -3209,20 +3279,20 @@ class Renderer {
 
         textBrush_->SetOpacity(0.96f);
         D2D1_RECT_F cityRect = D2D1::RectF(rect.left + 28.0f * scale, rect.top + 26.0f * scale, rect.left + 185.0f * scale, rect.top + 48.0f * scale);
-        target_->DrawTextW(city.c_str(), static_cast<UINT32>(city.length()), boldTextFormat_.Get(),
+        target_->DrawText(city.c_str(), static_cast<UINT32>(city.length()), boldTextFormat_.Get(),
                            cityRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         D2D1_RECT_F iconRect = D2D1::RectF(rect.left + 28.0f * scale, rect.top + 52.0f * scale, rect.left + 88.0f * scale, rect.top + 112.0f * scale);
-        target_->DrawTextW(wIcon.c_str(), static_cast<UINT32>(wIcon.length()), hugeTextFormat_.Get(),
+        target_->DrawText(wIcon.c_str(), static_cast<UINT32>(wIcon.length()), hugeTextFormat_.Get(),
                            iconRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
                            
         D2D1_RECT_F tempRect = D2D1::RectF(rect.left + 88.0f * scale, rect.top + 52.0f * scale, rect.left + 185.0f * scale, rect.top + 112.0f * scale);
-        target_->DrawTextW(wTemp, static_cast<UINT32>(wcslen(wTemp)), hugeTextFormat_.Get(),
+        target_->DrawText(wTemp, static_cast<UINT32>(wcslen(wTemp)), hugeTextFormat_.Get(),
                            tempRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         mutedBrush_->SetOpacity(0.85f);
         D2D1_RECT_F descRect = D2D1::RectF(rect.left + 28.0f * scale, rect.top + 116.0f * scale, rect.left + 185.0f * scale, rect.bottom - 16.0f * scale);
-        target_->DrawTextW(desc.c_str(), static_cast<UINT32>(desc.length()), textFormat_.Get(),
+        target_->DrawText(desc.c_str(), static_cast<UINT32>(desc.length()), textFormat_.Get(),
                            descRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         ComPtr<ID2D1SolidColorBrush> divider;
@@ -3238,15 +3308,15 @@ class Renderer {
 
         mutedBrush_->SetOpacity(0.70f);
         D2D1_RECT_F rightLine3 = D2D1::RectF(rect.left + 212.0f * scale, rect.top + 45.0f * scale, rect.right - 20.0f * scale, rect.top + 70.0f * scale);
-        target_->DrawTextW(line3.c_str(), static_cast<UINT32>(line3.length()), textFormat_.Get(),
+        target_->DrawText(line3.c_str(), static_cast<UINT32>(line3.length()), textFormat_.Get(),
                            rightLine3, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                            
         D2D1_RECT_F rightLine4 = D2D1::RectF(rect.left + 212.0f * scale, rect.top + 75.0f * scale, rect.right - 20.0f * scale, rect.top + 100.0f * scale);
-        target_->DrawTextW(line4.c_str(), static_cast<UINT32>(line4.length()), textFormat_.Get(),
+        target_->DrawText(line4.c_str(), static_cast<UINT32>(line4.length()), textFormat_.Get(),
                            rightLine4, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                            
         D2D1_RECT_F rightLine5 = D2D1::RectF(rect.left + 212.0f * scale, rect.top + 105.0f * scale, rect.right - 20.0f * scale, rect.top + 130.0f * scale);
-        target_->DrawTextW(line5.c_str(), static_cast<UINT32>(line5.length()), textFormat_.Get(),
+        target_->DrawText(line5.c_str(), static_cast<UINT32>(line5.length()), textFormat_.Get(),
                            rightLine5, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         mutedBrush_->SetOpacity(1.0f);
         textBrush_->SetOpacity(1.0f);
@@ -3254,13 +3324,13 @@ class Renderer {
 
     void DrawNotesDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
         textBrush_->SetOpacity(0.96f);
-        target_->DrawTextW(L"📝 Quick Notes & Scratchpad", 26, boldTextFormat_.Get(),
+        target_->DrawText(L"📝 Quick Notes & Scratchpad", 26, boldTextFormat_.Get(),
                            D2D1::RectF(rect.left + 24.0f * scale, rect.top + 16.0f * scale, rect.right - 30.0f * scale, rect.top + 38.0f * scale),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         if (state.quickNotes.empty()) {
             mutedBrush_->SetOpacity(0.60f);
-            target_->DrawTextW(L"No notes yet. Right click capsule > 'Add Quick Note' to capture your thoughts!", 76, textFormat_.Get(),
+            target_->DrawText(L"No notes yet. Right click capsule > 'Add Quick Note' to capture your thoughts!", 76, textFormat_.Get(),
                                D2D1::RectF(rect.left + 28.0f * scale, rect.top + 60.0f * scale, rect.right - 36.0f * scale, rect.bottom - 20.0f * scale),
                                mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
             mutedBrush_->SetOpacity(1.0f);
@@ -3270,7 +3340,7 @@ class Renderer {
             for (size_t i = 0; i < count; ++i) {
                 std::wstring item = L"• " + state.quickNotes[state.quickNotes.size() - 1 - i];
                 textBrush_->SetOpacity(0.88f);
-                target_->DrawTextW(item.c_str(), static_cast<UINT32>(item.length()), textFormat_.Get(),
+                target_->DrawText(item.c_str(), static_cast<UINT32>(item.length()), textFormat_.Get(),
                                    D2D1::RectF(rect.left + 28.0f * scale, y, rect.right - 36.0f * scale, y + 26.0f * scale),
                                    textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 y += 30.0f * scale;
@@ -3302,7 +3372,7 @@ class Renderer {
         swprintf_s(timeStr, L"%02d:%02d", remMins, remSecs);
 
         textBrush_->SetOpacity(0.96f);
-        target_->DrawTextW(timeStr, static_cast<UINT32>(wcslen(timeStr)), boldTextFormat_.Get(),
+        target_->DrawText(timeStr, static_cast<UINT32>(wcslen(timeStr)), boldTextFormat_.Get(),
                            D2D1::RectF(cx - 40.0f * scale, cy - 14.0f * scale, cx + 40.0f * scale, cy + 14.0f * scale),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
@@ -3312,19 +3382,19 @@ class Renderer {
                                   (state.pomodoro.state == PomodoroState::Break) ? L"☕ Short Break" :
                                   (state.pomodoro.state == PomodoroState::LongBreak) ? L"🌿 Long Break" : L"🍅 Pomodoro Ready";
         
-        target_->DrawTextW(modeName, static_cast<UINT32>(wcslen(modeName)), boldTextFormat_.Get(),
+        target_->DrawText(modeName, static_cast<UINT32>(wcslen(modeName)), boldTextFormat_.Get(),
                            D2D1::RectF(rightLeft, rect.top + 32.0f * scale, rect.right - 30.0f * scale, rect.top + 56.0f * scale),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         wchar_t sessStr[64] = {};
         swprintf_s(sessStr, L"Completed: %d sessions | Target: 25m", state.pomodoro.completedSessions);
         mutedBrush_->SetOpacity(0.68f);
-        target_->DrawTextW(sessStr, static_cast<UINT32>(wcslen(sessStr)), smallTextFormat_.Get(),
+        target_->DrawText(sessStr, static_cast<UINT32>(wcslen(sessStr)), smallTextFormat_.Get(),
                            D2D1::RectF(rightLeft, rect.top + 60.0f * scale, rect.right - 30.0f * scale, rect.top + 80.0f * scale),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         mutedBrush_->SetOpacity(0.55f);
-        target_->DrawTextW(L"Click or Right-Click to Start / Pause", 36, smallTextFormat_.Get(),
+        target_->DrawText(L"Click or Right-Click to Start / Pause", 36, smallTextFormat_.Get(),
                            D2D1::RectF(rightLeft, rect.top + 95.0f * scale, rect.right - 30.0f * scale, rect.bottom - 20.0f * scale),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         mutedBrush_->SetOpacity(1.0f);
@@ -3332,7 +3402,7 @@ class Renderer {
 
     void DrawAssistantDashboard(const SharedState& state, D2D1_RECT_F rect, float scale) {
         textBrush_->SetOpacity(0.96f);
-        target_->DrawTextW(L"🌿 Living Assistant & Wellness", 29, boldTextFormat_.Get(),
+        target_->DrawText(L"🌿 Living Assistant & Wellness", 29, boldTextFormat_.Get(),
                            D2D1::RectF(rect.left + 24.0f * scale, rect.top + 16.0f * scale, rect.right - 30.0f * scale, rect.top + 38.0f * scale),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
@@ -3343,16 +3413,16 @@ class Renderer {
         wchar_t line1[128] = {};
         swprintf_s(line1, L"⏱️ PC Active Time: %llu hr %llu min", upHours, upM);
         textBrush_->SetOpacity(0.88f);
-        target_->DrawTextW(line1, static_cast<UINT32>(wcslen(line1)), textFormat_.Get(),
+        target_->DrawText(line1, static_cast<UINT32>(wcslen(line1)), textFormat_.Get(),
                            D2D1::RectF(rect.left + 28.0f * scale, rect.top + 48.0f * scale, rect.right - 30.0f * scale, rect.top + 72.0f * scale),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         mutedBrush_->SetOpacity(0.75f);
-        target_->DrawTextW(L"💧 Hydration: Reminder active (drink water regularly)", 53, textFormat_.Get(),
+        target_->DrawText(L"💧 Hydration: Reminder active (drink water regularly)", 53, textFormat_.Get(),
                            D2D1::RectF(rect.left + 28.0f * scale, rect.top + 78.0f * scale, rect.right - 30.0f * scale, rect.top + 102.0f * scale),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
-        target_->DrawTextW(L"👁️ 20-20-20 Rule: Rest your eyes every 20 min", 46, textFormat_.Get(),
+        target_->DrawText(L"👁️ 20-20-20 Rule: Rest your eyes every 20 min", 46, textFormat_.Get(),
                            D2D1::RectF(rect.left + 28.0f * scale, rect.top + 108.0f * scale, rect.right - 30.0f * scale, rect.bottom - 16.0f * scale),
                            mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         mutedBrush_->SetOpacity(1.0f);
@@ -3377,7 +3447,7 @@ class Renderer {
         swprintf_s(recStr, L"REC %02d:%02d", mins, secs);
 
         textBrush_->SetOpacity(0.96f);
-        target_->DrawTextW(recStr, static_cast<UINT32>(wcslen(recStr)), boldTextFormat_.Get(),
+        target_->DrawText(recStr, static_cast<UINT32>(wcslen(recStr)), boldTextFormat_.Get(),
                            D2D1::RectF(rect.left + 36.0f, cy - 10.0f, rect.left + 120.0f, cy + 10.0f),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
@@ -3421,7 +3491,7 @@ class Renderer {
             D2D1_RECT_F timeRect = D2D1::RectF(rect.left + 14.0f * scale, rect.top + 7.0f * scale,
                                                rect.left + 64.0f * scale, rect.bottom - 7.0f * scale);
             textBrush_->SetOpacity(0.96f);
-            target_->DrawTextW(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
+            target_->DrawText(timeBuf, static_cast<UINT32>(wcslen(timeBuf)), smallTextFormat_.Get(),
                                timeRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
             
             ComPtr<ID2D1SolidColorBrush> divider;
@@ -3437,7 +3507,7 @@ class Renderer {
                 D2D1_RECT_F cpuRect = D2D1::RectF(rect.left + 74.0f * scale, rect.top + 7.0f * scale,
                                                   rect.left + 108.0f * scale, rect.bottom - 7.0f * scale);
                 accentBrush_->SetOpacity(0.85f);
-                target_->DrawTextW(cpuLabel, static_cast<UINT32>(wcslen(cpuLabel)), smallTextFormat_.Get(),
+                target_->DrawText(cpuLabel, static_cast<UINT32>(wcslen(cpuLabel)), smallTextFormat_.Get(),
                                    cpuRect, accentBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
                 accentBrush_->SetOpacity(1.0f);
             }
@@ -3449,7 +3519,7 @@ class Renderer {
             const float weatherLeft = (settings.showMetricsInIdle ? 112.0f : 78.0f) * scale;
             D2D1_RECT_F wRect = D2D1::RectF(rect.left + weatherLeft, rect.top + 7.0f * scale,
                                             rect.right - 8.0f * scale, rect.bottom - 7.0f * scale);
-            target_->DrawTextW(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), smallTextFormat_.Get(),
+            target_->DrawText(weatherLabel, static_cast<UINT32>(wcslen(weatherLabel)), smallTextFormat_.Get(),
                                wRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
             textBrush_->SetOpacity(1.0f);
             target_->PopAxisAlignedClip();
@@ -3507,7 +3577,7 @@ class Renderer {
 
         if (settings.showMetricText) {
             mutedBrush_->SetOpacity(0.44f);
-            target_->DrawTextW(L"FPS", 3, smallTextFormat_.Get(),
+            target_->DrawText(L"FPS", 3, smallTextFormat_.Get(),
                                D2D1::RectF(fpsPanel.left + 31.0f * scale, fpsPanel.top + 6.0f * scale,
                                            fpsPanel.right - 10.0f * scale, fpsPanel.top + 24.0f * scale),
                                mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
@@ -3519,7 +3589,7 @@ class Renderer {
         D2D1_RECT_F fpsValueRect = settings.showMetricText 
             ? D2D1::RectF(fpsPanel.left + 16.0f * scale, fpsPanel.top + 23.0f * scale, fpsPanel.right - 10.0f * scale, fpsPanel.bottom - 4.0f * scale)
             : D2D1::RectF(fpsPanel.left + 31.0f * scale, fpsPanel.top + 10.0f * scale, fpsPanel.right - 10.0f * scale, fpsPanel.bottom - 4.0f * scale);
-        target_->DrawTextW(fpsValue, static_cast<UINT32>(wcslen(fpsValue)), textFormat_.Get(),
+        target_->DrawText(fpsValue, static_cast<UINT32>(wcslen(fpsValue)), textFormat_.Get(),
                            fpsValueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         const float cardTop = rect.top + 10.0f * scale;
@@ -3571,7 +3641,7 @@ class Renderer {
 
         if (settings.showMetricText) {
             mutedBrush_->SetOpacity(0.56f);
-            target_->DrawTextW(label, static_cast<UINT32>(wcslen(label)), smallTextFormat_.Get(),
+            target_->DrawText(label, static_cast<UINT32>(wcslen(label)), smallTextFormat_.Get(),
                                D2D1::RectF(rect.left + 31.0f * scale, rect.top + 6.0f * scale,
                                            rect.right - 5.0f * scale, rect.top + 24.0f * scale),
                                mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
@@ -3584,7 +3654,7 @@ class Renderer {
         D2D1_RECT_F valueRect = settings.showMetricText 
             ? D2D1::RectF(rect.left + 10.0f * scale, rect.top + 22.0f * scale, rect.right - 8.0f * scale, rect.bottom - 8.0f * scale)
             : D2D1::RectF(rect.left + 31.0f * scale, rect.top + 10.0f * scale, rect.right - 5.0f * scale, rect.bottom - 8.0f * scale);
-        target_->DrawTextW(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(),
+        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(),
                            valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         const float pct = percent < 0 ? 0.0f : Clamp(percent / 100.0f, 0.0f, 1.0f);
@@ -3676,7 +3746,7 @@ class Renderer {
         if (settings.showMetricText) {
             D2D1_RECT_F labelRect = D2D1::RectF(rect.left + 23.0f * scale, rect.top + 3.0f * scale, rect.right - 2.0f * scale, rect.top + 20.0f * scale);
             mutedBrush_->SetOpacity(0.48f);
-            target_->DrawTextW(label, static_cast<UINT32>(wcslen(label)), smallTextFormat_.Get(), labelRect,
+            target_->DrawText(label, static_cast<UINT32>(wcslen(label)), smallTextFormat_.Get(), labelRect,
                                mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
         }
 
@@ -3687,7 +3757,7 @@ class Renderer {
         D2D1_RECT_F valueRect = settings.showMetricText
             ? D2D1::RectF(rect.left + 7.5f * scale, rect.top + 14.5f * scale, rect.right - 2.0f * scale, rect.bottom - 8.0f * scale)
             : D2D1::RectF(rect.left + 23.0f * scale, rect.top + 8.0f * scale, rect.right - 2.0f * scale, rect.bottom - 8.0f * scale);
-        target_->DrawTextW(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(),
+        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(),
                            valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_NONE);
 
         const float clamped = percent < 0 ? 0.0f : Clamp(percent / 100.0f, 0.0f, 1.0f);
@@ -3789,10 +3859,10 @@ class Renderer {
                 
                 mutedBrush_->SetOpacity(0.8f);
                 D2D1_RECT_F elRect = D2D1::RectF(scrubLeft, scrubberY - 8.0f, scrubLeft + 40.0f, scrubberY + 8.0f);
-                target_->DrawTextW(elapsedStr.c_str(), static_cast<UINT32>(elapsedStr.size()), smallTextFormat_.Get(), elRect, mutedBrush_.Get());
+                target_->DrawText(elapsedStr.c_str(), static_cast<UINT32>(elapsedStr.size()), smallTextFormat_.Get(), elRect, mutedBrush_.Get());
                 
                 D2D1_RECT_F remRect = D2D1::RectF(scrubRight - 36.0f, scrubberY - 8.0f, scrubRight, scrubberY + 8.0f);
-                target_->DrawTextW(remainStr.c_str(), static_cast<UINT32>(remainStr.size()), smallTextFormat_.Get(), remRect, mutedBrush_.Get());
+                target_->DrawText(remainStr.c_str(), static_cast<UINT32>(remainStr.size()), smallTextFormat_.Get(), remRect, mutedBrush_.Get());
 
                 const float barLeft = scrubLeft + 36.0f;
                 const float barRight = scrubRight - 38.0f;
@@ -3976,7 +4046,7 @@ class Renderer {
                 D2D1_RECT_F iconRect = D2D1::RectF(rect.left + 11, rect.top + 11, rect.right - 11, rect.bottom - 11);
                 DrawBitmapPixels(media.sourceIcon, iconRect, mediaSourceIconBitmap_, mediaSourceIconGeneration_, 0.95f);
             } else {
-                target_->DrawTextW(media.sourceBadge.empty() ? L"\u25b6" : media.sourceBadge.c_str(),
+                target_->DrawText(media.sourceBadge.empty() ? L"\u25b6" : media.sourceBadge.c_str(),
                                    static_cast<UINT32>(media.sourceBadge.empty() ? 1 : media.sourceBadge.size()),
                                    textFormat_.Get(), rect, textBrush_.Get());
             }
@@ -4158,7 +4228,7 @@ class Renderer {
             if (iconFormat_) {
                 iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
                 iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                target_->DrawTextW(glyph, static_cast<UINT32>(wcslen(glyph)), iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+                target_->DrawText(glyph, static_cast<UINT32>(wcslen(glyph)), iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                 iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
             }
@@ -4170,7 +4240,7 @@ class Renderer {
         const std::wstring clipTitle = state.clipboard.appName.empty()
             ? (state.clipboard.image ? std::wstring(L"Image copied") : std::wstring(L"Clipboard"))
             : state.clipboard.appName + L"  \u00b7  Clipboard";
-        target_->DrawTextW(clipTitle.c_str(), static_cast<UINT32>(clipTitle.size()), smallTextFormat_.Get(), titleRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(clipTitle.c_str(), static_cast<UINT32>(clipTitle.size()), smallTextFormat_.Get(), titleRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         D2D1_RECT_F textRect = D2D1::RectF(badge.right + 11, rect.top + 25, rect.right - 18, rect.bottom - 12);
         DrawMarqueeText(state.clipboard.text.empty() ? L"Copied" : state.clipboard.text, textRect, textFormat_.Get(), textBrush_.Get(), now, 34.0f);
@@ -4220,7 +4290,7 @@ class Renderer {
             if (iconFormat_) {
                 iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
                 iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-                target_->DrawTextW(L"🔔", 1, iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+                target_->DrawText(L"🔔", 1, iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
                 iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
                 iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
             }
@@ -4244,6 +4314,7 @@ class Renderer {
         accentBrush_->SetOpacity(0.80f);
         target_->FillRoundedRectangle(D2D1::RoundedRect(fill, 1.5f, 1.5f), accentBrush_.Get());
         accentBrush_->SetOpacity(1.0f);
+    }
 
     void DrawVolume(const SharedState& state, D2D1_RECT_F rect) {
         if (rect.bottom - rect.top < 24.0f || rect.right - rect.left < 140.0f) return;
@@ -4262,7 +4333,7 @@ class Renderer {
         if (iconFormat_) {
             iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
             iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-            target_->DrawTextW(glyph, static_cast<UINT32>(wcslen(glyph)), iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+            target_->DrawText(glyph, static_cast<UINT32>(wcslen(glyph)), iconFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
             iconFormat_->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
             iconFormat_->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
         }
@@ -4271,13 +4342,13 @@ class Renderer {
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 58, cy - 6);
         mutedBrush_->SetOpacity(0.50f);
         const std::wstring deviceLabel = state.volume.deviceName.empty() ? std::wstring(L"Volume") : state.volume.deviceName;
-        target_->DrawTextW(deviceLabel.c_str(), static_cast<UINT32>(deviceLabel.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(deviceLabel.c_str(), static_cast<UINT32>(deviceLabel.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         wchar_t value[16] = {};
         if (muted) wcscpy_s(value, ARRAYSIZE(value), L"Muted");
         else swprintf_s(value, L"%d%%", state.volume.percent);
         D2D1_RECT_F valueRect = D2D1::RectF(rect.right - 58, cy - 22, rect.right - 14, cy - 6);
-        target_->DrawTextW(value, static_cast<UINT32>(wcslen(value)), smallTextFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), smallTextFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
         textBrush_->SetOpacity(0.90f);
 
         D2D1_RECT_F track = D2D1::RectF(tx, cy + 2, rect.right - 14, cy + 6);
@@ -4310,7 +4381,7 @@ class Renderer {
         bool isOn = state.capsLock.isNumEvent ? state.capsLock.numOn : state.capsLock.capsOn;
 
         textBrush_->SetOpacity(0.95f);
-        target_->DrawTextW(glyph, static_cast<UINT32>(wcslen(glyph)), clockFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(glyph, static_cast<UINT32>(wcslen(glyph)), clockFormat_.Get(), badge, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         ComPtr<ID2D1SolidColorBrush> ledBrush;
         D2D1_COLOR_F ledColor = isOn ? D2D1::ColorF(0.19f, 0.83f, 0.38f, 1.0f) : D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.22f);
@@ -4320,12 +4391,12 @@ class Renderer {
 
         const float tx = badge.right + 14;
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 10, rect.right - 40, cy + 10);
-        target_->DrawTextW(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         std::wstring status = isOn ? L"ON" : L"OFF";
         D2D1_RECT_F statusRect = D2D1::RectF(rect.right - 40, cy - 10, rect.right - 14, cy + 10);
         mutedBrush_->SetOpacity(0.80f);
-        target_->DrawTextW(status.c_str(), static_cast<UINT32>(status.size()), smallTextFormat_.Get(), statusRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(status.c_str(), static_cast<UINT32>(status.size()), smallTextFormat_.Get(), statusRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
     }
 
     void DrawDevice(const SharedState& state, D2D1_RECT_F rect) {
@@ -4351,14 +4422,14 @@ class Renderer {
         mutedBrush_->SetOpacity(0.50f);
         std::wstring label = connected ? L"Device Connected" : L"Device Removed";
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 14, cy - 5);
-        target_->DrawTextW(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         textBrush_->SetOpacity(0.95f);
         const std::wstring& name = state.device.deviceName.empty()
             ? (state.device.isBluetoothLike ? std::wstring(L"Bluetooth") : std::wstring(L"USB Device"))
             : state.device.deviceName;
         D2D1_RECT_F nameRect = D2D1::RectF(tx, cy - 3, rect.right - 14, cy + 17);
-        target_->DrawTextW(name.c_str(), static_cast<UINT32>(name.size()), textFormat_.Get(), nameRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(name.c_str(), static_cast<UINT32>(name.size()), textFormat_.Get(), nameRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
         textBrush_->SetOpacity(0.90f);
         mutedBrush_->SetOpacity(0.58f);
     }
@@ -4400,7 +4471,7 @@ class Renderer {
         D2D1_RECT_F labelRect = D2D1::RectF(tx, cy - 22, rect.right - 14, cy - 6);
         mutedBrush_->SetOpacity(0.50f);
         std::wstring label = state.battery.charging ? L"Power Connected" : L"Battery Alert";
-        target_->DrawTextW(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(label.c_str(), static_cast<UINT32>(label.size()), smallTextFormat_.Get(), labelRect, mutedBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
 
         wchar_t value[128] = {};
         if (state.battery.secondsRemaining != BATTERY_LIFE_UNKNOWN && !state.battery.charging) {
@@ -4412,14 +4483,14 @@ class Renderer {
 
         D2D1_RECT_F valueRect = D2D1::RectF(tx, cy - 4, rect.right - 14, cy + 17);
         textBrush_->SetOpacity(0.95f);
-        target_->DrawTextW(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
+        target_->DrawText(value, static_cast<UINT32>(wcslen(value)), textFormat_.Get(), valueRect, textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
         textBrush_->SetOpacity(0.90f);
     }
 
     void DrawProgress(const SharedState& state, D2D1_RECT_F rect) {
         wchar_t buffer[64] = {};
         swprintf_s(buffer, L"Progress %d%%", state.progress.percent);
-        target_->DrawTextW(buffer, static_cast<UINT32>(wcslen(buffer)), textFormat_.Get(),
+        target_->DrawText(buffer, static_cast<UINT32>(wcslen(buffer)), textFormat_.Get(),
                            D2D1::RectF(rect.left + 18, rect.top + 14, rect.right - 18, rect.bottom - 10),
                            textBrush_.Get(), D2D1_DRAW_TEXT_OPTIONS_CLIP);
     }
@@ -4526,68 +4597,6 @@ class Renderer {
         BLENDFUNCTION blend = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
         return UpdateLayeredWindow(hwnd_, nullptr, nullptr, &size, memDc_, &src, 0, &blend, ULW_ALPHA) != FALSE;
     }
-
-   private:
-    HWND hwnd_ = nullptr;
-    HDC memDc_ = nullptr;
-    HBITMAP memBitmap_ = nullptr;
-    HGDIOBJ oldBitmap_ = nullptr;
-    int bitmapWidth_ = 0;
-    int bitmapHeight_ = 0;
-    float settingsOpacity_ = 0.96f;
-
-    ComPtr<ID2D1Factory> d2dFactory_;
-    ComPtr<IDWriteFactory> dwriteFactory_;
-    ComPtr<ID2D1DCRenderTarget> target_;
-
-    ComPtr<ID2D1SolidColorBrush> pillBgBrush_;
-    ComPtr<ID2D1SolidColorBrush> tintBrush_;
-    ComPtr<ID2D1SolidColorBrush> accentBrush_;
-    ComPtr<ID2D1SolidColorBrush> textBrush_;
-    ComPtr<ID2D1SolidColorBrush> mutedBrush_;
-    ComPtr<ID2D1SolidColorBrush> whiteBrush_;
-    ComPtr<ID2D1SolidColorBrush> redBrush_;
-    ComPtr<ID2D1SolidColorBrush> greenBrush_;
-    ComPtr<ID2D1SolidColorBrush> yellowBrush_;
-    ComPtr<ID2D1SolidColorBrush> cyanBrush_;
-    ComPtr<ID2D1SolidColorBrush> orangeBrush_;
-    ComPtr<ID2D1SolidColorBrush> glassBorderBrush_;
-    ComPtr<ID2D1SolidColorBrush> glassGlossBrush_;
-    ComPtr<ID2D1SolidColorBrush> shadowBrushes_[6];
-
-    ComPtr<IDWriteTextFormat> textFormat_;
-    ComPtr<IDWriteTextFormat> smallTextFormat_;
-    ComPtr<IDWriteTextFormat> clockFormat_;
-    ComPtr<IDWriteTextFormat> boldTextFormat_;
-    ComPtr<IDWriteTextFormat> hugeTextFormat_;
-    ComPtr<IDWriteTextFormat> iconFormat_;
-
-    ComPtr<ID2D1Bitmap> artBitmap_;
-    uint64_t artGeneration_ = 0;
-    ComPtr<ID2D1Bitmap> mediaSourceIconBitmap_;
-    uint64_t mediaSourceIconGeneration_ = 0;
-    ComPtr<ID2D1Bitmap> notificationIconBitmap_;
-    uint64_t notificationIconGeneration_ = 0;
-    ComPtr<ID2D1Bitmap> clipboardIconBitmap_;
-    uint64_t clipboardIconGeneration_ = 0;
-
-    // Gradient brush cache — avoids per-frame StopCollection + Brush allocation
-    ComPtr<ID2D1GradientStopCollection> sheenStops_;
-    ComPtr<ID2D1LinearGradientBrush> sheenBrush_;
-    float cachedSheenIntensity_ = -1.0f;
-    float cachedSheenOpacity_ = -1.0f;
-
-    ComPtr<ID2D1GradientStopCollection> shimmerStops_;
-    ComPtr<ID2D1LinearGradientBrush> shimmerBrush_;
-    float cachedShimmerIntensity_ = -1.0f;
-    float cachedShimmerOpacity_ = -1.0f;
-
-    ComPtr<ID2D1SolidColorBrush> glowBorderBrush_;
-
-    // Text layout cache — avoids per-frame IDWriteTextLayout allocation for marquee
-    std::wstring cachedMarqueeText_;
-    float cachedMarqueeHeight_ = 0.0f;
-    ComPtr<IDWriteTextLayout> cachedMarqueeLayout_;
 };
 
 LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
