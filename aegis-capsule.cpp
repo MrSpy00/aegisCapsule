@@ -917,6 +917,7 @@ HANDLE g_notificationThread = nullptr;
 HANDLE g_keyboardThread = nullptr;
 HANDLE g_assistantThread = nullptr;
 HANDLE g_recordingThread = nullptr;
+DWORD g_renderThreadId = 0;
 DWORD g_keyboardThreadId = 0;
 UINT g_shellHookMessage = 0;
 
@@ -1538,7 +1539,19 @@ RECT GetAnchorWorkRect() {
     return mi.rcWork;
 }
 
-void PositionOverlayWindow(HWND hwnd, int width, int height) {
+static int s_lastOverlayX = INT_MIN, s_lastOverlayY = INT_MIN, s_lastOverlayW = INT_MIN, s_lastOverlayH = INT_MIN;
+static bool s_lastOverlayTopMost = false;
+
+void ResetPositionOverlayCache() {
+    s_lastOverlayX = INT_MIN;
+    s_lastOverlayY = INT_MIN;
+    s_lastOverlayW = INT_MIN;
+    s_lastOverlayH = INT_MIN;
+    s_lastOverlayTopMost = false;
+}
+
+void PositionOverlayWindow(HWND hwnd, int width, int height, bool force = false) {
+    if (!hwnd || !IsWindow(hwnd)) return;
     Settings settings = GetSettingsSnapshot();
     RECT work = GetAnchorWorkRect();
     const int margin = settings.edgeMargin;
@@ -1580,11 +1593,15 @@ void PositionOverlayWindow(HWND hwnd, int width, int height) {
     x += settings.offsetX;
     y += settings.offsetY;
 
-    static int lastX = INT_MIN, lastY = INT_MIN, lastW = INT_MIN, lastH = INT_MIN;
-    static bool lastTopMost = false;
     bool topMost = settings.alwaysOnTop;
-    if (x == lastX && y == lastY && width == lastW && height == lastH && topMost == lastTopMost) return;
-    lastX = x; lastY = y; lastW = width; lastH = height; lastTopMost = topMost;
+    if (!force && x == s_lastOverlayX && y == s_lastOverlayY && width == s_lastOverlayW && height == s_lastOverlayH && topMost == s_lastOverlayTopMost) {
+        return;
+    }
+    s_lastOverlayX = x;
+    s_lastOverlayY = y;
+    s_lastOverlayW = width;
+    s_lastOverlayH = height;
+    s_lastOverlayTopMost = topMost;
 
     SetWindowPos(hwnd, topMost ? HWND_TOPMOST : HWND_NOTOPMOST,
                  x, y, width, height,
@@ -5548,6 +5565,24 @@ class Renderer {
     }
 };
 
+void DispatchMediaCommand(int action, int64_t targetTicks = -1) {
+    std::thread([action, targetTicks]() {
+        try {
+            winrt::init_apartment();
+            auto sessionManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
+            if (sessionManager) {
+                auto session = sessionManager.GetCurrentSession();
+                if (session) {
+                    if (action == 0) session.TrySkipPreviousAsync();
+                    else if (action == 1) session.TryTogglePlayPauseAsync();
+                    else if (action == 2) session.TrySkipNextAsync();
+                    else if (action == 3 && targetTicks >= 0) session.TryChangePlaybackPositionAsync(targetTicks);
+                }
+            }
+        } catch (...) {}
+    }).detach();
+}
+
 LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     static bool tracking = false;
     static bool isDraggingScrubber = false;
@@ -5583,16 +5618,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 if (barRight > barLeft && state.media.endTicks > 0) {
                     float pct = Clamp((unscaledX - barLeft) / (barRight - barLeft), 0.0f, 1.0f);
                     int64_t targetTicks = static_cast<int64_t>(pct * state.media.endTicks);
-                    
-                    try {
-                        auto sessionManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
-                        if (sessionManager) {
-                            auto session = sessionManager.GetCurrentSession();
-                            if (session) {
-                                session.TryChangePlaybackPositionAsync(targetTicks);
-                            }
-                        }
-                    } catch (...) {}
+                    DispatchMediaCommand(3, targetTicks);
                 }
             }
             return 0;
@@ -5688,15 +5714,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                     if (barRight > barLeft && state.media.endTicks > 0) {
                         float pct = Clamp((unscaledX - barLeft) / (barRight - barLeft), 0.0f, 1.0f);
                         int64_t targetTicks = static_cast<int64_t>(pct * state.media.endTicks);
-                        try {
-                            auto sessionManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
-                            if (sessionManager) {
-                                auto session = sessionManager.GetCurrentSession();
-                                if (session) {
-                                    session.TryChangePlaybackPositionAsync(targetTicks);
-                                }
-                            }
-                        } catch (...) {}
+                        DispatchMediaCommand(3, targetTicks);
                     }
                     return 0;
                 }
@@ -5721,18 +5739,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             int pressed = g_pressedMediaButton.exchange(-1);
             if (pressed != -1) {
                 ReleaseCapture();
-
-                try {
-                    auto sessionManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
-                    if (sessionManager) {
-                        auto session = sessionManager.GetCurrentSession();
-                        if (session) {
-                            if (pressed == 0) session.TrySkipPreviousAsync();
-                            else if (pressed == 1) session.TryTogglePlayPauseAsync();
-                            else if (pressed == 2) session.TrySkipNextAsync();
-                        }
-                    }
-                } catch (...) {}
+                DispatchMediaCommand(pressed);
                 return 0;
             }
 
@@ -5780,15 +5787,7 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             return 0;
         }
         case WM_MBUTTONUP: {
-            try {
-                auto sessionManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
-                if (sessionManager) {
-                    auto session = sessionManager.GetCurrentSession();
-                    if (session) {
-                        session.TryTogglePlayPauseAsync();
-                    }
-                }
-            } catch (...) {}
+            DispatchMediaCommand(1);
             return 0;
         }
         case WM_MOUSEWHEEL: {
@@ -5821,16 +5820,56 @@ LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 // Background Worker Threads
 
 DWORD WINAPI RenderThreadProc(LPVOID) {
+    Settings initSettings = GetSettingsSnapshot();
+    RECT work = GetAnchorWorkRect();
+    const int initialW = static_cast<int>(std::ceil(initSettings.collapsedWidth * initSettings.sizeScale + kRenderPadX * 2.0f));
+    const int initialH = static_cast<int>(std::ceil(initSettings.collapsedHeight * initSettings.sizeScale + kRenderPadY * 2.0f));
+    int initialX = work.left + (work.right - work.left - initialW) / 2;
+    int initialY = work.top + initSettings.edgeMargin;
+
+    // Clean unregister previous class if lingering
+    UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
+
+    WNDCLASSEXW wc = {};
+    wc.cbSize = sizeof(wc);
+    wc.lpfnWndProc = OverlayWndProc;
+    wc.hInstance = GetModuleHandleW(nullptr);
+    wc.lpszClassName = kWindowClass;
+    wc.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
+    RegisterClassExW(&wc);
+
+    g_hwnd = CreateWindowExW(
+        WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
+        kWindowClass, L"aegisCapsule",
+        WS_POPUP, initialX, initialY, initialW, initialH,
+        nullptr, nullptr, wc.hInstance, nullptr);
+
+    if (!g_hwnd) {
+        UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
+        return 1;
+    }
+
+    PositionOverlayWindow(g_hwnd, initialW, initialH, true);
+    EnableBlurBehind(g_hwnd);
+    ShowWindow(g_hwnd, SW_SHOWNOACTIVATE);
+    UpdateWindow(g_hwnd);
+    g_shellHookMessage = RegisterWindowMessageW(L"SHELLHOOK");
+    RegisterShellHookWindow(g_hwnd);
+
     Renderer renderer;
     if (!renderer.Initialize(g_hwnd)) {
+        DeregisterShellHookWindow(g_hwnd);
+        DestroyWindow(g_hwnd);
+        g_hwnd = nullptr;
+        UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
         return 1;
     }
 
     SpringValue widthSpring;
     SpringValue heightSpring;
     SpringValue nudgeSpring;
-    widthSpring.Reset(170.0f);
-    heightSpring.Reset(36.0f);
+    widthSpring.Reset(initSettings.collapsedWidth * initSettings.sizeScale);
+    heightSpring.Reset(initSettings.collapsedHeight * initSettings.sizeScale);
     nudgeSpring.Reset(0.0f);
 
     double lastTime = NowSeconds();
@@ -5839,6 +5878,17 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
     double lastActiveTime = lastTime;
 
     while (g_running) {
+        MSG msg;
+        while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                g_running = false;
+                break;
+            }
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+        if (!g_running) break;
+
         double now = NowSeconds();
         float dt = static_cast<float>(now - lastTime);
         lastTime = now;
@@ -5998,6 +6048,13 @@ DWORD WINAPI RenderThreadProc(LPVOID) {
         else if (!g_stopEvent) Sleep(frameMs);
     }
 
+    if (g_hwnd) {
+        DeregisterShellHookWindow(g_hwnd);
+        DestroyWindow(g_hwnd);
+        g_hwnd = nullptr;
+    }
+    UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
+    ResetPositionOverlayCache();
     return 0;
 }
 
@@ -6529,34 +6586,7 @@ void WhTool_ModInit() {
         SetSystemToastSuppression(true);
     }
 
-    // Clean unregister previous class if lingering
-    UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
-
-    WNDCLASSEXW wc = {};
-    wc.cbSize = sizeof(wc);
-    wc.lpfnWndProc = OverlayWndProc;
-    wc.hInstance = GetModuleHandleW(nullptr);
-    wc.lpszClassName = kWindowClass;
-    wc.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
-    RegisterClassExW(&wc);
-
-    if (!g_hwnd) {
-        g_hwnd = CreateWindowExW(
-            WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
-            kWindowClass, L"aegisCapsule",
-            WS_POPUP, 0, 0, 520, 140,
-            nullptr, nullptr, wc.hInstance, nullptr);
-
-        if (g_hwnd) {
-            EnableBlurBehind(g_hwnd);
-            ShowWindow(g_hwnd, SW_SHOWNOACTIVATE);
-            UpdateWindow(g_hwnd);
-            g_shellHookMessage = RegisterWindowMessageW(L"SHELLHOOK");
-            RegisterShellHookWindow(g_hwnd);
-        }
-    }
-
-    g_renderThread = CreateThread(nullptr, 0, RenderThreadProc, nullptr, 0, nullptr);
+    g_renderThread = CreateThread(nullptr, 0, RenderThreadProc, nullptr, 0, &g_renderThreadId);
     g_mediaThread = CreateThread(nullptr, 0, MediaThreadProc, nullptr, 0, nullptr);
     g_audioThread = CreateThread(nullptr, 0, AudioThreadProc, nullptr, 0, nullptr);
     g_weatherThread = CreateThread(nullptr, 0, WeatherThreadProc, nullptr, 0, nullptr);
@@ -6584,6 +6614,9 @@ void WhTool_ModUninit() {
     // Restore Windows native toast popups on unload
     SetSystemToastSuppression(false);
 
+    if (g_renderThreadId) {
+        PostThreadMessageW(g_renderThreadId, WM_QUIT, 0, 0);
+    }
     if (g_keyboardThreadId) {
         PostThreadMessageW(g_keyboardThreadId, WM_QUIT, 0, 0);
     }
@@ -6606,6 +6639,7 @@ void WhTool_ModUninit() {
         }
     }
     g_renderThread = nullptr;
+    g_renderThreadId = 0;
     g_mediaThread = nullptr;
     g_audioThread = nullptr;
     g_weatherThread = nullptr;
@@ -6616,15 +6650,6 @@ void WhTool_ModUninit() {
 #if AEGIS_CAPSULE_HAS_USER_NOTIFICATION_LISTENER
     g_notificationThread = nullptr;
 #endif
-
-    if (g_hwnd) {
-        DeregisterShellHookWindow(g_hwnd);
-        SendMessageW(g_hwnd, WM_CLOSE, 0, 0);
-        DestroyWindow(g_hwnd);
-        g_hwnd = nullptr;
-    }
-
-    UnregisterClassW(kWindowClass, GetModuleHandleW(nullptr));
 
     if (g_stopEvent) {
         CloseHandle(g_stopEvent);
