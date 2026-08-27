@@ -4,7 +4,8 @@
 // @description     aegisCapsule - Next-generation fluid Liquid Glass dynamic capsule for Windows desktops with full-screen auto-hide, living assistant, smart voice recorder, quick notes, pomodoro focus, hardware metrics, and buttery-smooth physics animations.
 // @version         0.0.1
 // @author          MrSpy00
-// @github          https://github.com/MrSpy00/aegisCapsule
+// @github          https://github.com/MrSpy00
+// @homepage        https://github.com/MrSpy00/aegisCapsule
 // @include         explorer.exe
 // @include         windhawk.exe
 // @compilerOptions -lole32 -loleaut32 -lshcore -ld2d1 -ldwrite -ldwmapi -lgdi32 -luser32 -lshell32 -lruntimeobject -lwindowscodecs -lavrt -lsetupapi -lwinhttp -lpdh -lwinmm
@@ -147,6 +148,22 @@
       - '3': System Telemetry HUD (Clock + CPU + RAM) / Sistem Durum Bilgisi
       - '4': Weather & Atmosphere Focus / Hava Durumu Odaklı
       - '5': Live Pomodoro Focus / Canlı Pomodoro Sayacı
+  - IdleTextScale: 100
+    $name: Collapsed Idle Font Scale (%) / Kapalı Kapsül Yazı Boyutu (%)
+    $description: Adjust the text and clock size in the collapsed capsule (50% to 200%). / Kapalı kapsül içindeki yazı ve saat boyutunu ölçekleyin (%50 - %200).
+  - IdleClockShowSeconds: false
+    $name: Show Seconds in Clock / Saatte Saniyeleri Göster
+    $description: Display seconds in the minimal clock format (e.g. 14:32:08). / Minimal saatte saniyeleri göster (Örn: 14:32:08).
+  - IdleClockTimeFormat: auto
+    $name: Clock Time Format / Saat Zaman Formatı
+    $description: Choose between 24-Hour, 12-Hour (AM/PM), or System Locale default. / 24 Saat, 12 Saat (ÖÖ/ÖS) veya Sistem varsayılanı.
+    $options:
+      - auto: Auto (System Locale Default) / Otomatik (Sistem Dili)
+      - 24h: 24-Hour (14:30) / 24 Saatlik
+      - 12h: 12-Hour (2:30 PM) / 12 Saatlik
+  - IdleClockBold: true
+    $name: Bold Idle Typography / Kalın Yazı Tipi
+    $description: Use SemiBold font weight for crisp visibility in the minimal capsule. / Kapalı kapsülde daha net okunabilirlik için yarı kalın yazı tipi kullan.
   - CollapsedWidth: 200
     $name: Collapsed Idle Width (px) / Kapalı Kapsül Genişliği
     $description: Width of the minimal idle capsule before size scaling. Default is 200. / Standart kapalı kapsül genişliği.
@@ -607,6 +624,10 @@ struct Settings {
     CornerStyle cornerStyle = CornerStyle::Pill;
     float customCornerRadius = 18.0f;
     int idleDisplayMode = 0;
+    float idleTextScale = 1.0f;
+    bool idleClockShowSeconds = false;
+    int idleClockTimeFormat = 0; // 0 = Auto, 1 = 24h, 2 = 12h
+    bool idleClockBold = true;
     float collapsedWidth = 200.0f;
     float collapsedHeight = 38.0f;
     float expandedWidth = 480.0f;
@@ -1166,6 +1187,17 @@ void LoadSettings() {
     // Default Idle Display Style
     const int localIdleMode = Wh_GetIntValue(L"IdleDisplayModeOverride", -1);
     next.idleDisplayMode = localIdleMode >= 0 ? localIdleMode : Wh_GetIntSetting(L"Appearance.IdleDisplayMode");
+
+    // Idle Typography & Clock Customization
+    const int idleScaleSetting = Wh_GetIntSetting(L"Appearance.IdleTextScale");
+    next.idleTextScale = idleScaleSetting > 0 ? Clamp(idleScaleSetting / 100.0f, 0.5f, 2.5f) : 1.0f;
+    const int localSecOverride = Wh_GetIntValue(L"IdleClockSecondsOverride", -1);
+    next.idleClockShowSeconds = localSecOverride >= 0 ? (localSecOverride != 0) : (Wh_GetIntSetting(L"Appearance.IdleClockShowSeconds") != 0);
+    const std::wstring timeFmt = GetStringSettingCopy(L"Appearance.IdleClockTimeFormat");
+    if (timeFmt == L"24h") next.idleClockTimeFormat = 1;
+    else if (timeFmt == L"12h") next.idleClockTimeFormat = 2;
+    else next.idleClockTimeFormat = 0;
+    next.idleClockBold = Wh_GetIntSetting(L"Appearance.IdleClockBold") != 0;
 
     // Full Screen Auto-Hide
     next.fullScreenDetection = Wh_GetIntSetting(L"Appearance.FullScreenDetection") != 0;
@@ -2577,6 +2609,11 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
     AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 3 ? MF_CHECKED : 0), 83, tr ? L"📊 Sistem Durumu HUD (Saat/CPU/RAM)" : L"📊 System Telemetry HUD");
     AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 4 ? MF_CHECKED : 0), 84, tr ? L"☀️ Hava Durumu Odaklı" : L"☀️ Weather & Atmosphere Focus");
     AppendMenuW(hIdleMenu, MF_STRING | (currentIdleStyle == 5 ? MF_CHECKED : 0), 85, tr ? L"🍅 Canlı Pomodoro Sayacı" : L"🍅 Live Pomodoro Focus");
+    AppendMenuW(hIdleMenu, MF_SEPARATOR, 0, nullptr);
+    const int curSec = Wh_GetIntValue(L"IdleClockSecondsOverride", -1) >= 0
+                     ? Wh_GetIntValue(L"IdleClockSecondsOverride", 0)
+                     : (currentSettings.idleClockShowSeconds ? 1 : 0);
+    AppendMenuW(hIdleMenu, MF_STRING | (curSec ? MF_CHECKED : 0), 86, tr ? L"⏱️ Saatte Saniyeleri Göster" : L"⏱️ Show Seconds in Clock");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hIdleMenu), tr ? L"🖥️ Bekleme Görünümü" : L"🖥️ Idle Display Style");
 
     // Submenu 6: Themes & Optics
@@ -2735,6 +2772,15 @@ void ShowContextMenu(HWND hwnd, POINT screenPoint) {
         case 83: Wh_SetIntValue(L"IdleDisplayModeOverride", 3); LoadSettings(); g_layoutDirty = true; break;
         case 84: Wh_SetIntValue(L"IdleDisplayModeOverride", 4); LoadSettings(); g_layoutDirty = true; break;
         case 85: Wh_SetIntValue(L"IdleDisplayModeOverride", 5); LoadSettings(); g_layoutDirty = true; break;
+        case 86: {
+            const int curSecVal = Wh_GetIntValue(L"IdleClockSecondsOverride", -1) >= 0
+                                ? Wh_GetIntValue(L"IdleClockSecondsOverride", 0)
+                                : (currentSettings.idleClockShowSeconds ? 1 : 0);
+            Wh_SetIntValue(L"IdleClockSecondsOverride", curSecVal ? 0 : 1);
+            LoadSettings();
+            g_layoutDirty = true;
+            break;
+        }
         case 90: {
             std::lock_guard lock(g_stateMutex);
             g_state.pomodoro.state = PomodoroState::Stopped;
@@ -3959,7 +4005,25 @@ class Renderer {
         SYSTEMTIME local = {};
         GetLocalTime(&local);
         wchar_t timeBuf[32] = {};
-        GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, &local, nullptr, timeBuf, ARRAYSIZE(timeBuf));
+        DWORD timeFlags = settings.idleClockShowSeconds ? 0 : TIME_NOSECONDS;
+        if (settings.idleClockTimeFormat == 1) {
+            if (settings.idleClockShowSeconds) {
+                swprintf_s(timeBuf, L"%02d:%02d:%02d", local.wHour, local.wMinute, local.wSecond);
+            } else {
+                swprintf_s(timeBuf, L"%02d:%02d", local.wHour, local.wMinute);
+            }
+        } else if (settings.idleClockTimeFormat == 2) {
+            int h12 = local.wHour % 12;
+            if (h12 == 0) h12 = 12;
+            const wchar_t* ampm = local.wHour >= 12 ? L"PM" : L"AM";
+            if (settings.idleClockShowSeconds) {
+                swprintf_s(timeBuf, L"%d:%02d:%02d %s", h12, local.wMinute, local.wSecond, ampm);
+            } else {
+                swprintf_s(timeBuf, L"%d:%02d %s", h12, local.wMinute, ampm);
+            }
+        } else {
+            GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, timeFlags, &local, nullptr, timeBuf, ARRAYSIZE(timeBuf));
+        }
 
         bool hasWeather = state.weather.hasData && (now - state.weather.lastUpdated < 3600.0);
         std::wstring wIcon = L"🌡️";
@@ -3983,6 +4047,9 @@ class Renderer {
             else displayMode = 2;
         }
 
+        const float tScale = settings.idleTextScale;
+        const DWRITE_FONT_WEIGHT clockWeight = settings.idleClockBold ? DWRITE_FONT_WEIGHT_SEMI_BOLD : DWRITE_FONT_WEIGHT_NORMAL;
+
         const float halfH = std::clamp((rect.bottom - rect.top) * 0.38f, 8.0f, 16.0f);
         const float divH = std::clamp(halfH * 0.65f, 5.0f, 12.0f);
 
@@ -3996,7 +4063,7 @@ class Renderer {
             ID2D1SolidColorBrush* pBrush = (state.pomodoro.state == PomodoroState::Working) ? redBrush_.Get() : greenBrush_.Get();
 
             D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 6.0f, cy - halfH, cx - 3.0f, cy + halfH);
-            DrawFittedLine(pomoText, leftRect, pBrush ? pBrush : textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(pomoText, leftRect, pBrush ? pBrush : textBrush_.Get(), 12.0f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
             // Center Divider
             ComPtr<ID2D1SolidColorBrush> divider;
@@ -4005,11 +4072,11 @@ class Renderer {
 
             // Right: Time
             D2D1_RECT_F rightRect = D2D1::RectF(cx + 3.0f, cy - halfH, rect.right - 6.0f, cy + halfH);
-            DrawFittedLine(timeBuf, rightRect, textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_NORMAL);
+            DrawFittedLine(timeBuf, rightRect, textBrush_.Get(), 12.0f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, clockWeight);
         } else if (displayMode == 2) {
             // Minimalist Clock Only (Centered)
             D2D1_RECT_F fullRect = D2D1::RectF(rect.left + 6.0f, cy - halfH, rect.right - 6.0f, cy + halfH);
-            DrawFittedLine(timeBuf, fullRect, textBrush_.Get(), 14.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(timeBuf, fullRect, textBrush_.Get(), 14.5f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, clockWeight);
         } else if (displayMode == 3 || (settings.showMetricsInIdle && state.system.cpuPercent >= 0)) {
             // System Telemetry HUD with high contrast, 3 equal columns and zero overlap
             const float pad = 6.0f;
@@ -4025,19 +4092,19 @@ class Renderer {
 
             // Col 1: Time
             D2D1_RECT_F col1 = D2D1::RectF(rect.left + pad, cy - halfH, d1 - 2.0f, cy + halfH);
-            DrawFittedLine(timeBuf, col1, textBrush_.Get(), 11.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(timeBuf, col1, textBrush_.Get(), 11.5f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, clockWeight);
 
             // Col 2: CPU %
             wchar_t cpuLabel[32] = {};
             swprintf_s(cpuLabel, L"CPU %d%%", state.system.cpuPercent >= 0 ? state.system.cpuPercent : 0);
             D2D1_RECT_F col2 = D2D1::RectF(d1 + 2.0f, cy - halfH, d2 - 2.0f, cy + halfH);
-            DrawFittedLine(cpuLabel, col2, cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get(), 11.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(cpuLabel, cyanBrush_ ? cyanBrush_.Get() : textBrush_.Get(), 11.0f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
             // Col 3: RAM %
             wchar_t memLabel[32] = {};
             swprintf_s(memLabel, L"RAM %d%%", state.system.memoryPercent >= 0 ? state.system.memoryPercent : 0);
             D2D1_RECT_F col3 = D2D1::RectF(d2 + 2.0f, cy - halfH, rect.right - pad, cy + halfH);
-            DrawFittedLine(memLabel, col3, orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get(), 11.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(memLabel, col3, orangeBrush_ ? orangeBrush_.Get() : textBrush_.Get(), 11.0f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
         } else if (displayMode == 4) {
             // Weather Focus: [ ☀️ Istanbul 28° | 17:09 ]
             wchar_t weatherLabel[64] = {};
@@ -4046,18 +4113,18 @@ class Renderer {
             else swprintf_s(weatherLabel, L"☀️ %s 24\x00B0", locName.c_str());
 
             D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 6.0f, cy - halfH, cx - 3.0f, cy + halfH);
-            DrawFittedLine(weatherLabel, leftRect, textBrush_.Get(), 11.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(weatherLabel, leftRect, textBrush_.Get(), 11.5f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
 
             ComPtr<ID2D1SolidColorBrush> divider;
             target_->CreateSolidColorBrush(D2D1::ColorF(1, 1, 1, 0.15f * settingsOpacity_), &divider);
             target_->FillRoundedRectangle(D2D1::RoundedRect(D2D1::RectF(cx - 0.5f, cy - divH, cx + 0.5f, cy + divH), 0.5f, 0.5f), divider.Get());
 
             D2D1_RECT_F rightRect = D2D1::RectF(cx + 3.0f, cy - halfH, rect.right - 6.0f, cy + halfH);
-            DrawFittedLine(timeBuf, rightRect, textBrush_.Get(), 11.5f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_NORMAL);
+            DrawFittedLine(timeBuf, rightRect, textBrush_.Get(), 11.5f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, clockWeight);
         } else {
             // Classic 50/50 Duo: [ Time | Weather ] (Style 1 & default)
             D2D1_RECT_F leftRect = D2D1::RectF(rect.left + 6.0f, cy - halfH, cx - 3.0f, cy + halfH);
-            DrawFittedLine(timeBuf, leftRect, textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(timeBuf, leftRect, textBrush_.Get(), 12.0f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, clockWeight);
 
             // Center Divider
             ComPtr<ID2D1SolidColorBrush> divider;
@@ -4070,7 +4137,7 @@ class Renderer {
             else wcscpy_s(weatherLabel, ARRAYSIZE(weatherLabel), L"☀️ 24\x00B0");
 
             D2D1_RECT_F rightRect = D2D1::RectF(cx + 3.0f, cy - halfH, rect.right - 6.0f, cy + halfH);
-            DrawFittedLine(weatherLabel, rightRect, textBrush_.Get(), 12.0f, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
+            DrawFittedLine(weatherLabel, rightRect, textBrush_.Get(), 12.0f * tScale, 1.0f, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_FONT_WEIGHT_SEMI_BOLD);
         }
 
         target_->PopAxisAlignedClip();
