@@ -1,8 +1,8 @@
-# aegisCapsule — Liquid Glass Dynamic Island for Windows
+# aegisCapsule
 
-> **Next-generation Liquid Glass Dynamic Island & Living Personal Assistant for Windows 10/11.**  
-> Native Direct2D, 60–240 FPS, ultra-fluid spring physics, zero-bloat single-file Windhawk mod by **aegis**.  
-> **GitHub:** [MrSpy00/aegisCapsule](https://github.com/MrSpy00/aegisCapsule)
+Hardware-accelerated Dynamic Island and desktop status capsule for Windows 10/11, written as a single-file Windhawk mod in C++, Direct2D, DirectWrite, and WASAPI (`60–240 FPS`).
+
+**GitHub:** [MrSpy00/aegisCapsule](https://github.com/MrSpy00/aegisCapsule)
 
 ![License](https://img.shields.io/badge/license-MIT-black)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4)
@@ -11,122 +11,76 @@
 
 ---
 
-## 🇹🇷 Türkçe Açıklama
+## Türkçe Açıklama
 
-### 💎 aegisCapsule Nedir?
-**aegisCapsule**, Windows masaüstünü Apple iOS Dynamic Island ve Vision Pro Liquid Glass estetiğiyle buluşturan, donanım hızlandırmalı ve ultra-akıcı bir masaüstü kapsülüdür. 
+### aegisCapsule Nedir?
 
-Sıradan bir bildirim çubuğu veya araç takımı olmanın ötesinde; **tam teşekküllü bir kişisel asistan**, **ses kayıt cihazı**, **Pomodoro odak sayacı**, **hızlı not defteri** ve **canlı sistem monitörü** olarak çalışır.
+**aegisCapsule**, Windows masaüstünün üst çubuğunda çalışan, Direct2D ve DirectWrite ile donanım hızlandırmalı olarak çizilen tek dosyalık bir Windhawk modudur. Bildirim genişlemesi, medya kontrolü, WASAPI ses kaydı, Pomodoro sayacı, hızlı notlar ve temel sistem telemetrisi (CPU, RAM, GPU, disk, FPS) panellerini tek bir kapsül arayüzünde toplar.
 
----
+### Özellikler
 
-### ✨ Öne Çıkan Özellikler
+- **Tam Ekran Otomatik Gizleme (`Appearance.FullScreenDetection`):** Tam ekran oyun, video oynatıcı (YouTube, Netflix, VLC) veya sunum algılandığında kapsül otomatik olarak gizlenir, tam ekrandan çıkınca geri gelir.
+- **Dinamik Bildirim Genişlemesi:** Gelen bildirim başlığına ve mesaj uzunluğuna göre kapsül yatayda genişler; uzun metinler için kayan yazı (marquee) kullanır.
+- **Hatırlatıcılar:** Yapılandırılabilir su içme hatırlatıcısı (varsayılan 45 dk), 20-20-20 göz dinlendirme uyarısı, esneme ve uzun oturum bildirimleri.
+- **WASAPI Ses Kaydedici:** Mikrofon girişinden 16-bit PCM WAV formatında doğrudan `Masaüstü\aegisCapsule_Recordings\` klasörüne kayıt alır; kayıt sırasında canlı ses dalgası gösterir.
+- **Hızlı Notlar:** Sağ tık menüsündeki *Add Note from Clipboard* ile panodaki metni kapsül notlarına kaydeder.
+- **Pomodoro Sayacı:** 25 dakika çalışma / 5 dakika mola döngüsü ve ilerleme halkası.
+- **7 Sekmeli Genişletilmiş Görünüm:** Günlük Özet, Takvim & Saat, Hava Durumu (`wttr.in`), Donanım/Game Overlay, Hızlı Notlar, Pomodoro ve Yaşam Asistanı.
+- **10 Renk Teması ve Kısmi Cam Efekti:** Direct2D tabanlı katmanlı cam görünümü, 10 renk teması ve eksen-hizalı kırpma.
 
-#### 1. 🎬 Tam Ekran Otomatik Gizlenme (Full-Screen Auto-Hide)
-- Oyun oynarken, tam ekran film izlerken (YouTube, Netflix, VLC vb.) veya sunum yaparken kapsül otomatik olarak tespit eder ve tamamen kapanır.
-- Tam ekrandan çıkıldığında akıcı spring animasyonuyla geri gelir.
-- İstenirse `Appearance.FullScreenDetection` ayarı üzerinden açılıp kapatılabilir.
+### Kontroller
 
-#### 2. 🪄 Dinamik Genişleyen Bildirim Çubuğu (Dynamic Island Expansion)
-- Bildirim geldiğinde sabit boyuta sıkışmak veya yazının kesilmesi yerine, başlık ve mesaj uzunluğuna göre kapsül yatayda otomatik olarak genişler ve tüm metni eksiksiz gösterir.
-- Kayan yazı (marquee) moduyla uzun metinler akıcı şekilde akar.
-
-#### 3. 🌿 Yaşayan Kapsül & Kişisel Sağlık Asistanı (Living Wellness Assistant)
-- **Su İçme Hatırlatıcısı (Hydration Alert):** Belirlenen aralıklarla (varsayılan 45 dk) su içmenizi hatırlatır.
-- **20-20-20 Göz Dinlendirme:** Her 20 dakikada bir 20 fit uzağa 20 saniye bakma uyarısı verir.
-- **Duruş ve Esneme:** Uzun oturmalarda omuz ve omurga esnetme tavsiyesi gönderir.
-- **Aktif Oturum Uyarısı:** Bilgisayar başında kesintisiz 2 saatten fazla kaldığınızda mola vermenizi önerir.
-
-#### 4. 🎙️ Gelişmiş Akıllı Ses Kaydedici (WASAPI Voice Recorder)
-- Windows Core Audio (WASAPI) motoru ile mikrofonunuzdan doğrudan stüdyo kalitesinde 16-bit PCM WAV kaydı alır.
-- Kayıtları otomatik olarak `Masaüstü\aegisCapsule_Recordings\` klasörüne tarih-saat etiketiyle kaydeder.
-- Kayıt esnasında kapsül üzerinde canlı ses dalgası (waveform) ve kırmızı kayıt animasyonu gösterilir.
-
-#### 5. 📝 Hızlı Notlar & Scratchpad (Quick Notes)
-- Aklınıza gelen fikirleri veya kopyaladığınız metinleri anında kapsüle not olarak ekleyin.
-- Sağ tık menüsünden *"Add Note from Clipboard"* seçeneğiyle panodaki metin anında kaydedilir ve Kapsül Notlar sekmesinde listelenir.
-
-#### 6. 🍅 Pomodoro Odak Sayacı (Focus Timer)
-- 25 dakika çalışma, 5 dakika mola döngüleriyle üretkenliğinizi zirveye taşır.
-- Kapsüle tıklayarak veya sağ tık menüsünden başlatılır/duraklatılır. Süre bittiğinde özel bildirimle uyarır.
-
-#### 7. 📑 7 Sekmeli Gelişmiş Genişletilebilir Dashboard
-Genişletilmiş modda fare tekerleğiyle veya tıklayarak 7 farklı sekmeye geçiş yapabilirsiniz (Kapsül açıldığında her zaman ilk olarak Yaşayan Asistan & Günlük Özet kartı gelir):
-1. **🌟 Yaşayan Asistan & Günlük Özet (Default / İlk Açılış):** Kullanıcı adına özel dinamik selamlama, canlı saat, tam tarih, hava durumu ve bilgisayar oturumu süresi ile birlikte akıllı durumsal mesajlar (su içme, göz dinlendirme, duruş, günün saatine ve hava durumuna göre motive edici ipuçları).
-2. **📅 Takvim & Saat:** Ay görünümü, bugün vurgusu ve detaylı tarih.
-3. **⛅ Hava Durumu & Atmosfer:** wttr.in tabanlı sıcaklık, rüzgar hızı, yönü, nem ve hissedilen sıcaklık.
-4. **🎮 Donanım & Game Overlay:** CPU, RAM, GPU, FPS ve Disk kullanım grafikleri.
-5. **📝 Hızlı Notlar:** Son alınan notların listesi.
-6. **🍅 Pomodoro:** Odak döngüsü sayacı ve ilerleme halkası.
-7. **🌿 Yaşam Asistanı:** Sistem çalışma süresi ve sağlık metrikleri.
-
-#### 8. 💎 Kusursuz Liquid Glass Optik Motoru & Görsel Temizlik
-- Kapsül dışındaki tüm karanlık leke ve gölge taşmaları giderilmiştir.
-- Çok katmanlı frosted glass, yumuşak kenar ışıması (ambient glow), specular yansımalar ve 10 farklı renk teması.
-- Kart geçişlerinde kesin sınır kırpma (axis-aligned clip) ile hiçbir kart birbiri altında şeffaf görünmez veya çakışmaz.
-
----
-
-### 🖱️ Kontroller & Kısayollar
-
-- **Fare Üzerine Gelme (Hover):** Kapsülü genişletir (ve her zaman canlı Günlük Özet kartıyla başlar).
-- **Fare Tekerleği (Scroll):** Standart yönünde sekmeler arasında ileri/geri geçiş yapar (Yukarı = Önceki, Aşağı = Sonraki).
-- **Sol Tık:** Pomodoro başlat/durdur veya sekmeler arası geçiş yap. Kayıt sırasında kaydı durdurur.
-- **Çift Tık:** Kapsülü sürekli açık (Pinned Expanded) moduna sabitler.
+- **Fare Üzerine Gelme:** Kapsülü genişletir.
+- **Fare Tekerleği:** Sekmeler arasında geçiş yapar.
+- **Sol Tık:** Pomodoro başlat/durdur veya kayıt durdur.
+- **Çift Tık:** Kapsülü açık modda sabitler.
 - **Orta Tık:** Çalan medyayı Oynat / Duraklat.
-- **Sağ Tık:** Hızlı kontrol menüsünü açar (Ses kaydı, Not ekleme, Tema değiştirme, Şekil ayarı).
+- **Sağ Tık:** Hızlı kontrol menüsünü açar (ses kaydı, not ekleme, tema, şekil).
 
 ---
 
-## 🇬🇧 English Description
+## English Description
 
-### 💎 What is aegisCapsule?
-**aegisCapsule** brings the pinnacle of Apple iOS Dynamic Island and Vision Pro Liquid Glass aesthetics to Windows 10 and 11. Built with pure hardware-accelerated Direct2D and DirectWrite in a single zero-bloat file (`aegis-capsule.cpp`), it runs smoothly at 60 to 240 FPS.
+### What is aegisCapsule?
 
-Beyond a simple status pill, it is a **complete personal desktop companion**, featuring a **WASAPI voice recorder**, **Pomodoro timer**, **quick notes scratchpad**, **living wellness assistant**, and **hardware telemetry**.
+**aegisCapsule** is a single-file Windhawk mod for Windows 10 and 11 written in native C++, Direct2D, DirectWrite, and WASAPI (`60–240 FPS`). It adds a top-bar capsule with dynamic notification expansion, media playback controls, microphone recording, a Pomodoro timer, clipboard quick notes, and basic hardware telemetry.
 
----
+### Features
 
-### ✨ Core Highlights
-
-1. **Full-Screen Auto-Hide:** Automatically hides when you play full-screen games, watch full-screen videos (YouTube, Netflix, VLC), or give presentations. Smoothly reappears when exiting fullscreen.
-2. **Dynamic Island Expansion:** Automatically scales its width dynamically according to the notification title and message length.
-3. **Living Personal Assistant & Daily Briefing:** Smart personalized greeting with OS username, live weather, formatted date/time, and intelligent context-aware wellness prompts, focus motivation, and dynamic conversational tips on every hover.
-4. **Smart Voice Recorder:** One-click studio quality 16-bit PCM WAV audio capture via WASAPI directly to `%USERPROFILE%\Desktop\aegisCapsule_Recordings\`.
-5. **Quick Notes Scratchpad:** Store instant notes and thoughts directly from the clipboard or menu with persistent storage.
-6. **Pomodoro Focus Timer:** 25/5 interval productivity clock with visual progress arc and session tracking.
-7. **7 Interactive Dashboard Tabs:** Seamlessly cycle through Living Briefing, Calendar, Weather, Hardware HUD, Quick Notes, Pomodoro, and Living Assistant with zero bleed or ghosting.
-8. **Liquid Glass Multi-Layer Optics:** Cleaned ambient backglow, specular highlight, refraction rim, and zero border bleeding.
+- **Full-Screen Auto-Hide:** Automatically hides during full-screen games, video players, or presentations and returns when exiting full screen.
+- **Dynamic Notification Expansion:** Adjusts capsule width to match notification title and message length, with marquee scrolling for longer strings.
+- **Wellness Prompts:** Configurable hydration reminder, 20-20-20 eye-break timer, posture reminder, and active-session break alerts.
+- **WASAPI Voice Recorder:** Saves 16-bit PCM WAV microphone recordings to `%USERPROFILE%\Desktop\aegisCapsule_Recordings\` with a live waveform indicator.
+- **Quick Notes:** Captures clipboard text into persistent quick notes from the context menu.
+- **Pomodoro Timer:** 25/5 focus intervals with a progress ring.
+- **7 Interactive Tabs:** Daily Briefing, Calendar, Weather (`wttr.in`), Hardware HUD, Quick Notes, Pomodoro, and Wellness Assistant.
 
 ---
 
-## ⚙️ Installation & Setup / Kurulum
+## Installation / Kurulum
 
-1. Download and install **Windhawk**: [https://windhawk.net](https://windhawk.net)
+1. Install **Windhawk** from [windhawk.net](https://windhawk.net).
 2. Open Windhawk > **Mods** > **Create / Install from file**.
-3. Select `aegis-capsule.cpp`.
-4. Windhawk will automatically compile and launch the mod with all required compiler options.
+3. Select `aegis-capsule.wh.cpp` (or `aegis-capsule.cpp`).
+4. Windhawk compiles and loads the mod with the embedded `@compilerOptions`.
 
 ---
 
-## 🎛️ Settings Reference / Ayar Rehberi
+## Settings Reference / Ayar Rehberi
 
 | Setting / Ayar | Description (EN) | Açıklama (TR) |
 |---|---|---|
 | `Appearance.FullScreenDetection` | Auto-hide capsule during games & fullscreen apps | Oyun ve tam ekran uygulamalarda otomatik gizlen |
 | `Appearance.Position` | Placement (`top-center`, `top-left`, `top-right`, etc.) | Kapsülün ekrandaki yerleşimi |
-| `Appearance.CornerStyle` | Shape (`pill`, `squircle`, `modern-box`, `sharp`) | Kapsül köşe ve geometrisi |
-| `Optics.LiquidGlass` | Enable multi-layer frosted glass optics | Çok katmanlı sıvı cam efekti |
-| `Optics.AccentGlow` | Ambient backglow conforming to capsule shape | Kapsül arkasındaki yumuşak ortam ışıması |
-| `Modules.NotificationAutoExpand` | Dynamically expand width for notifications | Bildirim uzunluğuna göre genişliği otomatik büyüt |
-| `Assistant.EnableWellnessReminders` | Enable water, eye rest, and uptime reminders | Su içme, göz dinlendirme ve sağlık hatırlatıcıları |
-| `Tools.PomodoroWorkMinutes` | Pomodoro focus duration (default: 25 min) | Pomodoro çalışma süresi (varsayılan: 25 dk) |
-| `Tools.VoiceRecordingFolder` | Custom folder for recorded WAV voice notes | Ses kayıtlarının kaydedileceği özel klasör |
+| `Appearance.CornerStyle` | Shape (`pill`, `squircle`, `modern-box`, `sharp`) | Kapsül köşe geometrisi |
+| `Optics.LiquidGlass` | Enable multi-layer glass rendering | Katmanlı cam efekti |
+| `Optics.AccentGlow` | Ambient backglow conforming to capsule shape | Kapsül arkası ortam ışıması |
+| `Optics.AccentColor` | Accent theme (`cyan`, `purple`, `emerald`, `crimson`, etc.) | Vurgu rengi teması |
+| `Language` | Interface language (`auto`, `en`, `tr`) | Arayüz dili |
+| `Weather.City` | Custom city name (blank for IP auto-detect) | Özel şehir adı (boşsa IP üzerinden tespit) |
 
 ---
 
-## 📜 License & Credits
+## License
 
-- **Author:** aegis (`MrSpy00`)
-- **License:** MIT License
-- **Repository:** [https://github.com/MrSpy00/aegisCapsule](https://github.com/MrSpy00/aegisCapsule)
+MIT License — see [LICENSE](LICENSE).
