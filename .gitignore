@@ -8,5 +8,9 @@
 !/.gitignore
 !/LICENSE
 !/README.md
+!/CONTRIBUTING.md
+!/.github/
+!/.github/ISSUE_TEMPLATE/
+!/.github/ISSUE_TEMPLATE/*.md
 !/aegis-capsule.cpp
 !/aegis-capsule.wh.cpp
