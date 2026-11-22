@@ -1,7 +1,7 @@
 // ==WindhawkMod==
 // @id              aegis-capsule
 // @name            aegisCapsule
-// @description     aegisCapsule - Next-generation fluid Liquid Glass dynamic capsule for Windows desktops with full-screen auto-hide, living assistant, smart voice recorder, quick notes, pomodoro focus, hardware metrics, and buttery-smooth physics animations.
+// @description     Direct2D & WASAPI top-bar status capsule for Windows 10/11 with media controls, voice recording, Pomodoro timer, quick notes, and hardware telemetry.
 // @version         0.1.0
 // @author          MrSpy00
 // @github          https://github.com/MrSpy00
@@ -3876,8 +3876,17 @@ class Renderer {
             case 119: case 122: icon = L"☁️"; text = isTurkish ? L"Bulutlu" : L"Cloudy"; break;
             case 143: case 248: case 260: icon = L"🌫️"; text = isTurkish ? L"Sisli" : L"Foggy"; break;
             case 200: case 386: case 389: case 392: case 395: icon = L"⛈️"; text = isTurkish ? L"Fırtına" : L"Thunderstorm"; break;
-            case 176: case 263: case 266: case 281: case 284: case 293: case 296: case 299: case 302: case 305: case 308: case 311: case 314: case 353: case 356: case 359: icon = L"🌧️"; text = isTurkish ? L"Yağmurlu" : L"Rain"; break;
-            case 179: case 182: case 185: case 227: case 230: case 317: case 320: case 323: case 326: case 329: case 332: case 335: case 338: case 350: case 362: case 365: case 368: case 371: icon = L"❄️"; text = isTurkish ? L"Karlı" : L"Snow"; break;
+            case 176: case 263: case 266: case 281: case 284: case 293: case 296: case 299:
+            case 302: case 305: case 308: case 311: case 314: case 353: case 356: case 359:
+                icon = L"🌧️";
+                text = isTurkish ? L"Yağmurlu" : L"Rain";
+                break;
+            case 179: case 182: case 185: case 227: case 230: case 317: case 320: case 323:
+            case 326: case 329: case 332: case 335: case 338: case 350: case 362: case 365:
+            case 368: case 371:
+                icon = L"❄️";
+                text = isTurkish ? L"Karlı" : L"Snow";
+                break;
             default: icon = L"🌡️"; text = isTurkish ? L"Açık" : L"Clear"; break;
         }
     }
@@ -7008,7 +7017,7 @@ void UpdateBatteryMetrics() {
 
 std::atomic<bool> g_modInitialized{false};
 
-void WhTool_ModInit() {
+BOOL WhTool_ModInit() {
     g_running = true;
     if (!g_stopEvent) g_stopEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
     else ResetEvent(g_stopEvent);
@@ -7031,6 +7040,7 @@ void WhTool_ModInit() {
 #if AEGIS_CAPSULE_HAS_USER_NOTIFICATION_LISTENER
     g_notificationThread = CreateThread(nullptr, 0, NotificationThreadProc, nullptr, 0, nullptr);
 #endif
+    return TRUE;
 }
 
 void WhTool_ModSettingsChanged() {
